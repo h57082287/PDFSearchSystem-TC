@@ -1,13 +1,12 @@
 import time
-import requests
 from PDFReader import PDFReader
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import os
+import httpx
 
-# 亞洲大學
-class AUH():
+
+# 澄清醫院中港分院
+class CKCCGH():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
         if E_Num == '':
             E_Num = 5
@@ -19,6 +18,18 @@ class AUH():
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
         self.Data = []
+        # 建立header
+        self.headers = {
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36'
+        }
+        # 建立payload
+        self.payload = {
+        'idType': '1',
+        'patData': 'H125087083',
+        'birthDate': '0870701',
+        'Send': '',
+        'csrf': 'e00716bb18df93a0e4d855493b2bb52877a06df1'
+        }
         self.browser = browser
 
     def run(self):
@@ -45,13 +56,23 @@ class AUH():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        respone = requests.get('https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel=' + ID + '&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
-        with open("reslut.html",'wb') as f :
-            f.write(respone.content)
+        self.payload['patData'] = ID
+        self.payload['birthDate'] = year + month + day
+        with httpx.Client(http2=True) as client :
+            respone = client.get('https://ck.ccgh.com.tw/register_search.htm')
+            soup = BeautifulSoup(respone.content,"html.parser")
+
+            # 讀取隱藏元素
+            self.payload['csrf'] = soup.find('input',{'name':'csrf'}).get('value')
+
+            # 發送請求
+            respone = client.post('https://ck.ccgh.com.tw/register_search_detail.htm',data=self.payload,headers=self.headers)
+            with open('reslut.html','w',encoding='utf-8') as f :
+                f.write(self._changeHTMLStyle(respone.text,"https://ck.ccgh.com.tw/"))
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        if self._Screenshot(" 取消此筆掛號 ",(name + '_' + ID + '_亞洲大學.png')) :
+        if self._Screenshot("取消掛號",(name + '_' + ID + '_澄清醫院中港分院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
@@ -59,7 +80,7 @@ class AUH():
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
         soup = BeautifulSoup(self.browser.page_source,"html.parser")
-        Tags = soup.find_all(['a','input','h1','h2','h3','h4','h5'])
+        Tags = soup.find_all(['a','button','input','h1','h2','h3','h4','h5'])
         for tag in Tags :
             if tag.text == condition :
                 found = True
@@ -76,9 +97,21 @@ class AUH():
         else:
             return False
     
+    def _changeHTMLStyle(self,page_content,targer:str="https://ck.ccgh.com.tw/"):
+        soup = BeautifulSoup(page_content,"html.parser")
+        # 替換屬性內容，強制複寫資源路徑(針對img)
+        Tags = soup.find_all(['img'])
+        for Tag in Tags:
+            Tag['src'] = targer + Tag['src'] 
+        # 替換屬性內容，強制複寫資源路徑(針對link)
+        Tags = soup.find_all(['link'])
+        for Tag in Tags:
+            Tag['href'] = targer + Tag['href']
+        return str(soup)
+
     def _endBrowser(self):
         self.browser.quit()
 
     def __del__(self):
         print("物件刪除")
-    
+

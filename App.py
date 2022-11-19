@@ -7,6 +7,9 @@ from tkinter import filedialog
 import tkinter
 from License import License
 from auh import AUH
+from ckccgh import CKCCGH
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 
 # ========================================================
 # 注意 : 每次添加新的醫院時須同時調整所有的URLList
@@ -19,6 +22,7 @@ class MainWindows():
         self.modeName = '全部'
         self.URLList = {
             "亞洲大學附設醫院" : None,
+            "澄清醫院中港分院" : None,
         }
         self.RunStatus = True
 
@@ -103,7 +107,7 @@ class MainWindows():
         self.Text8.place(relx=0.80,rely=0.21,anchor=tk.CENTER)
 
         # 設定按鈕
-        self.switchMode = tk.Button(self.MainTab,text="指定",width=6,height=1,font=("標楷體",14),command=MainWindows.changeMode)
+        self.switchMode = tk.Button(self.MainTab,text="指定",width=6,height=1,font=("標楷體",14),command=self.changeMode)
         self.switchMode.place(relx=0.87 , rely=0.18)
 
         #-----------------------------------------------------------------------------------------匯出選擇
@@ -230,7 +234,7 @@ class MainWindows():
     
     # 連結修改模式動作
     def changeMode(self):
-        if((MainWindows.mode % 2) == 0):
+        if((self.mode % 2) == 0):
             self.switchMode.configure(text="全部")
             self.beginPage.configure(state="normal")
             self.beginNum.configure(state="normal")
@@ -293,8 +297,10 @@ class MainWindows():
 
     def Start(self):
         self._LockUI()
+        self.browser = webdriver.Chrome(ChromeDriverManager().install())
         self.URLList = {
-            "亞洲大學附設醫院" : AUH(self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath)
+            "亞洲大學附設醫院" : AUH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "澄清醫院中港分院" : CKCCGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
         }
         t = threading.Thread(target=self.mainProcess)
         t.start()
