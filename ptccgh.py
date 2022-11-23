@@ -4,9 +4,8 @@ from bs4 import BeautifulSoup
 import os
 import httpx
 
-
 # 澄清醫院中港分院
-class CKCCGH():
+class PTCCGH():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
         if E_Num == '':
             E_Num = 5
@@ -38,7 +37,7 @@ class CKCCGH():
                 for persionData in self.Data :
                     print(persionData)
                     if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
-                        content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 澄清醫院中港分院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                        content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                         self._getReslut(persionData['Name'], persionData['ID'], persionData['Born'].split('/')[0],persionData['Born'].split('/')[1],persionData['Born'].split('/')[2])
                         self._startBrowser(persionData['Name'],persionData['ID'])
@@ -59,20 +58,20 @@ class CKCCGH():
         self.payload['patData'] = ID
         self.payload['birthDate'] = year + month + day
         with httpx.Client(http2=True) as client :
-            respone = client.get('https://ck.ccgh.com.tw/register_search.htm')
+            respone = client.get('https://pt.ccgh.com.tw/register_search.htm')
             soup = BeautifulSoup(respone.content,"html.parser")
 
             # 讀取隱藏元素
             self.payload['csrf'] = soup.find('input',{'name':'csrf'}).get('value')
 
             # 發送請求
-            respone = client.post('https://ck.ccgh.com.tw/register_search_detail.htm',data=self.payload,headers=self.headers)
+            respone = client.post('https://pt.ccgh.com.tw/register_search_detail.htm',data=self.payload,headers=self.headers)
             with open('reslut.html','w',encoding='utf-8') as f :
-                f.write(self._changeHTMLStyle(respone.text,"https://ck.ccgh.com.tw/"))
+                f.write(self._changeHTMLStyle(respone.text,"https://pt.ccgh.com.tw/"))
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        if self._Screenshot("取消掛號",(name + '_' + ID + '_澄清醫院中港分院.png')) :
+        if self._Screenshot("取消掛號",(name + '_' + ID + '_澄清醫院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
@@ -97,7 +96,7 @@ class CKCCGH():
         else:
             return False
     
-    def _changeHTMLStyle(self,page_content,targer:str="https://ck.ccgh.com.tw/"):
+    def _changeHTMLStyle(self,page_content,targer:str):
         soup = BeautifulSoup(page_content,"html.parser")
         # 替換屬性內容，強制複寫資源路徑(針對img)
         Tags = soup.find_all(['img'])
@@ -114,4 +113,3 @@ class CKCCGH():
 
     def __del__(self):
         print("物件刪除")
-

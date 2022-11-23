@@ -8,6 +8,7 @@ import tkinter
 from License import License
 from auh import AUH
 from ckccgh import CKCCGH
+from ptccgh import PTCCGH
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
@@ -23,6 +24,7 @@ class MainWindows():
         self.URLList = {
             "亞洲大學附設醫院" : None,
             "澄清醫院中港分院" : None,
+            "澄清醫院" : None,
         }
         self.RunStatus = True
 
@@ -301,6 +303,7 @@ class MainWindows():
         self.URLList = {
             "亞洲大學附設醫院" : AUH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "澄清醫院中港分院" : CKCCGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "澄清醫院" : PTCCGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
         }
         t = threading.Thread(target=self.mainProcess)
         t.start()
