@@ -1,0 +1,5 @@
+import json
+
+data = "[\r\n  {\r\n    \"deptID\": \"U3K00A\",\r\n    \"deptName\": \"營養治療科\",\r\n    \"opdDate\": \"20221221\",\r\n    \"opdTimeID\": \"1\",\r\n    \"roomID\": \"\",\r\n    \"roomName\": \"\",\r\n    \"roomLocation\": \"\",\r\n    \"doctorID\": \"Z909\",\r\n    \"doctorName\": \"陳冠伶\",\r\n    \"subDoctorID\": \"\",\r\n    \"subDoctorName\": \"\",\r\n    \"regNumber\": \"1\",\r\n    \"memo\": \"\",\r\n    \"calledNumber\": \"0\",\r\n    \"estiTime\": \"08:30\",\r\n    \"name\": \"初診病人\",\r\n    \"kd\": \"門診掛號\",\r\n    \"week\": \"三\",\r\n    \"idNumber\": \"\",\r\n    \"spdept\": \"N\",\r\n    \"spdeptPhone\": \"\",\r\n    \"WebdeptID\": \"U3K00A\",\r\n    \"Webdeptnm\": \"營養治療科\",\r\n    \"weekDay\": \"3\",\r\n    \"own\": \"N\",\r\n    \"videodpt\": \"N\",\r\n    \"videouse\": \"N\",\r\n    \"videourl\": \"\",\r\n    \"videoestiTime\": \"\",\r\n    \"teldpt\": \"\",\r\n    \"teluse\": \"N\",\r\n    \"telurl\": \"\",\r\n    \"telestiTime\": \"\"\r\n  }\r\n]"
+data = json.loads(data)
+print(type(data))
