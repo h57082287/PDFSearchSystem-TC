@@ -11,6 +11,7 @@ from ckccgh import CKCCGH
 from ptccgh import PTCCGH
 from ujah import UJAH
 from jjah import JJAH
+from rg import RG
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
@@ -24,6 +25,7 @@ class MainWindows():
         self.mode = 0
         self.modeName = '全部'
         self.URLList = {
+            "童綜合醫院" : None,
             "亞洲大學附設醫院" : None,
             "澄清醫院中港分院" : None,
             "澄清醫院" : None,
@@ -305,6 +307,7 @@ class MainWindows():
         self._LockUI()
         self.browser = webdriver.Chrome(ChromeDriverManager().install())
         self.URLList = {
+            "童綜合醫院" : RG(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "亞洲大學附設醫院" : AUH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "澄清醫院中港分院" : CKCCGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "澄清醫院" : PTCCGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
