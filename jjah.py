@@ -7,7 +7,6 @@ import os
 from PDFReader import PDFReader
 import json
 
-
 # 大里仁愛醫院
 class JJAH():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
