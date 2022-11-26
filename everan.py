@@ -7,8 +7,8 @@ from PDFReader import PDFReader
 import datetime
 
 
-# 豐原醫院
-class FYH():
+# 太平長安醫院
+class EVERAN():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
         if E_Num == '':
             E_Num = 5
@@ -71,22 +71,21 @@ class FYH():
         self.payload['birthday'] = year + '-' + month + '-' + day
         self.payload2['cardid'] = ID
         self.payload2['birthday'] = str(int(year) + 1911) + month + day
-
         with httpx.Client(http2=True) as client :
             # 進入網頁
-            respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers)
+            respone = client.post('http://www.everanhospital.com.tw:9099/OReg/GetPatInfo', data=self.payload, headers=self.headers)
             if(respone.json()[0]['msg'] == "病患不存在"):
                 self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
                 with open("reslut.html", "w", encoding="utf-8") as f:
                     f.write(respone.json()[0]['msg'])
             else:
-                respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords')
-                respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers)
+                respone = client.get('http://www.everanhospital.com.tw:9099/OReg/ScheduledRecords')
+                respone2 = client.post('http://www.everanhospital.com.tw:9099/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers)
                 self._JSONDataToHTML(respone2,respone.text)
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        if self._Screenshot("預約成功",(name + '_' + ID + '_豐原醫院.png')) :
+        if self._Screenshot("預約成功",(name + '_' + ID + '_太平長安醫院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
@@ -116,11 +115,11 @@ class FYH():
         # 替換屬性內容，強制複寫資源路徑(針對link)
         Tags = soup.find_all(['link'])
         for Tag in Tags:
-            Tag['href'] = "https://nreg.fyh.mohw.gov.tw/" + Tag['href']
+            Tag['href'] = "http://www.everanhospital.com.tw:9099/" + Tag['href']
         # 替換屬性內容，強制複寫資源路徑(針對img)
         Tags = soup.find_all(['img'])
         for Tag in Tags:
-            Tag['src'] = "https://nreg.fyh.mohw.gov.tw/Content/onlineregister/logo.png"
+            Tag['src'] = "http://www.everanhospital.com.tw:9099/Content/onlineregister/logo.png"
         #增加掛號table
         Tags = soup.find(['table'])
         Tags['style'] = "width:100%;border:0px;font-size:2.0em;table-layout:fixed;"
@@ -131,7 +130,6 @@ class FYH():
         soup = BeautifulSoup(page_content,"html.parser")
         datas = []
         datas = jsonData.json()
-
         for i in range(len(datas)):
             new_tr_tag = soup.new_tag("tr")
             new_tr_tag.attrs = {"class":"row"}
@@ -160,18 +158,8 @@ class FYH():
             target_tag[i+1].append(new_td_tag)
 
             new_td_tag = soup.new_tag("td")
-            new_td_tag.attrs = {"style":"text-align:center", "class":"col-xs-2 col-md-2 col-lg-2"}
-            new_td_tag.string = datas[i]['visitroom']
-            target_tag[i+1].append(new_td_tag)
-
-            new_td_tag = soup.new_tag("td")
             new_td_tag.attrs = {"style":"text-align:center", "class":"col-xs-1 col-md-1 col-lg-1"}
             new_td_tag.string = str(datas[i]['visitno'])
-            target_tag[i+1].append(new_td_tag)
-
-            new_td_tag = soup.new_tag("td")
-            new_td_tag.attrs = {"style":"text-align:center", "class":"col-xs-1 col-md-1 col-lg-1"}
-            new_td_tag.string = datas[i]['regarrivaltime']
             target_tag[i+1].append(new_td_tag)
 
             new_td_tag = soup.new_tag("td")
