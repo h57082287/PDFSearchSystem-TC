@@ -49,7 +49,7 @@ class FYH():
                 for persionData in self.Data :
                     print(persionData)
                     if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
-                        content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 童綜合醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                        content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 豐原醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                         self._getReslut(persionData['Name'], persionData['ID'], persionData['Born'].split('/')[0],persionData['Born'].split('/')[1],persionData['Born'].split('/')[2])
                         self._startBrowser(persionData['Name'],persionData['ID'])

@@ -15,6 +15,7 @@ from cmuh import CMUH
 from fyh import FYH
 from rg import RG
 from everan import EVERAN
+from tafghzb import TAFGHZB
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
@@ -37,6 +38,7 @@ class MainWindows():
             "中國醫學大學豐原分院" : None,
             "豐原醫院" : None,
             "太平長安醫院" : None,
+            "國軍醫院-台中" : None,
         }
         self.RunStatus = True
 
@@ -322,6 +324,7 @@ class MainWindows():
             "中國醫學大學豐原分院" : CMUH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "豐原醫院" : FYH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "太平長安醫院" : EVERAN(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "國軍醫院-台中" : TAFGHZB(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
         }
         t = threading.Thread(target=self.mainProcess)
         t.start()
