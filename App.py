@@ -14,6 +14,7 @@ from jjah import JJAH
 from cmuh import CMUH
 from fyh import FYH
 from rg import RG
+from lshosp import LSHOSP
 from everan import EVERAN
 from tafghzb import TAFGHZB
 from tafgh import TAFGH
@@ -37,6 +38,7 @@ class MainWindows():
             "台中仁愛醫院" : None,
             "大里仁愛醫院" : None,
             "中國醫學大學豐原分院" : None,
+            "林新醫院" : None,
             "豐原醫院" : None,
             "太平長安醫院" : None,
             "國軍醫院-中清" : None,
@@ -324,6 +326,7 @@ class MainWindows():
             "台中仁愛醫院" : UJAH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "大里仁愛醫院" : JJAH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "中國醫學大學豐原分院" : CMUH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "林新醫院" : LSHOSP(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "豐原醫院" : FYH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "太平長安醫院" : EVERAN(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "國軍醫院-中清" : TAFGHZB(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
