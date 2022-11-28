@@ -16,6 +16,7 @@ from fyh import FYH
 from rg import RG
 from lshosp import LSHOSP
 from everan import EVERAN
+from chingchyuan import CHINGCHYUAN
 from tafghzb import TAFGHZB
 from tafgh import TAFGH
 from selenium import webdriver
@@ -41,6 +42,7 @@ class MainWindows():
             "林新醫院" : None,
             "豐原醫院" : None,
             "太平長安醫院" : None,
+            "清泉醫院" : None,
             "國軍醫院-中清" : None,
             "國軍醫院-台中" : None,
         }
@@ -329,6 +331,7 @@ class MainWindows():
             "林新醫院" : LSHOSP(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "豐原醫院" : FYH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "太平長安醫院" : EVERAN(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "清泉醫院" : CHINGCHYUAN(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "國軍醫院-中清" : TAFGHZB(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "國軍醫院-台中" : TAFGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
         }
