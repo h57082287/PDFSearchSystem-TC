@@ -19,7 +19,6 @@ class AUH():
         self.Data = []
         self.browser = browser
         # 各醫院新增項目
-        self.IPStatus = True
         self.respone = None
         self.ChangeIPNow = False
 
