@@ -22,6 +22,7 @@ from tafghzb import TAFGHZB
 from tafgh import TAFGH
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from VPNClient import VPN
 
 # ========================================================
 # 注意 : 每次添加新的醫院時須同時調整所有的URLList
@@ -242,8 +243,9 @@ class MainWindows():
     # 關閉功能定義
     def onClose(self):
         # MainWindows.StopThread = True
-        # os._exit(0)
-        self.window.destroy()
+        self.RunStatus = False
+        self.endBrowser()
+        os._exit(0)
 
     # 連結取得檔案動作
     def GetFile(self):
@@ -340,8 +342,11 @@ class MainWindows():
             "國軍醫院-中清" : TAFGHZB(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "國軍醫院-台中" : TAFGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
         }
-        t = threading.Thread(target=self.mainProcess)
-        t.start()
+        t1 = threading.Thread(target=self.mainProcess)
+        t1.start()
+        t2 = threading.Thread(target=self.VPNProcess)
+        t2.start()
+
 
     # 取得PDF路徑
     def getPDFPath(self):
@@ -359,6 +364,14 @@ class MainWindows():
     # 建立主程序
     def mainProcess(self):
         self.URLList[self.webList.get()].run()
+    
+    # 結束瀏覽器
+    def endBrowser(self):
+        self.browser.quit()
+    
+    # 建立VPN程序
+    def VPNProcess(self):
+        VPN(self,self.URLList[self.webList.get()]).watch_dog()
 
     # =================================================================
     #                           彈窗定義

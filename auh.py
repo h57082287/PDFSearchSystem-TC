@@ -18,10 +18,18 @@ class AUH():
         self.currentNum = int(S_Num)
         self.Data = []
         self.browser = browser
+        # 各醫院新增項目
+        self.IPStatus = True
+        self.respone = None
+        self.ChangeIPNow = False
 
     def run(self):
         while True:
             if self._PDFData() and self.window.RunStatus:
+                # 各醫院新增項目
+                self.ChangeIPNow = bool(int(input("是否更換IP : (0 or 1)")))
+                # 各醫院新增項目
+                self._ChangingIPCK()
                 for persionData in self.Data :
                     print(persionData)
                     if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
@@ -37,15 +45,17 @@ class AUH():
                 self.currentPage += 1
             else:
                 self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
+                self.window.RunStatus = False
+                time.sleep(2)
                 self.window.GUIRestart()
                 self._endBrowser()
                 break
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        respone = requests.get('https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel=' + ID + '&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
+        self.respone = requests.get('https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel=' + ID + '&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
         with open("reslut.html",'wb') as f :
-            f.write(respone.content)
+            f.write(self.respone.content)
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
@@ -76,6 +86,12 @@ class AUH():
     
     def _endBrowser(self):
         self.browser.quit()
+    
+    # 各醫院新增項目
+    def _ChangingIPCK(self):
+        while(self.ChangeIPNow):
+            pass
+        self.ChangeIPNow = False
 
     def __del__(self):
         print("物件刪除")
