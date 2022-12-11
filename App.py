@@ -1,4 +1,6 @@
+import ctypes
 import os
+import sys
 import threading
 import tkinter as tk
 from tkinter import ttk
@@ -24,6 +26,7 @@ from tafgh import TAFGH
 from csh import CSH
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
+from VPNClient import VPN
 
 # ========================================================
 # 注意 : 每次添加新的醫院時須同時調整所有的URLList
@@ -31,6 +34,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 # 建立視窗程式物件
 class MainWindows():
     def __init__(self):
+        # 取得管理員權限
+        self.getAdmin()
+        
         # 變數設定
         self.mode = 0
         self.modeName = '全部'
@@ -54,6 +60,7 @@ class MainWindows():
             "中山醫" : None,
         }
         self.RunStatus = True
+        self.VClient = None
 
         # 設定視窗
         self.window = tk.Tk()
@@ -190,29 +197,29 @@ class MainWindows():
         # 建立設定頁面內容
 
         # 初始化狀態
-        checkVal_AND = tk.BooleanVar()
-        checkVal_AND.set(False)
+        self.checkVal_AND = tk.BooleanVar()
+        self.checkVal_AND.set(False)
 
-        checkVal_AUDM = tk.BooleanVar()
-        checkVal_AUDM.set(False)
+        self.checkVal_AUDM = tk.BooleanVar()
+        self.checkVal_AUDM.set(False)
 
-        checkVal_AULL = tk.BooleanVar()
-        checkVal_AULL.set(False)
+        self.checkVal_AULL = tk.BooleanVar()
+        self.checkVal_AULL.set(True)
 
-        checkVal_AUVPNM = tk.BooleanVar()
-        checkVal_AUVPNM.set(False)
+        self.checkVal_AUVPNM = tk.BooleanVar()
+        self.checkVal_AUVPNM.set(True)
 
         # 建立勾選
-        self.allowNetworkDebug = tk.Checkbutton(self.SetupTab,text="允許使用網路偵錯功能(開發者可遠端除錯)",var=checkVal_AND)
+        self.allowNetworkDebug = tk.Checkbutton(self.SetupTab,text="允許使用網路偵錯功能(開發者可遠端除錯)",var=self.checkVal_AND,state="disable")
         self.allowNetworkDebug.place(relx=0.25,rely=0.08)
 
-        self.allowUseDebugMode = tk.Checkbutton(self.SetupTab,text="允許使用測試版軟體(可能會有穩定性問題)",var=checkVal_AUDM)
+        self.allowUseDebugMode = tk.Checkbutton(self.SetupTab,text="允許使用測試版軟體(可能會有穩定性問題)",var=self.checkVal_AUDM,state="disable")
         self.allowUseDebugMode.place(relx=0.25,rely=0.18)
 
-        self.allowUseLocalLog = tk.Checkbutton(self.SetupTab,text="產生本地端記錄檔(與執行檔相同資料夾)",var=checkVal_AULL)
+        self.allowUseLocalLog = tk.Checkbutton(self.SetupTab,text="產生本地端記錄檔(與執行檔相同資料夾)",var=self.checkVal_AULL,state="disabled")
         self.allowUseLocalLog.place(relx=0.25,rely=0.28)
 
-        self.allowUseVPNMode = tk.Checkbutton(self.SetupTab,text="允許使用VPN繞過IP封鎖機制(初步測試版本可能會有穩定性問題)",var=checkVal_AUVPNM)
+        self.allowUseVPNMode = tk.Checkbutton(self.SetupTab,text="允許使用VPN繞過IP封鎖機制(初步測試版本可能會有穩定性問題)",var=self.checkVal_AUVPNM)
         self.allowUseVPNMode.place(relx=0.25,rely=0.38)
 
         # 建立按鈕
@@ -246,8 +253,9 @@ class MainWindows():
     # 關閉功能定義
     def onClose(self):
         # MainWindows.StopThread = True
-        # os._exit(0)
-        self.window.destroy()
+        self.RunStatus = False
+        self.endBrowser()
+        os._exit(0)
 
     # 連結取得檔案動作
     def GetFile(self):
@@ -346,8 +354,11 @@ class MainWindows():
             "國軍醫院-台中" : TAFGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "中山醫" : CSH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
         }
-        t = threading.Thread(target=self.mainProcess)
-        t.start()
+        t1 = threading.Thread(target=self.mainProcess)
+        t1.start()
+        t2 = threading.Thread(target=self.VPNProcess)
+        t2.start()
+
 
     # 取得PDF路徑
     def getPDFPath(self):
@@ -365,6 +376,29 @@ class MainWindows():
     # 建立主程序
     def mainProcess(self):
         self.URLList[self.webList.get()].run()
+    
+    # 結束瀏覽器
+    def endBrowser(self):
+        self.browser.quit()
+    
+    # 建立VPN程序
+    def VPNProcess(self):
+        VPN(self,self.URLList[self.webList.get()]).watch_dog()
+    
+    # 獲取最高權限
+    def getAdmin(self):
+        if self.is_admin():
+           pass
+        else:
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+            os._exit(0)
+    
+    # 檢查權限
+    def is_admin(self):
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
 
     # =================================================================
     #                           彈窗定義

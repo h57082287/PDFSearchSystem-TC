@@ -56,8 +56,8 @@ class PDFReader():
             
             self.window.setStatusText(content="~本頁含有"+ str(non_data) +"筆資料不齊或內容異常，已跳過異常及不齊全資料~",x=0.1,y=0.8,size=12)
             time.sleep(5)
-            return True,self.Datas
+            return True,self.Datas,len(self.Datas)
         except:
             self.window.setStatusText(content="~PDF解析異常，請檢查您的檔案，本系統將跳過此頁繼續執行~",x=0.1,y=0.8,size=12)
             time.sleep(5)
-            return False,self.Datas
+            return False,self.Datas,-1
