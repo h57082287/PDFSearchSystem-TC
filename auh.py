@@ -30,7 +30,7 @@ class AUH():
     def run(self):
         while True:
             if self._PDFData() and self.window.RunStatus:
-                for self.idx in range(self.currentNum,self.datalen) :
+                for self.idx in range(self.currentNum-1,self.datalen) :
                     # 各醫院新增項目
                     self._ChangingIPCK()
                     print(self.Data[self.idx])
