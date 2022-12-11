@@ -205,7 +205,7 @@ class MainWindows():
         self.checkVal_AULL.set(True)
 
         self.checkVal_AUVPNM = tk.BooleanVar()
-        self.checkVal_AUVPNM.set(False)
+        self.checkVal_AUVPNM.set(True)
 
         # 建立勾選
         self.allowNetworkDebug = tk.Checkbutton(self.SetupTab,text="允許使用網路偵錯功能(開發者可遠端除錯)",var=self.checkVal_AND,state="disable")
@@ -351,7 +351,6 @@ class MainWindows():
             "國軍醫院-中清" : TAFGHZB(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "國軍醫院-台中" : TAFGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
         }
-        self.VClient = VPN(self,self.URLList[self.webList.get()])
         t1 = threading.Thread(target=self.mainProcess)
         t1.start()
         t2 = threading.Thread(target=self.VPNProcess)
@@ -381,7 +380,7 @@ class MainWindows():
     
     # 建立VPN程序
     def VPNProcess(self):
-        self.VClient.watch_dog()
+        VPN(self,self.URLList[self.webList.get()]).watch_dog()
     
     # 獲取最高權限
     def getAdmin(self):
