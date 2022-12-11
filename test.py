@@ -1,3 +1,3 @@
 from VPNClient import VPN
 
-v = VPN(None,None)
+v = VPN(None,None)._stopVPN()

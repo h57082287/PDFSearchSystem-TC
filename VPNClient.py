@@ -20,7 +20,7 @@ class VPN():
         self.Text_Rule = ["對不起!此ip查詢或取消資料次數過多;"]
         self.Code_Rule = [400,408,500,407,503,404]
         self.ovpnDir = ""
-        self.fileList = []
+        self.fileList = ["",""]
         self.index = 0
 
         if (self.window.checkVal_AUVPNM.get()):
@@ -40,11 +40,12 @@ class VPN():
     def _startVPN(self):
         if (self.index != len(self.fileList)) and self.window.checkVal_AUVPNM.get():
             cmd = 'start openvpn --config "' + self.fileList[self.index] + '" --auth-user-pass login.conf'
+            # cmd = 'start openvpn --config "C:\\Users\\h5708\\Downloads\\Surfshark_Config\\89.187.178.94_tcp.ovpn" --auth-user-pass login.conf'
             os.system(cmd)
             self.index += 1
             self._memberControl()
         else:
-            self.window.RunStatus = False
+            # self.window.RunStatus = False
             messagebox.showerror(title="IP替換失敗",message="所有可用ip已用盡或您本次並未啟用VPN功能!!!")
             self._stopVPN()
             os._exit(0)

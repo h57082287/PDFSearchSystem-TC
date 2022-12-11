@@ -6,6 +6,7 @@ from tkinter import messagebox
 
 class VPNWindow():
         def __init__(self,VPNObj) -> None:
+            self.VPN = VPNObj
             # 設定視窗
             self.root = tk.Tk()
             self.root.title("VPN設定視窗")
