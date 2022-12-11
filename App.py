@@ -21,6 +21,7 @@ from everan import EVERAN
 from chingchyuan import CHINGCHYUAN
 from tafghzb import TAFGHZB
 from tafgh import TAFGH
+from csh import CSH
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 
@@ -50,6 +51,7 @@ class MainWindows():
             "烏日林新醫院" : None,
             "國軍醫院-中清" : None,
             "國軍醫院-台中" : None,
+            "中山醫" : None,
         }
         self.RunStatus = True
 
@@ -342,6 +344,7 @@ class MainWindows():
             "烏日林新醫院" : WLSHOSP(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "國軍醫院-中清" : TAFGHZB(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "國軍醫院-台中" : TAFGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "中山醫" : CSH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
         }
         t = threading.Thread(target=self.mainProcess)
         t.start()

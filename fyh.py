@@ -124,6 +124,7 @@ class FYH():
         #增加掛號table
         Tags = soup.find(['table'])
         Tags['style'] = "width:100%;border:0px;font-size:2.0em;table-layout:fixed;"
+        
         return str(soup)
 
     def _JSONDataToHTML(self,jsonData,page_content):
