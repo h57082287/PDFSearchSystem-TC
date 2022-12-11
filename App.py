@@ -390,6 +390,13 @@ class MainWindows():
         else:
             ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
             os._exit(0)
+    
+    # 檢查權限
+    def is_admin(self):
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except:
+            return False
 
     # =================================================================
     #                           彈窗定義
