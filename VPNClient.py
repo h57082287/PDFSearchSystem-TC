@@ -22,7 +22,7 @@ class VPN():
         self.fileList = []
         self.index = 0
 
-        if (self.window.checkVal_AUVPNM):
+        if (self.window.checkVal_AUVPNM.get()):
             # 設定視窗
             self.root = tk.Tk()
             self.root.title("VPN設定視窗")
@@ -75,7 +75,7 @@ class VPN():
             messagebox.showerror(title="檢查您的輸入",message="請檢查您的帳號或密碼是否有輸入完成,或是檔案路徑是否有效(必須包含副檔名為.ovpn的檔案類型)!!!")
 
     def _startVPN(self):
-        if (self.index != len(self.fileList)) and self.window.checkVal_AUVPNM:
+        if (self.index != len(self.fileList)) and self.window.checkVal_AUVPNM.get():
             cmd = 'start openvpn --config "' + self.fileList[self.index] + '" --auth-user-pass login.conf'
             os.system(cmd)
             self.index += 1
