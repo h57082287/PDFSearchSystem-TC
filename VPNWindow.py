@@ -1,5 +1,4 @@
 import os
-import sys
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
@@ -45,7 +44,8 @@ class VPNWindow():
                 with open("login.conf","w",encoding="utf-8") as f :
                     data = str(self.UserName.get()).strip() + "\n" + str(self.Password.get()).strip()
                     f.write(data)
-                self.root.destroy()
+                self.root.destroy() # 刪除視窗
+                self.root.quit() # 離開本物件回到上層物件
             else:
                 messagebox.showerror(title="檢查您的輸入",message="請檢查您的帳號或密碼是否有輸入完成,或是檔案路徑是否有效(必須包含副檔名為.ovpn的檔案類型)!!!")
 

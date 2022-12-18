@@ -1,10 +1,8 @@
 import os 
 import time
-from tkinter import filedialog, messagebox
+from tkinter import messagebox
 import requests
 from bs4 import BeautifulSoup
-import tkinter as tk
-from VPNWindow import VPNWindow
 
 # 規則說明 :
 # 1. 各醫院物件需加入self.ChangeIPNow變數
@@ -14,75 +12,38 @@ from VPNWindow import VPNWindow
 # 5. 各醫院地的respone改成self.respone
 
 class VPN():
-    def __init__(self,MainWindowsObj,HospitalObj) -> None:
+    def __init__(self,MainWindowsObj) -> None:
         self.window = MainWindowsObj
-        self.hospital = HospitalObj
-        self.Text_Rule = ["對不起!此ip查詢或取消資料次數過多;"]
-        self.Code_Rule = [400,408,500,407,503,404]
         self.ovpnDir = ""
-        self.fileList = ["",""]
+        self.fileList = []
         self.index = 0
-
-        if (self.window.checkVal_AUVPNM.get()):
-            self.hospital.ChangeIPNow = True
-            VPNWindow(self)
-            self.hospital.ChangeIPNow = False
         
-    def _InstallationCkeck(self):
-        cmd = 'start openvpn --config "C:\\Users\\h5708\\Downloads\\Surfshark_Config\\89.187.178.94_tcp.ovpn" --auth-user-pass login.conf'
+    def InstallationCkeck(self):
+        self.window.setStatusText(content="檢測OpenVPN安裝狀態...",x=0.23,y=0.7,size=24)
+        cmd = 'start openvpn --config "' + self.ovpnDir + '/' + self.fileList[self.index] + '" --auth-user-pass login.conf'
         os.system(cmd)
-        time.sleep(5)
-        if self._CKVPNStatus:
-            self._stopVPN()
+        time.sleep(10)
+        if self._CKVPNStatus():
+            self.window.setStatusText(content="已檢測到OpenVPN環境",x=0.23,y=0.7,size=24)
+            self.stopVPN()
+            return True
         else:
-            pass
+            return False
 
-    def _startVPN(self):
+    def startVPN(self):
         if (self.index != len(self.fileList)) and self.window.checkVal_AUVPNM.get():
-            cmd = 'start openvpn --config "' + self.fileList[self.index] + '" --auth-user-pass login.conf'
-            # cmd = 'start openvpn --config "C:\\Users\\h5708\\Downloads\\Surfshark_Config\\89.187.178.94_tcp.ovpn" --auth-user-pass login.conf'
+            if self._CKVPNStatus():
+                self.stopVPN()
+            cmd = 'start openvpn --config "' + self.ovpnDir + '/' +self.fileList[self.index] + '" --auth-user-pass login.conf'
             os.system(cmd)
             self.index += 1
-            self._memberControl()
+            self._CKIPChanged()
         else:
-            # self.window.RunStatus = False
+            self.window.RunStatus = False
             messagebox.showerror(title="IP替換失敗",message="所有可用ip已用盡或您本次並未啟用VPN功能!!!")
-            self._stopVPN()
+            self.stopVPN()
             os._exit(0)
     
-    def watch_dog(self):
-        while True:
-            if(not self.window.RunStatus):
-                self._stopVPN()
-                break
-            if((self.hospital.ChangeIPNow) or (self._ContentCK())) and self.window.RunStatus:
-                self.window.setStatusText(content="檢測到IP異常，切換IP...",x=0.23,y=0.7,size=24)
-                if(self._CKVPNStatus):
-                    self._stopVPN()
-                self._startVPN()
-                self._CKIPChanged()
-                self.hospital.ChangeIPNow = False
-    
-    def _ContentCK(self):
-        if self.hospital.respone != None:
-            for detail in self.Text_Rule:
-                if detail in self.hospital.respone.text:
-                    return True
-            if self.hospital.respone.status_code in self.Code_Rule:
-                return True
-        return False
-    
-    def _memberControl(self):
-        self.hospital.idx -= 1
-        if self.hospital.idx <= 0 :
-            self.hospital.currentPage -= 1
-            self.hospital.idx = self.hospital.olddatalen -1
-            self.hospital._PDFData()
-        if self.hospital.currentPage <= 0 :
-            self.hospital.currentPage = 0
-            self.hospital.idx = 0
-            self.hospital._PDFData()
-
     def _CKIPChanged(self):
         while True:
             try:
@@ -94,18 +55,19 @@ class VPN():
                 break
             except:
                 pass
+    
+    def _getFileList(self):
+        for file in os.listdir(self.ovpnDir):
+            if "tcp" in file :
+                self.fileList.append(file)
 
     def _CKVPNStatus(self):
         cmd = "tasklist"
         Tasks = os.popen(cmd).read()
         return ("openvpn.exe" in Tasks)
 
-    def _stopVPN(self):
+    def stopVPN(self):
         os.system("taskkill /F /IM openvpn.exe")
     
-    # def ChangingIPCK(self):
-    #     while(not self.IPStatus):
-    #         pass
-    #     self.IPStatus = True
 
     
