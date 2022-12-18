@@ -27,8 +27,7 @@ class AUH():
         self.datalen = 0
         self.olddatalen = 0
         self.log = Log()
-        self.VPNSetup = 0 # 尚未初始化VPN狀態
-        if self.window.checkVal_AUVPNM :
+        if self.window.checkVal_AUVPNM.get() :
             self.VPN = VPN(self.window)
             VPNWindow(self.VPN)
             if not self.VPN.InstallationCkeck() :
@@ -36,22 +35,19 @@ class AUH():
                 self.window.RunStatus = False
                 self.browser.quit()
                 os._exit(0)
-            self.VPNSetup = 1 # 啟用VPN模式
-            print(1234)
-        else:
-            self.VPNSetup = 2 # 未啟用VPN模式
+
 
     def run(self):
         for currentPage in range(self.currentPage-1,self.EndPage):
             if self._PDFData(currentPage) and self.window.RunStatus:
                 for self.idx in range(self.currentNum-1,self.datalen) :
                     print(self.Data[self.idx])
-                    if ((currentPage != self.EndPage -1) and (self.idx != self.EndNum - 1)) and self.window.RunStatus:
+                    if ((currentPage != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
                         content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 亞洲大學附設醫院\n當前第" + str(currentPage) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                         self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                         self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
-                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"亞洲大學附設醫院",self.Data[self.idx]['Born'],str(currentPage),str(self.idx + 1))
+                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"亞洲大學附設醫院",self.Data[self.idx]['Born'],str(currentPage + 1),str(self.idx + 1))
                         time.sleep(2)
                     else:
                         break
