@@ -5,6 +5,7 @@ import os
 import time
 from PDFReader import PDFReader
 import datetime
+from LogController import Log
 
 
 # 中山醫
@@ -50,11 +51,21 @@ class CSH():
                         'btnRegister': '確定',
                     }
         self.browser = browser
+        # 各醫院新增項目
+        self.respone = None
+        self.ChangeIPNow = False
+        self.idx = 0
+        self.datalen = 0
+        self.olddatalen = 0
+        self.log = Log()
 
     def run(self):
         while True:
             if self._PDFData() and self.window.RunStatus:
+                self.ChangeIPNow = True
                 for persionData in self.Data :
+                    # 各醫院新增項目
+                    self._ChangingIPCK()
                     print(persionData)
                     if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
                         content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 中山醫\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
@@ -79,9 +90,9 @@ class CSH():
         self.payload['tbBirthday'] = str(int(year) + 1911) + month + day
 
         with httpx.Client(http2=True) as client :
-            respone = client.get('https://sysint.csh.org.tw/Register/SearchReg.aspx')
+            self.respone = client.get('https://sysint.csh.org.tw/Register/SearchReg.aspx')
             # print(respone.status_code)
-            soup = BeautifulSoup(respone.content,"html.parser")
+            soup = BeautifulSoup(self.respone.content,"html.parser")
             time.sleep(1)
 
             # 獲取隱藏元素
@@ -93,18 +104,18 @@ class CSH():
 
             while True:
                 # 請求驗證碼
-                respone = client.get('https://sysint.csh.org.tw/Register/ValidateCookie.aspx')
+                self.respone = client.get('https://sysint.csh.org.tw/Register/ValidateCookie.aspx')
                 with open('VaildCode.png','wb') as f :
-                    f.write(respone.content)
+                    f.write(self.respone.content)
                 self.payload['tbValid'] = self._ParseCaptcha()
 
                 # 發送登入請求
-                respone = client.post('https://sysint.csh.org.tw/Register/SearchReg.aspx', headers=self.headers, data=self.payload)
-                soup = BeautifulSoup(respone.content, "html.parser")
+                self.respone = client.post('https://sysint.csh.org.tw/Register/SearchReg.aspx', headers=self.headers, data=self.payload)
+                soup = BeautifulSoup(self.respone.content, "html.parser")
                 if('對不起，您輸入的驗證碼有誤，請再輸入一次，謝謝!' not in soup):
                     break
                 
-            self._changeHTMLStyle(respone.content)
+            self._changeHTMLStyle(self.respone.content)
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
@@ -128,7 +139,7 @@ class CSH():
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
         if (self.currentPage <= self.EndPage):
             mPDFReader = PDFReader(self.window,self.filePath)
-            status, self.Data = mPDFReader.GetData(self.currentPage-1)
+            status, self.Data,self.datalen = mPDFReader.GetData(self.currentPage-1)
             return status
         else:
             return False
@@ -162,6 +173,12 @@ class CSH():
         result = orc.classification(img_bytes)
         os.remove("VaildCode.png")
         return result
+
+    # 各醫院新增項目
+    def _ChangingIPCK(self):
+        while(self.ChangeIPNow):
+            pass
+        self.ChangeIPNow = False
 
     def _endBrowser(self):
         self.browser.quit()

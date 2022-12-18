@@ -4,6 +4,7 @@ import ddddocr
 import os
 import time
 from PDFReader import PDFReader
+from LogController import Log
 
 # 林新醫院
 class LSHOSP():
@@ -80,11 +81,20 @@ class LSHOSP():
             "ctl00$ContentPlaceHolder1$SecClick": "",
         }
         self.browser = browser
+        # 各醫院新增項目
+        self.respone = None
+        self.ChangeIPNow = False
+        self.idx = 0
+        self.datalen = 0
+        self.olddatalen = 0
+        self.log = Log()
 
     def run(self):
         while True:
             if self._PDFData() and self.window.RunStatus:
                 for persionData in self.Data :
+                    # 各醫院新增項目
+                    self._ChangingIPCK()
                     print(persionData)
                     if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
                         content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 林新醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
@@ -109,8 +119,8 @@ class LSHOSP():
         self.OK_Payload['ctl00$ContentPlaceHolder1$dd1BirthM'] = str(int(month))
         self.OK_Payload['ctl00$ContentPlaceHolder1$dd1BirthD'] = str(int(day))
         with httpx.Client(http2=True) as client :
-            respone = client.get("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx")
-            soup = BeautifulSoup(respone.content,"html.parser")
+            self.respone = client.get("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx")
+            soup = BeautifulSoup(self.respone.content,"html.parser")
             
             # 發送月份請求
             self.payloadM["__EVENTTARGET"] = "ctl00$ContentPlaceHolder1$dd1BirthM"
@@ -119,8 +129,8 @@ class LSHOSP():
             self.payloadM["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
             self.payloadM["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
             self.payloadM["ctl00$ContentPlaceHolder1$dd1BirthM"] = str(int(month))
-            respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.payloadM,headers=self.header)
-            soup = BeautifulSoup(respone.content,"html.parser")
+            self.respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.payloadM,headers=self.header)
+            soup = BeautifulSoup(self.respone.content,"html.parser")
             
             # 發送日期請求
             self.payloadD["__EVENTTARGET"] = "ctl00$ContentPlaceHolder1$dd1BirthD"
@@ -130,14 +140,14 @@ class LSHOSP():
             self.payloadD["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
             self.payloadD["ctl00$ContentPlaceHolder1$dd1BirthM"] = str(int(month))
             self.payloadD["ctl00$ContentPlaceHolder1$dd1BirthD"] = str(int(day))
-            respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.payloadD,headers=self.header)
-            soup = BeautifulSoup(respone.content,"html.parser")
+            self.respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.payloadD,headers=self.header)
+            soup = BeautifulSoup(self.respone.content,"html.parser")
             
             while True :
                 # 請求驗證碼
-                respone = client.get("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/ValidateNumber.ashx")
+                self.respone = client.get("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/ValidateNumber.ashx")
                 with open("VaildCode.png","wb") as f :
-                    f.write(respone.content)
+                    f.write(self.respone.content)
 
                 # 發送正式請求
                 self.OK_Payload["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
@@ -145,10 +155,10 @@ class LSHOSP():
                 self.OK_Payload["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
                 self.OK_Payload["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
                 self.OK_Payload["ctl00$ContentPlaceHolder1$txtVerificationCode"] = self._ParseCaptcha()
-                respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.OK_Payload,headers=self.header)
-                if not self._CKCaptcha(respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！"):
+                self.respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.OK_Payload,headers=self.header)
+                if not self._CKCaptcha(self.respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！"):
                     with open("reslut.html","w",encoding="utf-8") as f :
-                        f.write(self._changeHTMLStyle(respone.content,"http://www.lshosp.com.tw:8001/OINetReg","http://www.lshosp.com.tw"))
+                        f.write(self._changeHTMLStyle(self.respone.content,"http://www.lshosp.com.tw:8001/OINetReg","http://www.lshosp.com.tw"))
                     time.sleep(2)
                     break
                 else:
@@ -179,7 +189,7 @@ class LSHOSP():
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
         if (self.currentPage <= self.EndPage):
             mPDFReader = PDFReader(self.window,self.filePath)
-            status, self.Data = mPDFReader.GetData(self.currentPage-1)
+            status, self.Data,self.datalen = mPDFReader.GetData(self.currentPage-1)
             return status
         else:
             return False
@@ -223,6 +233,12 @@ class LSHOSP():
         result = orc.classification(img_bytes)
         os.remove("VaildCode.png")
         return result
+
+    # 各醫院新增項目
+    def _ChangingIPCK(self):
+        while(self.ChangeIPNow):
+            pass
+        self.ChangeIPNow = False
 
     def _endBrowser(self):
         self.browser.quit()

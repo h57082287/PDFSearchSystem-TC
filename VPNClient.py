@@ -107,5 +107,3 @@ class VPN():
     #     while(not self.IPStatus):
     #         pass
     #     self.IPStatus = True
-
-    

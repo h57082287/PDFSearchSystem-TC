@@ -5,10 +5,15 @@ from bs4 import BeautifulSoup
 import ddddocr
 import os
 from PDFReader import PDFReader
-from LogController import Log
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+import base64
 
-# 國軍醫院-台中
-class TAFGH():
+
+# 台中榮總
+class VGHTC():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
         if E_Num == '':
             E_Num = 5
@@ -20,42 +25,18 @@ class TAFGH():
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
         self.Data = []
-        # 建立header
-        self.headers = {    
-                'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Mobile Safari/537.36',
-            }
-        # 建立payload
-        self.payload = {
-                'idtype' : 'id1',
-                'idno' : 'H122222222',
-                'year' : '',
-                'month' : '',
-                'day' : '',
-                'birth' : '888888',
-                'vcode' : '',
-                '__RequestVerificationToken': '',
-            }
         self.browser = browser
-        # 各醫院新增項目
-        self.respone = None
-        self.ChangeIPNow = False
-        self.idx = 0
-        self.datalen = 0
-        self.olddatalen = 0
-        self.log = Log()
 
     def run(self):
         while True:
             if self._PDFData() and self.window.RunStatus:
                 for persionData in self.Data :
-                    # 各醫院新增項目
-                    self._ChangingIPCK()
                     print(persionData)
                     if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
                         content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 國軍醫院-台中\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                         self._getReslut(persionData['Name'], persionData['ID'], persionData['Born'].split('/')[0],persionData['Born'].split('/')[1],persionData['Born'].split('/')[2])
-                        self._startBrowser(persionData['Name'],persionData['ID'])
+                        self._startBrowser(persionData['Name'],persionData['ID'])    #判斷截圖
                         time.sleep(2)
                         self.currentNum += 1
                     else:
@@ -70,37 +51,53 @@ class TAFGH():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str) -> bool:
+        self.browser.get("https://register.vghtc.gov.tw/register/queryInternetPrompt.jsp?type=query")
+        time.sleep(3)
+        self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[1]/td[2]/input').send_keys(ID)
+        time.sleep(1)
+        self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/input[3]').send_keys(year)
+        time.sleep(1)
+        Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[1]')).select_by_visible_text(month)
+        time.sleep(1)
+        Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[2]')).select_by_visible_text(day)
+        time.sleep(3)
+        while True:
+                Captcha = self._ParseCaptcha(self.browser.find_element(by=By.XPATH, value='//*[@id="numimage"]'),self.browser,mode=1)
+                time.sleep(5)
+                self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[2]').send_keys(Captcha)
+                time.sleep(5)
+                break
         self.payload['idno'] = ID
         self.payload['birth'] = str(int(year)) + month + day
         with httpx.Client(http2=True) as client :
             # 利用迴圈自動重試
             while True:
                 # 獲取登入網頁回應
-                self.respone = client.get('https://web-reg-server.803.org.tw/803/webreg/book_query')
-                soup = BeautifulSoup(self.respone.content,"html.parser")
+                respone = client.get('https://web-reg-server.803.org.tw/803/webreg/book_query')
+                soup = BeautifulSoup(respone.content,"html.parser")
                 time.sleep(1)
 
                 # 獲取隱藏元素
                 self.payload['__RequestVerificationToken'] = soup.find('form',{'method':'post'}).find('input',{'name':'__RequestVerificationToken'}).get('value')
                 
                 # 請求驗證碼
-                self.respone = client.get('https://web-reg-server.803.org.tw/803/captcha-img')
+                respone = client.get('https://web-reg-server.803.org.tw/803/captcha-img')
                 with open('VaildCode.png','wb') as f :
-                    f.write(self.respone.content)
+                    f.write(respone.content)
                 self.payload['vcode'] = self._ParseCaptcha()
 
                 # 發送登入請求
-                self.respone = client.post('https://web-reg-server.803.org.tw/803/WebReg/book_query', headers=self.headers, data=self.payload)
+                respone = client.post('https://web-reg-server.803.org.tw/803/WebReg/book_query', headers=self.headers, data=self.payload)
                 # 檢查是否登入成功(有登入成功此網站會回應302)
-                if(self.respone.status_code == 302):
+                if(respone.status_code == 302):
                     # 查詢掛號紀錄
-                    self.respone = client.get('https://web-reg-server.803.org.tw/803/WebReg/book_detail')
+                    respone = client.get('https://web-reg-server.803.org.tw/803/WebReg/book_detail')
                     with open('reslut.html','w', encoding='utf-8') as f :
-                        f.write(self._changeHTMLStyle(self.respone.content))
+                        f.write(self._changeHTMLStyle(respone.content))
                     break
                 else:
                     # 沒有登入成功的話先檢查有沒有病歷資料
-                    soup = BeautifulSoup(self.respone.content,"html.parser")
+                    soup = BeautifulSoup(respone.content,"html.parser")
                     if("無符合病歷資料，請填寫初診資料以建立初次掛號" in str(soup)):
                         self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
                         with open("reslut.html", "w", encoding="utf-8") as f:
@@ -134,7 +131,7 @@ class TAFGH():
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
         if (self.currentPage <= self.EndPage):
             mPDFReader = PDFReader(self.window,self.filePath)
-            status, self.Data,self.datalen = mPDFReader.GetData(self.currentPage-1)
+            status, self.Data, self.len = mPDFReader.GetData(self.currentPage-1)
             return status
         else:
             return False
@@ -152,19 +149,41 @@ class TAFGH():
         return str(soup)
     
     # 驗證碼辨識
-    def _ParseCaptcha(self):
-        with open("VaildCode.png",'rb') as f :
+    def _ParseCaptcha(self,element,driver,mode=1):
+        if mode == 1 :
+            image_base64 = driver.execute_script("\
+                var ele = arguments[0];\
+                var cnv = document.createElement('canvas');\
+                cnv.width = ele.width;\
+                cnv.height = ele.height;\
+                cnv.fillStyle = '#FFFFFF';\
+                cnv.getContext('2d').drawImage(ele,0,0);\
+                return cnv.toDataURL('image/png').substring(22);\
+            ",element)
+        elif mode == 2 :
+            image_base64 = driver.execute_script("\
+                var ele = arguments[0];\
+                var cnv = document.createElement('canvas');\
+                cnv.width = 835;\
+                cnv.height = 90;\
+                cnv.getContext('2d').drawImage(ele,0,0);\
+                return cnv.toDataURL('image/jepg').substring(22);\
+            ",element)
+
+        with open("captcha.png",'wb') as f :
+            f.write(base64.b64decode(image_base64))
+        
+        with open("captcha.png",'rb') as f :
             img_bytes = f.read()
         orc = ddddocr.DdddOcr()
         result = orc.classification(img_bytes)
-        os.remove("VaildCode.png")
         return result
-
-    # 各醫院新增項目
-    def _ChangingIPCK(self):
-        while(self.ChangeIPNow):
-            pass
-        self.ChangeIPNow = False
+        # with open("VaildCode.png",'rb') as f :
+        #     img_bytes = f.read()
+        # orc = ddddocr.DdddOcr()
+        # result = orc.classification(img_bytes)
+        # os.remove("VaildCode.png")
+        # return result
 
     def _endBrowser(self):
         self.browser.quit()
