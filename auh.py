@@ -13,6 +13,7 @@ class AUH():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
         if E_Num == '':
             E_Num = 5
+        self.code_rule = [400,500,503,404,408]
         self.EndPage = int(E_Page)
         self.EndNum = int(E_Num)
         self.outputFile = outputFile
@@ -42,6 +43,7 @@ class AUH():
             if self._PDFData(currentPage) and self.window.RunStatus:
                 for self.idx in range(self.currentNum-1,self.datalen) :
                     print(self.Data[self.idx])
+                    print(self.window.RunStatus)
                     if ((currentPage != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
                         content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 亞洲大學附設醫院\n當前第" + str(currentPage) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
@@ -53,6 +55,10 @@ class AUH():
                         break
             else:
                 break
+        try :
+            self.VPN.stopVPN()
+        except:
+            pass
         self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
         time.sleep(2)
         self.window.GUIRestart()
@@ -60,7 +66,20 @@ class AUH():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        respone = requests.get('https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel=' + ID + '&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
+        while True:
+            try:
+                respone = requests.get('https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel=' + ID + '&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
+                if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
+                    raise requests.exceptions.ConnectTimeout("ip已被封鎖")
+                break
+            except requests.exceptions.ConnectTimeout:
+                try:
+                    self.VPN.startVPN()
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
+
         with open("reslut.html",'wb') as f :
             f.write(respone.content)
 
