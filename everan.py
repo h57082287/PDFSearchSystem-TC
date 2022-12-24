@@ -5,6 +5,7 @@ import os
 import time
 from PDFReader import PDFReader
 import datetime
+from LogController import Log
 
 
 # 太平長安醫院
@@ -42,11 +43,20 @@ class EVERAN():
                             'enddate': self.new_dt.strftime("%Y%m%d")
                         }
         self.browser = browser
+        # 各醫院新增項目
+        self.respone = None
+        self.ChangeIPNow = False
+        self.idx = 0
+        self.datalen = 0
+        self.olddatalen = 0
+        self.log = Log()
 
     def run(self):
         while True:
             if self._PDFData() and self.window.RunStatus:
                 for persionData in self.Data :
+                    # 各醫院新增項目
+                    self._ChangingIPCK()
                     print(persionData)
                     if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
                         content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 童綜合醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
@@ -73,15 +83,15 @@ class EVERAN():
         self.payload2['birthday'] = str(int(year) + 1911) + month + day
         with httpx.Client(http2=True) as client :
             # 進入網頁
-            respone = client.post('http://www.everanhospital.com.tw:9099/OReg/GetPatInfo', data=self.payload, headers=self.headers)
-            if(respone.json()[0]['msg'] == "病患不存在"):
+            self.respone = client.post('http://www.everanhospital.com.tw:9099/OReg/GetPatInfo', data=self.payload, headers=self.headers)
+            if(self.respone.json()[0]['msg'] == "病患不存在"):
                 self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
                 with open("reslut.html", "w", encoding="utf-8") as f:
-                    f.write(respone.json()[0]['msg'])
+                    f.write(self.respone.json()[0]['msg'])
             else:
-                respone = client.get('http://www.everanhospital.com.tw:9099/OReg/ScheduledRecords')
-                respone2 = client.post('http://www.everanhospital.com.tw:9099/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers)
-                self._JSONDataToHTML(respone2,respone.text)
+                self.respone = client.get('http://www.everanhospital.com.tw:9099/OReg/ScheduledRecords')
+                self.respone2 = client.post('http://www.everanhospital.com.tw:9099/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers)
+                self._JSONDataToHTML(self.respone2,self.respone.text)
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
@@ -105,7 +115,7 @@ class EVERAN():
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
         if (self.currentPage <= self.EndPage):
             mPDFReader = PDFReader(self.window,self.filePath)
-            status, self.Data = mPDFReader.GetData(self.currentPage-1)
+            status, self.Data,self.datalen = mPDFReader.GetData(self.currentPage-1)
             return status
         else:
             return False
@@ -190,6 +200,12 @@ class EVERAN():
         result = orc.classification(img_bytes)
         os.remove("VaildCode.png")
         return result
+
+    # 各醫院新增項目
+    def _ChangingIPCK(self):
+        while(self.ChangeIPNow):
+            pass
+        self.ChangeIPNow = False
 
     def _endBrowser(self):
         self.browser.quit()
