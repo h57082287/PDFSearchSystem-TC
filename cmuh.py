@@ -3,6 +3,11 @@ import requests
 from PDFReader import PDFReader
 from bs4 import BeautifulSoup
 import os
+# 2022/12/24加入
+from LogController import Log
+from VPNClient import VPN
+from VPNWindow import VPNWindow
+from tkinter import messagebox
 
 # 中國醫學大學豐原分院
 class CMUH():
@@ -18,42 +23,79 @@ class CMUH():
         self.currentNum = int(S_Num)
         self.Data = []
         self.browser = browser
+        # 2022/12/24加入(各醫院新增項目)
+        self.code_rule = [400,500,503,404,408]
+        self.idx = 0
+        self.page = 0
+        self.datalen = 0
+        self.log = Log()
 
     def run(self):
-        while True:
-            if self._PDFData() and self.window.RunStatus:
-                for persionData in self.Data :
-                    print(persionData)
-                    status = False
-                    if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
+        print("進入執行程序")
+        # 2022/12/25加入 (VPN 檢測)
+        if self.window.checkVal_AUVPNM.get() :
+            self.VPN = VPN(self.window)
+            VPNWindow(self.VPN)
+            print("結束VPN設定視窗")
+            if not self.VPN.InstallationCkeck() :
+                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                self.window.RunStatus = False
+                self.browser.quit()
+                os._exit(0)
+        for self.page in range(self.currentPage-1,self.EndPage):
+            if self._PDFData(self.page) and self.window.RunStatus:
+                for self.idx in range(self.currentNum-1,self.datalen) :
+                    print(self.Data[self.idx])
+                    if ((self.page != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
+                        # 查詢狀態
+                        Q_Status = False
                         # 初診查詢
-                        content = "姓名 : " + persionData['Name'] + "(初診)" + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                        content = "姓名 : " + self.Data[self.idx]['Name'] + "(初診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                        self._getReslut(persionData['Name'], persionData['ID'], "088","01","01")
-                        status = self._startBrowser(persionData['Name'],persionData['ID'])
-                        # 複診查詢
-                        if not status:
-                            content = "姓名 : " + persionData['Name']+ "(複診)"+ "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
-                            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                            self._getReslut(persionData['Name'], persionData['ID'], persionData['Born'].split('/')[0],persionData['Born'].split('/')[1],persionData['Born'].split('/')[2])
-                            self._startBrowser(persionData['Name'],persionData['ID'])
-                        self.currentNum += 1
+                        self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], "088","01","01")
+                        Q_Status = self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"中國醫學大學豐原分院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                         time.sleep(2)
+                        # 複診查詢
+                        if not(Q_Status) and self.window.RunStatus:
+                            content = "姓名 : " + self.Data[self.idx]['Name'] + "(複診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                            self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                            self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                            self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"中國醫學大學豐原分院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                            time.sleep(2)
+                        else:
+                            break
                     else:
                         break
-                self.currentNum = 1
-                self.currentPage += 1
             else:
-                self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
-                self.window.GUIRestart()
-                self._endBrowser()
                 break
+        try :
+            self.VPN.stopVPN()
+        except:
+            pass
+        self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
+        time.sleep(2)
+        self.window.GUIRestart()
+        self._endBrowser()
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        respone = requests.get('http://61.66.117.10/cgi-bin/eng/reg21.cgi?Tel=' + ID + '&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=' + day + '&month=' + month + '&Year=' + year)
-        with open('reslut.html','wb') as f :
-            f.write(respone.content)
+        while True:
+            try:
+                respone = requests.get('http://61.66.117.10/cgi-bin/eng/reg21.cgi?Tel=' + ID + '&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=' + day + '&month=' + month + '&Year=' + year)
+                if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
+                    raise requests.exceptions.ConnectTimeout("ip已被封鎖")
+                with open("reslut.html",'wb') as f :
+                    f.write(respone.content)
+                break
+            except requests.exceptions.ConnectTimeout:
+                try:
+                    self.VPN.startVPN()
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
 
     def _startBrowser(self,name,ID) -> bool:
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
@@ -76,14 +118,12 @@ class CMUH():
                 break
         return found
 
-    def _PDFData(self) -> bool:
+    # 2022/12/14 加入
+    def _PDFData(self,currentPage) -> bool:
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
-        if (self.currentPage <= self.EndPage):
-            mPDFReader = PDFReader(self.window,self.filePath)
-            status, self.Data = mPDFReader.GetData(self.currentPage-1)
-            return status
-        else:
-            return False
+        mPDFReader = PDFReader(self.window,self.filePath)
+        status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
+        return status
     
     def _endBrowser(self):
         self.browser.quit()
