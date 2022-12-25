@@ -6,6 +6,11 @@ import ddddocr
 import os
 from PDFReader import PDFReader
 import json
+# 2022/12/24加入
+from LogController import Log
+from VPNClient import VPN
+from VPNWindow import VPNWindow
+from tkinter import messagebox
 
 # 大里仁愛醫院
 class JJAH():
@@ -20,6 +25,13 @@ class JJAH():
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
         self.Data = []
+        # 2022/12/24加入(各醫院新增項目)
+        self.idx = 0
+        self.page = 0
+        self.datalen = 0
+        self.log = Log()
+
+
         # 建立header
         self.headers = {
                 'accept': 'application/json, text/javascript, */*; q=0.01',
@@ -59,73 +71,98 @@ class JJAH():
         self.browser = browser
 
     def run(self):
-        while True:
-            if self._PDFData() and self.window.RunStatus:
-                for persionData in self.Data :
-                    print(persionData)
-                    if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
+        # 2022/12/25加入 (VPN 檢測)
+        if self.window.checkVal_AUVPNM.get() :
+            self.VPN = VPN(self.window)
+            VPNWindow(self.VPN)
+            if not self.VPN.InstallationCkeck() :
+                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                self.window.RunStatus = False
+                self.browser.quit()
+                os._exit(0)
+        for self.page in range(self.currentPage-1,self.EndPage):
+            if self._PDFData(self.page) and self.window.RunStatus:
+                for self.idx in range(self.currentNum-1,self.datalen) :
+                    print(self.Data[self.idx])
+                    if ((self.page != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
                         # 查詢狀態
                         Q_Status = False
                         # 初診查詢
                         self.Val[2]['value'] = 'Y'
-                        content = "姓名 : " + persionData['Name'] + "(初診)\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 大里仁愛醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                        content = "姓名 : " + self.Data[self.idx]['Name'] + "(初診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 大里仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                        Q_Status = self._getReslut(persionData['Name'] + "(初診)", persionData['ID'], persionData['Born'].split('/')[0],persionData['Born'].split('/')[1],persionData['Born'].split('/')[2])
-                        self._startBrowser(persionData['Name'],persionData['ID'])
+                        Q_Status = self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                        self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"大里仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                         time.sleep(2)
                         # 複診查詢
                         if not(Q_Status) and self.window.RunStatus:
                             self.Val[2]['value'] = 'N'
-                            content = "姓名 : " + persionData['Name'] + "(複診)\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 大里仁愛醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                            content = "姓名 : " + self.Data[self.idx]['Name'] + "(複診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 大里仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                            self._getReslut(persionData['Name'] + "(複診)", persionData['ID'], persionData['Born'].split('/')[0],persionData['Born'].split('/')[1],persionData['Born'].split('/')[2])
-                            self._startBrowser(persionData['Name'],persionData['ID'])
+                            Q_Status = self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                            self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                            self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"大里仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             time.sleep(2)
-                        self.currentNum += 1
+                        else:
+                            break
                     else:
                         break
-                self.currentNum = 1
-                self.currentPage += 1
             else:
-                self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
-                self.window.GUIRestart()
-                self._endBrowser()
                 break
+        try :
+            self.VPN.stopVPN()
+        except:
+            pass
+        self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
+        time.sleep(2)
+        self.window.GUIRestart()
+        self._endBrowser()
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str) -> bool:
         self.Val[4]['value'] = ID
         self.Val[5]['value'] = year + month + day
         status = False
-        with httpx.Client(http2=True) as client :
-            respone = client.get('https://www.jah.org.tw/JCHReg/Query/J')
-            soup = BeautifulSoup(respone.content,"html.parser")
-            time.sleep(1)
-
-            # 獲取隱藏元素
-            self.payload['__RequestVerificationToken'] = soup.find('form',{'id':'QueryForm'}).find('input',{'name':'__RequestVerificationToken'}).get('value')
-
-            # 利用迴圈自動重試
-            while True:
-                # 請求驗證碼
-                respone = client.get('https://www.jah.org.tw/JCHReg/Content/BuildCaptcha.aspx')
-                with open('VaildCode.png','wb') as f :
-                    f.write(respone.content)
-                self.Val[6]['value'] = self._ParseCaptcha()
-
-                # 發送請求
-                self.payload['Val'] = quote(str(self.Val))
-                time.sleep(5)
-                respone = client.post('https://www.jah.org.tw/JCHReg/Ajax',data=self.payload)
-                if respone.json()['QueryList'] != '' :
-                    status = True
-                if self._JSONDataToHTML(respone.json()) :
-                    break
-                else:
-                    self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+        while True:
+            try:
+                with httpx.Client(http2=True) as client :
+                    respone = client.get('https://www.jah.org.tw/JCHReg/Query/U')
+                    soup = BeautifulSoup(respone.content,"html.parser")
                     time.sleep(1)
-                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
-                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+
+                    # 獲取隱藏元素
+                    self.payload['__RequestVerificationToken'] = soup.find('form',{'id':'QueryForm'}).find('input',{'name':'__RequestVerificationToken'}).get('value')
+
+                    # 利用迴圈自動重試
+                    while True:
+                        # 請求驗證碼
+                        respone = client.get('https://www.jah.org.tw/JCHReg/Content/BuildCaptcha.aspx')
+                        with open('VaildCode.png','wb') as f :
+                            f.write(respone.content)
+                        self.Val[6]['value'] = self._ParseCaptcha()
+
+                        # 發送請求
+                        self.payload['Val'] = quote(str(self.Val))
+                        time.sleep(5)
+                        respone = client.post('https://www.jah.org.tw/JCHReg/Ajax',data=self.payload)
+                        if respone.json()['QueryList'] != '' :
+                            status = True
+                        if self._JSONDataToHTML(respone.json()) :
+                            break
+                        else:
+                            self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+                            time.sleep(1)
+                            content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 大里仁愛醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                    break
+            except requests.exceptions.ConnectTimeout:
+                try:
+                    self.VPN.startVPN()
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
         return status
 
     def _startBrowser(self,name,ID):
@@ -146,14 +183,12 @@ class JJAH():
                 break
         return found
 
-    def _PDFData(self) -> bool:
+    # 2022/12/14 加入
+    def _PDFData(self,currentPage) -> bool:
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
-        if (self.currentPage <= self.EndPage):
-            mPDFReader = PDFReader(self.window,self.filePath)
-            status, self.Data = mPDFReader.GetData(self.currentPage-1)
-            return status
-        else:
-            return False
+        mPDFReader = PDFReader(self.window,self.filePath)
+        status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
+        return status
     
     # def _changeHTMLStyle(self,page_content,targer:str):
     #     soup = BeautifulSoup(page_content,"html.parser")

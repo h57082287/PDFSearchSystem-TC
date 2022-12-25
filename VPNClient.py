@@ -69,12 +69,5 @@ class VPN():
     def stopVPN(self):
         os.system("taskkill /F /IM openvpn.exe")
     
-<<<<<<< HEAD
-    # def ChangingIPCK(self):
-    #     while(not self.IPStatus):
-    #         pass
-    #     self.IPStatus = True
-=======
 
     
->>>>>>> e190468fd2d64e94687b1917b055b8ba58a8fff6
