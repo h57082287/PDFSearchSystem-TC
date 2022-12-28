@@ -6,6 +6,9 @@ import time
 from PDFReader import PDFReader
 import datetime
 from LogController import Log
+from VPNClient import VPN
+from VPNWindow import VPNWindow
+from tkinter import messagebox
 
 
 # 豐原醫院
@@ -21,6 +24,20 @@ class FYH():
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
         self.Data = []
+        # 各醫院新增項目
+        self.idx = 0
+        self.datalen = 0
+        self.olddatalen = 0
+        self.log = Log()
+        if self.window.checkVal_AUVPNM.get() :
+            self.VPN = VPN(self.window)
+            VPNWindow(self.VPN)
+            if not self.VPN.InstallationCkeck() :
+                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                self.window.RunStatus = False
+                self.browser.quit()
+                os._exit(0)
+
         # payload2需要用到的時間
         self.loc_dt = datetime.datetime.today()
         self.new_dt = self.loc_dt + datetime.timedelta(days=365)
@@ -43,37 +60,32 @@ class FYH():
                             'enddate': self.new_dt.strftime("%Y%m%d")
                         }
         self.browser = browser
-        # 各醫院新增項目
-        self.respone = None
-        self.ChangeIPNow = False
-        self.idx = 0
-        self.datalen = 0
-        self.olddatalen = 0
-        self.log = Log()
 
     def run(self):
-        while True:
-            if self._PDFData() and self.window.RunStatus:
-                for persionData in self.Data :
-                    # 各醫院新增項目
-                    self._ChangingIPCK()
-                    print(persionData)
-                    if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
-                        content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 豐原醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+        for currentPage in range(self.currentPage-1,self.EndPage):
+            if self._PDFData(currentPage) and self.window.RunStatus:
+                for self.idx in range(self.currentNum-1,self.datalen) :
+                    print(self.Data[self.idx])
+                    print(self.window.RunStatus)
+                    if ((currentPage != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
+                        content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 豐原醫院\n當前第" + str(currentPage+1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                        self._getReslut(persionData['Name'], persionData['ID'], persionData['Born'].split('/')[0],persionData['Born'].split('/')[1],persionData['Born'].split('/')[2])
-                        self._startBrowser(persionData['Name'],persionData['ID'])
+                        self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                        self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"豐原醫院",self.Data[self.idx]['Born'],str(currentPage + 1),str(self.idx + 1))
                         time.sleep(2)
-                        self.currentNum += 1
                     else:
                         break
-                self.currentNum = 1
-                self.currentPage += 1
             else:
-                self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
-                self.window.GUIRestart()
-                self._endBrowser()
                 break
+        try :
+            self.VPN.stopVPN()
+        except:
+            pass
+        self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
+        time.sleep(2)
+        self.window.GUIRestart()
+        self._endBrowser()
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
@@ -112,14 +124,11 @@ class FYH():
                 break
         return found
 
-    def _PDFData(self) -> bool:
+    def _PDFData(self,currentPage) -> bool:
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
-        if (self.currentPage <= self.EndPage):
-            mPDFReader = PDFReader(self.window,self.filePath)
-            status, self.Data,self.datalen = mPDFReader.GetData(self.currentPage-1)
-            return status
-        else:
-            return False
+        mPDFReader = PDFReader(self.window,self.filePath)
+        status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
+        return status
     
     def _changeHTMLStyle(self,page_content):
         soup = BeautifulSoup(page_content,"html.parser")

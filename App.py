@@ -24,6 +24,9 @@ from chingchyuan import CHINGCHYUAN
 from tafghzb import TAFGHZB
 from tafgh import TAFGH
 from csh import CSH
+from vghtc import VGHTC
+from ktghs import KTGHS
+from ktghd import KTGHD
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from VPNClient import VPN
@@ -58,6 +61,9 @@ class MainWindows():
             "國軍醫院-中清" : None,
             "國軍醫院-台中" : None,
             "中山醫" : None,
+            "台中榮總" : None,
+            "光田醫院：沙鹿總院" : None,
+            "光田醫院：大甲院區" : None,
         }
         self.RunStatus = True
         self.VClient = None
@@ -354,6 +360,9 @@ class MainWindows():
             "國軍醫院-中清" : TAFGHZB(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "國軍醫院-台中" : TAFGH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "中山醫" : CSH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "台中榮總" : VGHTC(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "光田醫院：沙鹿總院" : KTGHS(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "光田醫院：大甲院區" : KTGHD(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
         }
         print("start mainProcess")
         t1 = threading.Thread(target=self.mainProcess)
