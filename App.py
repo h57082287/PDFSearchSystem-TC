@@ -260,7 +260,10 @@ class MainWindows():
     def onClose(self):
         # MainWindows.StopThread = True
         self.RunStatus = False
-        self.endBrowser()
+        try:
+            self.endBrowser()
+        except:
+            pass
         os._exit(0)
 
     # 連結取得檔案動作

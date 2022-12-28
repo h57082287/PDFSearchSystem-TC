@@ -3,6 +3,7 @@ import requests
 from PDFReader import PDFReader
 from bs4 import BeautifulSoup
 import os
+# 2022/12/24加入
 from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
@@ -23,11 +24,15 @@ class AUH():
         self.currentNum = int(S_Num)
         self.Data = []
         self.browser = browser
-        # 各醫院新增項目
+        # 2022/12/24加入(各醫院新增項目)
         self.idx = 0
+        self.page = 0
         self.datalen = 0
-        self.olddatalen = 0
         self.log = Log()
+
+
+    def run(self):
+        # 2022/12/24加入 (VPN 檢測)
         if self.window.checkVal_AUVPNM.get() :
             self.VPN = VPN(self.window)
             VPNWindow(self.VPN)
@@ -36,20 +41,16 @@ class AUH():
                 self.window.RunStatus = False
                 self.browser.quit()
                 os._exit(0)
-
-
-    def run(self):
-        for currentPage in range(self.currentPage-1,self.EndPage):
-            if self._PDFData(currentPage) and self.window.RunStatus:
+        for self.page in range(self.currentPage-1,self.EndPage):
+            if self._PDFData(self.page) and self.window.RunStatus:
                 for self.idx in range(self.currentNum-1,self.datalen) :
                     print(self.Data[self.idx])
-                    print(self.window.RunStatus)
-                    if ((currentPage != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
-                        content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 亞洲大學附設醫院\n當前第" + str(currentPage+1) + "頁，第" + str(self.idx + 1) + "筆"
+                    if ((self.page != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
+                        content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 亞洲大學附設醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                         self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                         self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
-                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"亞洲大學附設醫院",self.Data[self.idx]['Born'],str(currentPage + 1),str(self.idx + 1))
+                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"亞洲大學附設醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                         time.sleep(2)
                     else:
                         break
@@ -71,6 +72,8 @@ class AUH():
                 respone = requests.get('https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel=' + ID + '&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
                 if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
                     raise requests.exceptions.ConnectTimeout("ip已被封鎖")
+                with open("reslut.html",'wb') as f :
+                    f.write(respone.content)
                 break
             except requests.exceptions.ConnectTimeout:
                 try:
@@ -79,9 +82,6 @@ class AUH():
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
                     break
-
-        with open("reslut.html",'wb') as f :
-            f.write(respone.content)
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
@@ -101,6 +101,7 @@ class AUH():
                 break
         return found
 
+    # 2022/12/14 加入
     def _PDFData(self,currentPage) -> bool:
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
         mPDFReader = PDFReader(self.window,self.filePath)
