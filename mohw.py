@@ -4,6 +4,11 @@ import ddddocr
 import os
 import time
 from PDFReader import PDFReader
+# 2022/12/24加入
+from LogController import Log
+from VPNClient import VPN
+from VPNWindow import VPNWindow
+from tkinter import messagebox
 
 # 部立台中醫院
 class MOHW():
@@ -18,6 +23,12 @@ class MOHW():
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
         self.Data = []
+        # 2022/12/24加入(各醫院新增項目)
+        self.idx = 0
+        self.page = 0
+        self.datalen = 0
+        self.log = Log()
+
         # 建立header
         self.header = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36"
@@ -94,81 +105,103 @@ class MOHW():
         self.browser = browser
 
     def run(self):
-        while True:
-            if self._PDFData() and self.window.RunStatus:
-                for persionData in self.Data :
-                    print(persionData)
-                    if (self.currentNum <= self.EndNum) and (self.currentPage <= self.EndPage) and self.window.RunStatus:
-                        content = "姓名 : " + persionData['Name'] + "\n身分證字號 : " + persionData['ID'] + "\n出生日期 : " + persionData['Born'] + "\n查詢醫院 : 部立台中醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+        # 2022/12/24加入 (VPN 檢測)
+        if self.window.checkVal_AUVPNM.get() :
+            self.VPN = VPN(self.window)
+            VPNWindow(self.VPN)
+            if not self.VPN.InstallationCkeck() :
+                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                self.window.RunStatus = False
+                self.browser.quit()
+                os._exit(0)
+        for self.page in range(self.currentPage-1,self.EndPage):
+            if self._PDFData(self.page) and self.window.RunStatus:
+                for self.idx in range(self.currentNum-1,self.datalen) :
+                    print(self.Data[self.idx])
+                    if ((self.page != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
+                        content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 部立台中醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                        self._getReslut(persionData['Name'], persionData['ID'], persionData['Born'].split('/')[0],persionData['Born'].split('/')[1],persionData['Born'].split('/')[2])
-                        self._startBrowser(persionData['Name'],persionData['ID'])
+                        self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                        self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"部立台中醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                         time.sleep(2)
-                        self.currentNum += 1
                     else:
                         break
-                self.currentNum = 1
-                self.currentPage += 1
             else:
-                self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
-                self.window.GUIRestart()
-                self._endBrowser()
                 break
+        try :
+            self.VPN.stopVPN()
+        except:
+            pass
+        self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
+        time.sleep(2)
+        self.window.GUIRestart()
+        self._endBrowser()
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
         self.OK_Payload['ctl00$ContentPlaceHolder1$txtIDNOorPatientID'] = ID
         self.OK_Payload['ctl00$ContentPlaceHolder1$dd1BirthM'] = str(int(month))
         self.OK_Payload['ctl00$ContentPlaceHolder1$dd1BirthD'] = str(int(day))
-        with httpx.Client(http2=True) as client :
-            respone = client.get("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx")
-            soup = BeautifulSoup(respone.content,"html.parser")
-            
-            # 發送月份請求
-            self.payloadM["ctl00$ScriptManager1"] = "ctl00$ContentPlaceHolder1$UpdatePanel2|ctl00$ContentPlaceHolder1$dd1BirthM"
-            self.payloadM["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
-            self.payloadM["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
-            self.payloadM["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
-            self.payloadM["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
-            self.payloadM["ctl00$ContentPlaceHolder1$dd1BirthM"] = "7"
-            respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.payloadM,headers=self.header)
-            soup = BeautifulSoup(respone.content,"html.parser")
-            
-            # 發送日期請求
-            self.payloadD["ctl00$ScriptManager1"] = "ctl00$ContentPlaceHolder1$UpdatePanel2|ctl00$ContentPlaceHolder1$dd1BirthD"
-            self.payloadD["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
-            self.payloadD["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
-            self.payloadD["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
-            self.payloadD["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
-            self.payloadD["ctl00$ContentPlaceHolder1$dd1BirthD"] = "1"
-            respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.payloadD,headers=self.header)
-            soup = BeautifulSoup(respone.content,"html.parser")
-            
-            while True:
-                # 請求驗證碼
-                respone = client.get("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/VerificationCode.aspx")
-                with open("VaildCode.png","wb") as f :
-                    f.write(respone.content)
+        while True:
+            try:
+                with httpx.Client(http2=True) as client :
+                    respone = client.get("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx")
+                    soup = BeautifulSoup(respone.content,"html.parser")
+                    
+                    # 發送月份請求
+                    self.payloadM["ctl00$ScriptManager1"] = "ctl00$ContentPlaceHolder1$UpdatePanel2|ctl00$ContentPlaceHolder1$dd1BirthM"
+                    self.payloadM["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
+                    self.payloadM["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
+                    self.payloadM["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
+                    self.payloadM["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
+                    self.payloadM["ctl00$ContentPlaceHolder1$dd1BirthM"] = "7"
+                    respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.payloadM,headers=self.header)
+                    soup = BeautifulSoup(respone.content,"html.parser")
+                    
+                    # 發送日期請求
+                    self.payloadD["ctl00$ScriptManager1"] = "ctl00$ContentPlaceHolder1$UpdatePanel2|ctl00$ContentPlaceHolder1$dd1BirthD"
+                    self.payloadD["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
+                    self.payloadD["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
+                    self.payloadD["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
+                    self.payloadD["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
+                    self.payloadD["ctl00$ContentPlaceHolder1$dd1BirthD"] = "1"
+                    respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.payloadD,headers=self.header)
+                    soup = BeautifulSoup(respone.content,"html.parser")
+                    
+                    while True:
+                        # 請求驗證碼
+                        respone = client.get("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/VerificationCode.aspx")
+                        with open("VaildCode.png","wb") as f :
+                            f.write(respone.content)
 
-                # 發送正式請求
-                self.OK_Payload["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
-                self.OK_Payload["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
-                self.OK_Payload["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
-                self.OK_Payload["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
-                self.OK_Payload["ctl00$ContentPlaceHolder1$txtVerificationCode"] = self._ParseCaptcha()
-                respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.OK_Payload,headers=self.header)
-                with open("test.html","wb") as f :
-                    f.write(respone.content)
-                    if not self._CKCaptcha(respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！"):
-                        with open("reslut.html","w",encoding="utf-8") as f :
-                            f.write(self._changeHTMLStyle(respone.content,"https://www03.taic.mohw.gov.tw/OINetReg/",""))
-                        time.sleep(2)
-                        break
-                    else:
-                        self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
-                        time.sleep(1)
-                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                        # 發送正式請求
+                        self.OK_Payload["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
+                        self.OK_Payload["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
+                        self.OK_Payload["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
+                        self.OK_Payload["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
+                        self.OK_Payload["ctl00$ContentPlaceHolder1$txtVerificationCode"] = self._ParseCaptcha()
+                        respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.OK_Payload,headers=self.header)
+                        with open("test.html","wb") as f :
+                            f.write(respone.content)
+                            if not self._CKCaptcha(respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！"):
+                                with open("reslut.html","w",encoding="utf-8") as f :
+                                    f.write(self._changeHTMLStyle(respone.content,"https://www03.taic.mohw.gov.tw/OINetReg/",""))
+                                time.sleep(2)
+                                break
+                            else:
+                                self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+                                time.sleep(1)
+                                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                break
+            except requests.exceptions.ConnectTimeout:
+                try:
+                    self.VPN.startVPN()
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
@@ -188,14 +221,12 @@ class MOHW():
                 break
         return found
 
-    def _PDFData(self) -> bool:
+    # 2022/12/14 加入
+    def _PDFData(self,currentPage) -> bool:
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
-        if (self.currentPage <= self.EndPage):
-            mPDFReader = PDFReader(self.window,self.filePath)
-            status, self.Data = mPDFReader.GetData(self.currentPage-1)
-            return status
-        else:
-            return False
+        mPDFReader = PDFReader(self.window,self.filePath)
+        status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
+        return status
     
     def _changeHTMLStyle(self,page_content,targer1:str,targer2:str):
         soup = BeautifulSoup(page_content,"html.parser")

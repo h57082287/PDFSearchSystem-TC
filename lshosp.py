@@ -10,6 +10,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import requests
 
 # 林新醫院
 class LSHOSP():
@@ -192,12 +193,23 @@ class LSHOSP():
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 break
             except requests.exceptions.ConnectTimeout:
+                print("發生時間例外")
                 try:
                     self.VPN.startVPN()
                 except:
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
                     break
+            except AttributeError:
+                print("發生找不到內容例外")
+                try:
+                    self.VPN.startVPN()
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
+
+
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
