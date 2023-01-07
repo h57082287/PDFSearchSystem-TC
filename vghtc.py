@@ -79,11 +79,11 @@ class VGHTC():
         Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[2]')).select_by_visible_text(day)
         time.sleep(3)
         while True:
-                Captcha = self._ParseCaptcha(self.browser.find_element(by=By.XPATH, value='//*[@id="numimage"]'),self.browser,mode=1)
-                time.sleep(5)
-                self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[2]').send_keys(Captcha)
-                time.sleep(5)
-                break
+            Captcha = self._ParseCaptcha(self.browser.find_element(by=By.XPATH, value='//*[@id="numimage"]'),self.browser,mode=1)
+            time.sleep(5)
+            self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[2]').send_keys(Captcha)
+            time.sleep(5)
+            break
         self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[3]').click()
         time.sleep(5)
         with open('reslut.html','w', encoding='utf-8') as f :
@@ -107,14 +107,11 @@ class VGHTC():
                 break
         return found
 
-    def _PDFData(self) -> bool:
+    def _PDFData(self,currentPage) -> bool:
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
-        if (self.currentPage <= self.EndPage):
-            mPDFReader = PDFReader(self.window,self.filePath)
-            status, self.Data, self.len = mPDFReader.GetData(self.currentPage-1)
-            return status
-        else:
-            return False
+        mPDFReader = PDFReader(self.window,self.filePath)
+        status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
+        return status
     
     def _changeHTMLStyle(self,page_content):
         soup = BeautifulSoup(page_content,"html.parser")
