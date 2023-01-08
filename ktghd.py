@@ -32,6 +32,8 @@ class KTGHD():
         self.datalen = 0
         self.olddatalen = 0
         self.log = Log()
+
+    def run(self):
         if self.window.checkVal_AUVPNM.get() :
             self.VPN = VPN(self.window)
             VPNWindow(self.VPN)
@@ -40,8 +42,6 @@ class KTGHD():
                 self.window.RunStatus = False
                 self.browser.quit()
                 os._exit(0)
-
-    def run(self):
         for currentPage in range(self.currentPage-1,self.EndPage):
             if self._PDFData(currentPage) and self.window.RunStatus:
                 for self.idx in range(self.currentNum-1,self.datalen) :
