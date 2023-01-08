@@ -11,6 +11,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import requests
 
 
 # 台中仁愛醫院
@@ -92,17 +93,17 @@ class UJAH():
                         content = "姓名 : " + self.Data[self.idx]['Name'] + "(初診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                         Q_Status = self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                        self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
-                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"台中仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                        self._startBrowser(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'])
+                        self.log.write(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'],"台中仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                         time.sleep(2)
                         # 複診查詢
                         if not(Q_Status) and self.window.RunStatus:
                             self.Val[2]['value'] = 'N'
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "(複診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                            Q_Status = self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                            Q_Status = self._getReslut(self.Data[self.idx]['Name']+"(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                             self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
-                            self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"台中仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                            self.log.write(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'],"台中仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             time.sleep(2)
                         else:
                             break
@@ -153,12 +154,14 @@ class UJAH():
                         else:
                             self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                             time.sleep(1)
-                            content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                            content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                     break
             except requests.exceptions.ConnectTimeout:
                 try:
                     self.VPN.startVPN()
+                    content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 except:
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
