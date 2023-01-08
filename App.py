@@ -40,7 +40,7 @@ class MainWindows():
         
         # 檢查是否多開
         if self._MultiProcessCK("PDFSearchSystem-TC.exe") :
-            self._MultiProcessCK()
+            self.MultiProcessErr()
 
         # 取得管理員權限
         self.getAdmin()
