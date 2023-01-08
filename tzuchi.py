@@ -9,6 +9,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import requests
 
 # L122782985
 # 710208
@@ -90,6 +91,8 @@ class TZUCHI():
                 break
         try :
             self.VPN.stopVPN()
+            content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
         except:
             pass
         self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
@@ -146,6 +149,8 @@ class TZUCHI():
             except requests.exceptions.ConnectTimeout:
                 try:
                     self.VPN.startVPN()
+                    content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 except:
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
