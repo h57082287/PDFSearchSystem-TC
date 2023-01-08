@@ -191,6 +191,7 @@ class LSHOSP():
                             time.sleep(1)
                             content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                            time.sleep(2)
                 break
             except requests.exceptions.ConnectTimeout:
                 print("發生時間例外")

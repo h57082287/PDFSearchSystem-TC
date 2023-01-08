@@ -22,7 +22,7 @@ class VPN():
         self.window.setStatusText(content="檢測OpenVPN安裝狀態...",x=0.23,y=0.7,size=24)
         cmd = 'start openvpn --config "' + self.ovpnDir + '/' + self.fileList[self.index] + '" --auth-user-pass login.conf'
         os.system(cmd)
-        time.sleep(10)
+        time.sleep(20)
         if self._CKVPNStatus():
             self.window.setStatusText(content="已檢測到OpenVPN環境",x=0.23,y=0.7,size=24)
             self.stopVPN()
