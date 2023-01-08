@@ -9,6 +9,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import random
 
 
 # 烏日林新醫院
@@ -73,7 +74,9 @@ class WLSHOSP():
                         self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                         self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                         self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"烏日林新醫院",self.Data[self.idx]['Born'],str(currentPage + 1),str(self.idx + 1))
-                        time.sleep(2)
+                        sec = random.randint(1, 5)
+                        print(sec)
+                        time.sleep(sec)
                     else:
                         break
             else:
@@ -96,15 +99,16 @@ class WLSHOSP():
 
         with httpx.Client(http2=True) as client :
             # 進入網頁
-            respone = client.post('https://booking.wlshosp.org.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers)
+            respone = client.post('https://booking.wlshosp.org.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
             if(respone.json()[0]['msg'] == "病患不存在"):
                 self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
                 with open("reslut.html", "w", encoding="utf-8") as f:
                     f.write(respone.json()[0]['msg'])
             else:
-                respone = client.get('https://booking.wlshosp.org.tw/OReg/ScheduledRecords')
-                respone2 = client.post('https://booking.wlshosp.org.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers)
+                respone = client.get('https://booking.wlshosp.org.tw/OReg/ScheduledRecords', timeout=20)
+                respone2 = client.post('https://booking.wlshosp.org.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
                 self._JSONDataToHTML(respone2,respone.text)
+        client.close()
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')

@@ -9,6 +9,8 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import requests
+
 
 # 光田醫院：沙鹿總院
 class KTGHS():
@@ -98,6 +100,20 @@ class KTGHS():
                     time.sleep(3)
                 else:
                     break
+        
+        try:
+            if ("看診醫師" not in self.browser.page_source):
+                print("AAAA")
+                raise requests.exceptions.ConnectTimeout("ip已被封鎖")
+            with open('reslut.html','w', encoding='utf-8') as f :
+                f.write(self._changeHTMLStyle(self.browser.page_source))
+            # print("BBBBB")
+        except requests.exceptions.ConnectTimeout:
+            try:
+                self.VPN.startVPN()
+            except:
+                messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                self.window.Runstatus = False
 
         with open('reslut.html','w', encoding='utf-8') as f :
             f.write(self._changeHTMLStyle(self.browser.page_source))

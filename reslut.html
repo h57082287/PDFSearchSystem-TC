@@ -1,4 +1,140 @@
 <<<<<<< HEAD
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
+<link href="https://web-reg-server.803.org.twimg/HICON1.png" rel="icon" type="image/png"/>
+<title>book_query - 網路掛號</title>
+<link href="https://web-reg-server.803.org.tw/803/css/font-awesome.min.css" rel="stylesheet"/>
+<link href="https://web-reg-server.803.org.tw/803/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://web-reg-server.803.org.tw/803/vendor/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet"/>
+<script>window.MSInputMethodContext && document.documentMode && document.write('<script src="/803/js/jquery.js"><\/script><script src="/803/js/bootstrap-ie.min.js"><\/script><script src="/803/js/ie11CustomProperties.min.js"><\/script>');</script>
+<link href="https://web-reg-server.803.org.tw/803/css/main.css?202301012146" rel="stylesheet"/>
+</head>
+<body>
+<div class="topmenu">
+<div class="container">
+<header>
+<a class="menu-toggle" href="#"><i class="fa fa-bars"></i></a>
+<a class="logo" href="/803/">
+<img alt="logo" src="https://web-reg-server.803.org.tw/803/img/HLOGO1.png"/><h1>國軍臺中總醫院 網路掛號</h1>
+</a>
+<ul class="menuTop1">
+<li>
+                    文字：<button class="FontSize" sz="12px" type="button">大</button>
+<button class="FontSize active" sz="10px" type="button">中</button>
+<button class="FontSize" sz="8px" type="button">小</button>
+</li>
+<li>
+<label for="Langsel"> <i aria-hidden="true" class="fa fa-globe"></i></label>
+<select aria-label="Language Select" class="form-select-lg Langsel" id="Langsel" name="Langsel">
+<option selected="" value="TC">中文</option><option value="EN">English</option>
+</select>
+</li>
+</ul>
+<ul class="menu">
+<li><a href="/803/"><i aria-hidden="true" class="fa fa-id-badge"></i> 預約掛號</a></li>
+<li class="active"><a href="/803/webreg/book_query"><i aria-hidden="true" class="fa fa-list-alt"></i> 掛號查詢/取消</a></li>
+<li><a href="https://web-reg-server.803.org.tw/803/webreg/doctor_progress" rel="noreferrer noopener"><i aria-hidden="true" class="fa fa-clock-o"></i> 看診進度</a></li>
+<li><a href="/803/webreg/book_noreg"><i aria-hidden="true" class="fa fa-exclamation-circle"></i> 停/代診資訊</a></li>
+<li><a href="/803/webreg/book_desc"><i aria-hidden="true" class="fa fa-question-circle-o"></i> 掛號說明</a></li>
+<li class="toggleview">
+                    文字：<button class="FontSize" sz="12px" type="button">大</button>
+<button class="FontSize active" sz="10px" type="button">中</button>
+<button class="FontSize" sz="8px" type="button">小</button>
+</li>
+<li class="toggleview">
+<label for="Langsel"> <i aria-hidden="true" class="fa fa-globe"></i></label>
+<select aria-label="Language Select" class="form-select-lg Langsel" id="Langsel" name="Langsel">
+<option selected="" value="TC">中文</option><option value="EN">English</option>
+</select>
+</li>
+</ul>
+</header>
+</div>
+</div>
+<main>
+<div class="container lside">
+<div class="row justify-content-center">
+<div class="col-md-12">
+<h1>
+                    鄭●洲 預約掛號資料一覽
+                </h1>
+<div class="login-box">
+<div class="row align-items-end">
+<div class="col-xl-1 col-md-2 col-3 offset-xl-11 offset-md-10 offset-9 pr-3 pb-2">
+<button class="printbtn no-print" id="BtnPrint" title="列印">
+<i aria-hidden="true" class="fa fa-print"></i>列印
+                            </button>
+</div>
+</div>
+<div class="row align-items-center">
+<div class="offset-md-1 col-md-10">
+<div class="ltype1">
+<div class="table-responsive">
+<table class="table table-hover reglist" id="timeTable">
+<thead>
+<tr>
+<th>院別</th><th>日期</th><th>時段</th><th>科別</th><th>醫師</th><th>診室</th><th>就診號</th>
+<th> </th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="Registration-Operation no-print">
+<div class="row">
+<div class="offset-md-1 col-md-10">
+<div class="row other_operation pt-5">
+<div class="col-6 active"> <a class="btn btn-block btn-outline-primary h-100" href="/803/">預約掛號</a></div>
+<div class="col-6"> <a class="btn btn-block btn-outline-success h-100" href="/803/webreg/newone">登出</a></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<div id="sidemenu">
+<a class="sidebtn1" href="/803/webreg/newone" id="logout"><i aria-hidden="true" class="fa fa-sign-out"></i> 登出</a>
+</div>
+<!-- Modal -->
+<div aria-hidden="true" aria-labelledby="alertMeLabel" class="modal fade" id="alertMe" role="dialog" tabindex="-1">
+<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+<div class="modal-content">
+<div class="modal-header bg-danger text-light">
+<div class="modal-title" id="alertMeModalLabel"><i aria-hidden="true" class="fa fa-minus-circle"></i>取消掛號確認</div>
+<button aria-label="Close" class="close" data-dismiss="modal" type="button">
+<span aria-hidden="true">×</span>
+</button>
+</div>
+<div class="modal-body" style="overflow-x:hidden;">
+<span id="cnfMSG"></span>
+<div class="form-group">
+<div class="row text-center">
+<div class=""><label for="vcode">驗證碼</label><input autocomplete="off" id="vcode" maxlength="4" name="vcode" onfocus="this.removeAttribute('readonly');" placeholder="請輸入" readonly="" type="tel"/></div><span class="text-warning" id="errMsg"></span>
+<div class="">
+<img alt="AuthCode" classs="codeimg" id="codeimg" src="https://web-reg-server.803.org.tw/803/captcha-img" style="width:150px;height:42px; font-size:2rem; background-image:linear-gradient(45deg, #ffffff, #c4e2fc 90%);border-radius:10px;"/>
+<button data-placement="left" data-toggle="tooltip" id="authRenew" style="width:42px;height:42px;font-size:2rem;vertical-align:middle;border-radius:10px;border-color:#c4e2fc;color:#c4e2fc;" title="更新驗證碼"><i aria-hidden="true" class="fa fa-refresh"></i></button>
+<button data-placement="left" data-toggle="tooltip" id="authVoice" style="width:42px;height:42px;font-size:2rem;vertical-align:middle;border-radius:10px;border-color:#c4e2fc;color:#c4e2fc;" title="Voice"><i aria-hidden="true" class="fa fa-volume-up"></i></button>
+</div>
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<div class="col-md-12 text-danger text-center">※取消後無法回復，有看診需求請重新掛號※</div>
+<span class="badge bg-danger p-3" id="cancel" style="font-size:1em;">是的，我要取消</span> <span class="badge bg-secondary p-3" data-dismiss="modal" style="font-size:1em;">按錯了</span>
+=======
+<<<<<<< HEAD
 
 <!DOCTYPE html>
 
@@ -273,10 +409,130 @@ if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構�
 </tr>
 </table>
 </div>
+>>>>>>> 49a1cd7c963c1b8be4e659ace5e374b79387f5c2
 </div>
 </div>
 </div>
 </div>
+<<<<<<< HEAD
+<script src="/803/js/jquery.js"></script>
+<script src="/803/js/popper.min.js"></script>
+<script src="/803/js/bootstrap.min.js"></script>
+<script src="/803/js/main.js"></script>
+<script>
+    var vcode = "";
+    $(function () {
+
+        $('.Langsel').on('change', function () {
+            //alert(this.value);
+            window.location.href = "/803/" + "webreg/lang/" + $(this).val();
+        });
+
+        $("#authRenew").click(function () {
+            $("#codeimg").attr("src", "/803/captcha-img/" + Date.now());
+            return false;
+        });
+
+        var audio;
+        $("#authVoice").click(function () {
+            $("#authVoice").attr('disabled','disabled');
+            audio=new Audio('/803/captcha-voice/' + Date.now());
+            audio.play();
+            audio.onended = function () {
+                 $("#authVoice").removeAttr('disabled');
+            };
+            return false;
+        });
+
+        $(".delme").click(function () {
+            $('#vcode').val('');//清空文字框
+            //createCode();//重新整理驗證碼
+            const rr=$(this).attr('rr');
+
+            const cdata = $(this).closest('tr');
+            if ($('.Langsel').val() == 'EN') {
+                $('#cnfMSG').html('Cancel appointment：<br><b>' + cdata.find('td:eq(0)').text() + cdata.find('td:eq(1)').text() + cdata.find('td:eq(2)').text() + '-' + cdata.find('td:eq(3)').text() + '-' + cdata.find('td:eq(4)').text() + '</b><br>');
+                $('#msgMe .modal-body').html('「<b>' + cdata.find('td:eq(0)').text() + cdata.find('td:eq(1)').text() + cdata.find('td:eq(2)').text() + '-' + cdata.find('td:eq(3)').text() + '-' + cdata.find('td:eq(4)').text() + '</b>」');
+                $('#alertMe').modal('show');
+                $("#cancel").prop("onclick", null).off('click');
+                $("#cancel").click(function () {
+                    $('#errMsg').text('');
+                    var authSTS = 0;
+                    //if ($('#vcode').val().length <= 0) { //若輸入的驗證碼長度為0
+                    //    $('#errMsg').text('Please Enter \'Auth Code\'！'); //則彈出請輸入驗證碼
+                    //    authSTS = 1;
+                    //} else if ($('#vcode').val() != vcode) { //若輸入的驗證碼與產生的驗證碼不一致時
+                    //    $('#errMsg').text('Auth Code not match！'); //則彈出驗證碼輸入錯誤
+                    //    authSTS = 1;
+                    //}
+                    if (authSTS == 1) {
+                    } else {
+                        $('#alertMe').modal('hide');
+                        var today = new Date();
+                        var currentDateTime = right('0' + (today.getMonth() + 1), 2) + '/' + right('0' + today.getDate(), 2) + ' ' + right('0' + today.getHours(), 2) + ':' + right('0' + today.getMinutes(), 2) + ':' + right('0' + today.getSeconds(), 2);
+                        //$('#msgMe .modal-body').append('<br>Cancelled at ' + currentDateTime + '.');
+                        //$('#msgMe').modal('show');
+                        cdata.hide();
+                        window.location.href = "/803/" + "webreg/book_cancel/" + rr + "?v=" + $('#vcode').val();
+                    }
+                });
+            } else {
+                $('#cnfMSG').html('如您欲取消掛號：<br><b>' + cdata.find('td:eq(0)').text() + cdata.find('td:eq(1)').text() + cdata.find('td:eq(2)').text() + '-' + cdata.find('td:eq(3)').text() + '-' + cdata.find('td:eq(4)').text() + '醫師</b><br>');
+                $('#msgMe .modal-body').html('「<b>' + cdata.find('td:eq(0)').text() + cdata.find('td:eq(1)').text() + cdata.find('td:eq(2)').text() + '-' + cdata.find('td:eq(3)').text() + '-' + cdata.find('td:eq(4)').text() + '醫師</b>」掛號');
+                $('#alertMe').modal('show');
+                $("#cancel").prop("onclick", null).off('click');
+                $("#cancel").click(function () {
+                    $('#errMsg').text('');
+                    var authSTS = 0;
+                    //if ($('#vcode').val().length <= 0) { //若輸入的驗證碼長度為0
+                    //    $('#errMsg').text('請輸入驗證碼！'); //則彈出請輸入驗證碼
+                    //    authSTS = 1;
+                    //} else if ($('#vcode').val() != vcode) { //若輸入的驗證碼與產生的驗證碼不一致時
+                    //    $('#errMsg').text('驗證碼輸入錯誤！'); //則彈出驗證碼輸入錯誤
+                    //    authSTS = 1;
+                    //}
+                    if (authSTS == 1) {
+                    } else {
+                        $('#alertMe').modal('hide');
+                        var today = new Date();
+                        var currentDateTime = right('0' + (today.getMonth() + 1), 2) + '/' + right('0' + today.getDate(), 2) + ' ' + right('0' + today.getHours(), 2) + ':' + right('0' + today.getMinutes(), 2) + ':' + right('0' + today.getSeconds(), 2);
+                        //$('#msgMe .modal-body').append('<br>已於' + currentDateTime + '刪除');
+                        //$('#msgMe').modal('show');
+                        cdata.hide();
+                        window.location.href = "/803/" + "webreg/book_cancel/" + rr + "?v=" + $('#vcode').val();
+                    }
+                });
+            }
+            return false;
+        });
+
+        if ($('#Langsel').val() == 'EN') {
+            $('#BtnPrint').prop('title', 'Print');
+            $('#BtnPrint').html('<i class=\"fa fa-print\" aria-hidden=\"true\"></i>Print');
+        }
+        $("#BtnPrint").click(function () {
+            $('[data-toggle="tooltip"]').tooltip('hide');
+            window.print();
+            return false();
+        });
+    });
+
+    function right(str, num) {
+        return str.substring(str.length - num, str.length)
+    }
+</script>
+<footer class="no-print">
+<div class="copyright">
+                © 2022 國軍臺中總醫院 禁止任何網際網路服務業者轉錄其網路資訊之內容供人點閱
+            </div>
+</footer>
+<script type="text/javascript">
+        var isIE11 = !!navigator.userAgent.match(/Trident.*rv\:11\./);
+        if (isIE11) { $('.modal').addClass('modal-ie');}
+    </script>
+</body>
+</html>
+=======
 <script type="text/javascript">
 	window.onload = function() {
     $('#ctl00_ContentPlaceHolder1_btnReg').removeClass( "buttonGreen" );
@@ -877,3 +1133,4 @@ Sys.Application.initialize();
 </body>
 </html>
 >>>>>>> 8c20ba20e77e163d5e40c89499fdfafe6963e6d3
+>>>>>>> 49a1cd7c963c1b8be4e659ace5e374b79387f5c2

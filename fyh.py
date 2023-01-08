@@ -9,6 +9,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import random
 
 
 # 豐原醫院
@@ -24,6 +25,7 @@ class FYH():
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
         self.Data = []
+        self.browser = browser
         # 各醫院新增項目
         self.idx = 0
         self.datalen = 0
@@ -59,7 +61,6 @@ class FYH():
                             'startdate': self.loc_dt.strftime("%Y%m%d"),
                             'enddate': self.new_dt.strftime("%Y%m%d")
                         }
-        self.browser = browser
 
     def run(self):
         for currentPage in range(self.currentPage-1,self.EndPage):
@@ -73,7 +74,9 @@ class FYH():
                         self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                         self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                         self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"豐原醫院",self.Data[self.idx]['Born'],str(currentPage + 1),str(self.idx + 1))
-                        time.sleep(2)
+                        sec = random.randint(1, 5)
+                        print(sec)
+                        time.sleep(sec)
                     else:
                         break
             else:
@@ -96,15 +99,16 @@ class FYH():
 
         with httpx.Client(http2=True) as client :
             # 進入網頁
-            self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers)
+            self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
             if(self.respone.json()[0]['msg'] == "病患不存在"):
                 self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
                 with open("reslut.html", "w", encoding="utf-8") as f:
                     f.write(self.respone.json()[0]['msg'])
             else:
-                self.respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords')
-                self.respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers)
+                self.respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords', timeout=20)
+                self.respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
                 self._JSONDataToHTML(self.respone2,self.respone.text)
+        client.close()
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
