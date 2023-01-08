@@ -9,6 +9,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import requests
 
 # 部立台中醫院
 class MOHW():
@@ -155,7 +156,7 @@ class MOHW():
                     self.payloadM["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
                     self.payloadM["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
                     self.payloadM["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
-                    self.payloadM["ctl00$ContentPlaceHolder1$dd1BirthM"] = "7"
+                    self.payloadM["ctl00$ContentPlaceHolder1$dd1BirthM"] = str(int(month))
                     respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.payloadM,headers=self.header)
                     soup = BeautifulSoup(respone.content,"html.parser")
                     
@@ -165,10 +166,11 @@ class MOHW():
                     self.payloadD["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
                     self.payloadD["__EVENTVALIDATION"] = soup.find("input",{"id":"__EVENTVALIDATION"}).get("value")
                     self.payloadD["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
-                    self.payloadD["ctl00$ContentPlaceHolder1$dd1BirthD"] = "1"
+                    self.payloadD["ctl00$ContentPlaceHolder1$dd1BirthM"] = str(int(month))
+                    self.payloadD["ctl00$ContentPlaceHolder1$dd1BirthD"] = str(int(day))
                     respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.payloadD,headers=self.header)
                     soup = BeautifulSoup(respone.content,"html.parser")
-                    
+
                     while True:
                         # 請求驗證碼
                         respone = client.get("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/VerificationCode.aspx")
@@ -182,22 +184,22 @@ class MOHW():
                         self.OK_Payload["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
                         self.OK_Payload["ctl00$ContentPlaceHolder1$txtVerificationCode"] = self._ParseCaptcha()
                         respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.OK_Payload,headers=self.header)
-                        with open("test.html","wb") as f :
-                            f.write(respone.content)
+                        with open("reslut.html","w",encoding="utf-8") as f :
                             if not self._CKCaptcha(respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！"):
-                                with open("reslut.html","w",encoding="utf-8") as f :
-                                    f.write(self._changeHTMLStyle(respone.content,"https://www03.taic.mohw.gov.tw/OINetReg/",""))
+                                f.write(self._changeHTMLStyle(respone.content,"https://www03.taic.mohw.gov.tw/OINetReg/",""))
                                 time.sleep(2)
                                 break
                             else:
                                 self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                                 time.sleep(1)
-                                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                                content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 部立台中醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                                 self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 break
             except requests.exceptions.ConnectTimeout:
                 try:
                     self.VPN.startVPN()
+                    content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 部立台中醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 except:
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
