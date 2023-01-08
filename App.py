@@ -247,7 +247,7 @@ class MainWindows():
         self.type_text.place(relx=0.1,rely=0.16)
         self.status_text = tk.Label(self.VersionInfo,text="授權 : 未授權" ,font=("標楷體", 12))
         self.status_text.place(relx=0.1,rely=0.27)
-        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2022-10-11" ,font=("標楷體", 12))
+        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-1-8" ,font=("標楷體", 12))
         self.release_date.place(relx=0.1,rely=0.38)
         self.evmt = tk.Label(self.VersionInfo,text="支援環境 : Windows 10 、 Windows 11" ,font=("標楷體", 12))
         self.evmt.place(relx=0.1,rely=0.49)
@@ -414,9 +414,17 @@ class MainWindows():
     
     # 檢查多開狀態
     def _MultiProcessCK(self,ProcessName):
+        ProcessNum = 0
         cmd = "tasklist"
         Tasks = os.popen(cmd).read()
-        return (ProcessName in Tasks)
+        for Process in Tasks.split("\n"):
+            if ProcessName in Process:
+                print(ProcessName)
+                ProcessNum += 1
+        print(ProcessNum)
+        if ProcessNum > 2:
+            return True
+        return False
     # =================================================================
     #                           彈窗定義
     # =================================================================
