@@ -37,6 +37,11 @@ from VPNClient import VPN
 # 建立視窗程式物件
 class MainWindows():
     def __init__(self):
+        
+        # 檢查是否多開
+        if self._MultiProcessCK("PDFSearchSystem-TC.exe") :
+            self._MultiProcessCK()
+
         # 取得管理員權限
         self.getAdmin()
         
@@ -406,7 +411,12 @@ class MainWindows():
             return ctypes.windll.shell32.IsUserAnAdmin()
         except:
             return False
-
+    
+    # 檢查多開狀態
+    def _MultiProcessCK(self,ProcessName):
+        cmd = "tasklist"
+        Tasks = os.popen(cmd).read()
+        return (ProcessName in Tasks)
     # =================================================================
     #                           彈窗定義
     # =================================================================
@@ -416,6 +426,10 @@ class MainWindows():
 
     def LicenseInfo(self,days):
         tkinter.messagebox.showinfo(title="授權通知",message="注意，本軟體僅供測試使用，因此設有授權保護。\n您的有效授權還剩下"+ str(days) +"天!!!")
+    
+    def MultiProcessErr(self):
+        tkinter.messagebox.showerror(title="軟體多開守門員",message="偵測到本軟體已在運行，請先將原先軟體關閉後再開啟程式 !!!")
+        os._exit(0)
     
     # =================================================================
     #                           文字定義
