@@ -10,7 +10,6 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
-import requests
 
 
 # 林新醫院
@@ -109,12 +108,15 @@ class LSHOSP():
         # 2022/12/24加入 (VPN 檢測)
         if self.window.checkVal_AUVPNM.get() :
             self.VPN = VPN(self.window)
+            print("a")
             VPNWindow(self.VPN)
+            print("b")
             if not self.VPN.InstallationCkeck() :
                 messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
                 self.window.RunStatus = False
                 self.browser.quit()
                 os._exit(0)
+            print("c")
         for self.page in range(self.currentPage-1,self.EndPage):
             if self._PDFData(self.page) and self.window.RunStatus:
                 for self.idx in range(self.currentNum-1,self.datalen) :
@@ -149,9 +151,11 @@ class LSHOSP():
         while True:
             try:
                 with httpx.Client(http2=True) as client :
+                    print("1")
                     self.respone = client.get("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx")
                     soup = BeautifulSoup(self.respone.content,"html.parser")
                     
+                    print("2")
                     # 發送月份請求
                     self.payloadM["__EVENTTARGET"] = "ctl00$ContentPlaceHolder1$dd1BirthM"
                     self.payloadM["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
@@ -162,6 +166,7 @@ class LSHOSP():
                     self.respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.payloadM,headers=self.header)
                     soup = BeautifulSoup(self.respone.content,"html.parser")
                     
+                    print("3")
                     # 發送日期請求
                     self.payloadD["__EVENTTARGET"] = "ctl00$ContentPlaceHolder1$dd1BirthD"
                     self.payloadD["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
@@ -178,7 +183,6 @@ class LSHOSP():
                         self.respone = client.get("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/ValidateNumber.ashx")
                         with open("VaildCode.png","wb") as f :
                             f.write(self.respone.content)
-
                         # 發送正式請求
                         self.OK_Payload["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
                         self.OK_Payload["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
@@ -192,7 +196,7 @@ class LSHOSP():
                             break
                         else:
                             if(self.errorNum > self.maxError):
-                                raise requests.exceptions.ConnectTimeout("錯誤次數過多，啟動VPN")
+                                raise httpx.ConnectTimeout("錯誤次數過多，啟動VPN")
                             self.errorNum += 1
                             self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                             time.sleep(2)
@@ -200,7 +204,7 @@ class LSHOSP():
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                             time.sleep(3)
                 break
-            except requests.exceptions.ConnectTimeout:
+            except httpx.ConnectTimeout:
                 print("發生時間例外")
                 self.errorNum = 0
                 try:
