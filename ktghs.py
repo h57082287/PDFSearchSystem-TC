@@ -51,7 +51,7 @@ class KTGHS():
                         content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 光田醫院：沙鹿總院\n當前第" + str(currentPage+1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                         self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                        self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                        # self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                         self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"光田醫院：沙鹿總院",self.Data[self.idx]['Born'],str(currentPage + 1),str(self.idx + 1))
                         time.sleep(2)
                     else:
@@ -104,7 +104,7 @@ class KTGHS():
         
         try:
             if ("看診醫師" not in self.browser.page_source):
-                print("AAAA")
+                # print("AAAA")
                 raise requests.exceptions.ConnectTimeout("ip已被封鎖")
             with open('reslut.html','w', encoding='utf-8') as f :
                 f.write(self._changeHTMLStyle(self.browser.page_source))
@@ -116,15 +116,17 @@ class KTGHS():
                 messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                 self.window.Runstatus = False
 
-        with open('reslut.html','w', encoding='utf-8') as f :
-            f.write(self._changeHTMLStyle(self.browser.page_source))
-
-    def _startBrowser(self,name,ID):
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
         if self._Screenshot("病情簡述",(name + '_' + ID + '_光田醫院：沙鹿總院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+
+        # with open('reslut.html','w', encoding='utf-8') as f :
+        #     f.write(self._changeHTMLStyle(self.browser.page_source))
+
+    def _startBrowser(self,name,ID):
+        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
+        
 
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
