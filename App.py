@@ -201,8 +201,8 @@ class MainWindows():
         self.window.protocol("WM_DELETE_WINDOW",self.onClose)
         
         # 檢查授權
-        # l = License(self)
-        # l.TimeLicense("2023-1-31")
+        l = License(self)
+        l.TimeLicense("2023-1-31")
         
         #-----------------------------------------------------------------------------------------啟動視窗
         # 建立設定頁面內容
