@@ -39,7 +39,7 @@ class PDFReader():
                     self.PersionalData['Address'] = table[1].replace('\n','').replace(' ','')
                 elif LineNum%3 == 2:
                     try:
-                        if (self.PersionalData['Name'] == '' or self.PersionalData['Born'] == '' or self.PersionalData['ID'] == '' or self._CheckID(self.PersionalData['ID'])):
+                        if (self.PersionalData['Name'] == '' or self.PersionalData['Born'] == '' or self.PersionalData['ID'] == '' or not self._CheckID(self.PersionalData['ID'])):
                             non_data += 1
                             self.PersionalData.clear()
                             LineNum+=1
