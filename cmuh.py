@@ -31,12 +31,10 @@ class CMUH():
         self.log = Log()
 
     def run(self):
-        print("進入執行程序")
         # 2022/12/25加入 (VPN 檢測)
         if self.window.checkVal_AUVPNM.get() :
             self.VPN = VPN(self.window)
             VPNWindow(self.VPN)
-            print("結束VPN設定視窗")
             if not self.VPN.InstallationCkeck() :
                 messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
                 self.window.RunStatus = False
@@ -52,17 +50,17 @@ class CMUH():
                         # 初診查詢
                         content = "姓名 : " + self.Data[self.idx]['Name'] + "(初診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                        self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], "088","01","01")
-                        Q_Status = self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
-                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"中國醫學大學豐原分院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                        self._getReslut(self.Data[self.idx]['Name'] + "(初診)", self.Data[self.idx]['ID'], "088","01","01")
+                        Q_Status = self._startBrowser(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'])
+                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'] + "(初診)","中國醫學大學豐原分院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                         time.sleep(2)
                         # 複診查詢
                         if not(Q_Status) and self.window.RunStatus:
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "(複診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                            self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                            self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
-                            self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"中國醫學大學豐原分院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                            self._getReslut(self.Data[self.idx]['Name'] + "(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                            self._startBrowser(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'])
+                            self.log.write(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'],"中國醫學大學豐原分院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             time.sleep(2)
                         else:
                             break
@@ -72,6 +70,8 @@ class CMUH():
                 break
         try :
             self.VPN.stopVPN()
+            content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
         except:
             pass
         self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
