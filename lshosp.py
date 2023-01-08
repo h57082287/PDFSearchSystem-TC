@@ -12,6 +12,7 @@ from VPNWindow import VPNWindow
 from tkinter import messagebox
 import requests
 
+
 # 林新醫院
 class LSHOSP():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
@@ -30,6 +31,8 @@ class LSHOSP():
         self.page = 0
         self.datalen = 0
         self.log = Log()
+        self.errorNum = 0
+        self.maxError = 10
         
 
         # 建立header
@@ -122,6 +125,7 @@ class LSHOSP():
                         self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                         self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                         self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"林新醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                        self.errorNum = 0
                         time.sleep(2)
                     else:
                         break
@@ -132,6 +136,7 @@ class LSHOSP():
         except:
             pass
         self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
+        self.errorNum = 0
         time.sleep(2)
         self.window.GUIRestart()
         self._endBrowser()
@@ -181,20 +186,23 @@ class LSHOSP():
                         self.OK_Payload["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
                         self.OK_Payload["ctl00$ContentPlaceHolder1$txtVerificationCode"] = self._ParseCaptcha()
                         self.respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.OK_Payload,headers=self.header)
-                        if not self._CKCaptcha(self.respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！"):
+                        if (not self._CKCaptcha(self.respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！")) and (not self._CKCaptcha(self.respone.content,"title","Access Denied")) and (not self._CKCaptcha(self.respone.content,"span","您的查詢次數太過頻繁，請稍後再試")) :
                             with open("reslut.html","w",encoding="utf-8") as f :
                                 f.write(self._changeHTMLStyle(self.respone.content,"http://www.lshosp.com.tw:8001/OINetReg","http://www.lshosp.com.tw"))
-                            time.sleep(2)
                             break
                         else:
+                            if(self.errorNum > self.maxError):
+                                raise requests.exceptions.ConnectTimeout("錯誤次數過多，啟動VPN")
+                            self.errorNum += 1
                             self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
-                            time.sleep(1)
-                            content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
-                            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                             time.sleep(2)
+                            content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                            time.sleep(3)
                 break
             except requests.exceptions.ConnectTimeout:
                 print("發生時間例外")
+                self.errorNum = 0
                 try:
                     self.VPN.startVPN()
                 except:
@@ -202,13 +210,14 @@ class LSHOSP():
                     self.window.Runstatus = False
                     break
             except AttributeError:
-                print("發生找不到內容例外")
-                try:
-                    self.VPN.startVPN()
-                except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                    self.window.Runstatus = False
-                    break
+                time.sleep(5)
+                # print("發生找不到內容例外")
+                # try:
+                #     self.VPN.startVPN()
+                # except:
+                #     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                #     self.window.Runstatus = False
+                #     break
 
 
 

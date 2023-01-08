@@ -1,140 +1,3 @@
-<<<<<<< HEAD
-<!DOCTYPE html>
-
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport"/>
-<link href="https://web-reg-server.803.org.twimg/HICON1.png" rel="icon" type="image/png"/>
-<title>book_query - 網路掛號</title>
-<link href="https://web-reg-server.803.org.tw/803/css/font-awesome.min.css" rel="stylesheet"/>
-<link href="https://web-reg-server.803.org.tw/803/css/bootstrap.min.css" rel="stylesheet"/>
-<link href="https://web-reg-server.803.org.tw/803/vendor/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet"/>
-<script>window.MSInputMethodContext && document.documentMode && document.write('<script src="/803/js/jquery.js"><\/script><script src="/803/js/bootstrap-ie.min.js"><\/script><script src="/803/js/ie11CustomProperties.min.js"><\/script>');</script>
-<link href="https://web-reg-server.803.org.tw/803/css/main.css?202301012146" rel="stylesheet"/>
-</head>
-<body>
-<div class="topmenu">
-<div class="container">
-<header>
-<a class="menu-toggle" href="#"><i class="fa fa-bars"></i></a>
-<a class="logo" href="/803/">
-<img alt="logo" src="https://web-reg-server.803.org.tw/803/img/HLOGO1.png"/><h1>國軍臺中總醫院 網路掛號</h1>
-</a>
-<ul class="menuTop1">
-<li>
-                    文字：<button class="FontSize" sz="12px" type="button">大</button>
-<button class="FontSize active" sz="10px" type="button">中</button>
-<button class="FontSize" sz="8px" type="button">小</button>
-</li>
-<li>
-<label for="Langsel"> <i aria-hidden="true" class="fa fa-globe"></i></label>
-<select aria-label="Language Select" class="form-select-lg Langsel" id="Langsel" name="Langsel">
-<option selected="" value="TC">中文</option><option value="EN">English</option>
-</select>
-</li>
-</ul>
-<ul class="menu">
-<li><a href="/803/"><i aria-hidden="true" class="fa fa-id-badge"></i> 預約掛號</a></li>
-<li class="active"><a href="/803/webreg/book_query"><i aria-hidden="true" class="fa fa-list-alt"></i> 掛號查詢/取消</a></li>
-<li><a href="https://web-reg-server.803.org.tw/803/webreg/doctor_progress" rel="noreferrer noopener"><i aria-hidden="true" class="fa fa-clock-o"></i> 看診進度</a></li>
-<li><a href="/803/webreg/book_noreg"><i aria-hidden="true" class="fa fa-exclamation-circle"></i> 停/代診資訊</a></li>
-<li><a href="/803/webreg/book_desc"><i aria-hidden="true" class="fa fa-question-circle-o"></i> 掛號說明</a></li>
-<li class="toggleview">
-                    文字：<button class="FontSize" sz="12px" type="button">大</button>
-<button class="FontSize active" sz="10px" type="button">中</button>
-<button class="FontSize" sz="8px" type="button">小</button>
-</li>
-<li class="toggleview">
-<label for="Langsel"> <i aria-hidden="true" class="fa fa-globe"></i></label>
-<select aria-label="Language Select" class="form-select-lg Langsel" id="Langsel" name="Langsel">
-<option selected="" value="TC">中文</option><option value="EN">English</option>
-</select>
-</li>
-</ul>
-</header>
-</div>
-</div>
-<main>
-<div class="container lside">
-<div class="row justify-content-center">
-<div class="col-md-12">
-<h1>
-                    鄭●洲 預約掛號資料一覽
-                </h1>
-<div class="login-box">
-<div class="row align-items-end">
-<div class="col-xl-1 col-md-2 col-3 offset-xl-11 offset-md-10 offset-9 pr-3 pb-2">
-<button class="printbtn no-print" id="BtnPrint" title="列印">
-<i aria-hidden="true" class="fa fa-print"></i>列印
-                            </button>
-</div>
-</div>
-<div class="row align-items-center">
-<div class="offset-md-1 col-md-10">
-<div class="ltype1">
-<div class="table-responsive">
-<table class="table table-hover reglist" id="timeTable">
-<thead>
-<tr>
-<th>院別</th><th>日期</th><th>時段</th><th>科別</th><th>醫師</th><th>診室</th><th>就診號</th>
-<th> </th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-</div>
-<div class="Registration-Operation no-print">
-<div class="row">
-<div class="offset-md-1 col-md-10">
-<div class="row other_operation pt-5">
-<div class="col-6 active"> <a class="btn btn-block btn-outline-primary h-100" href="/803/">預約掛號</a></div>
-<div class="col-6"> <a class="btn btn-block btn-outline-success h-100" href="/803/webreg/newone">登出</a></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-<div id="sidemenu">
-<a class="sidebtn1" href="/803/webreg/newone" id="logout"><i aria-hidden="true" class="fa fa-sign-out"></i> 登出</a>
-</div>
-<!-- Modal -->
-<div aria-hidden="true" aria-labelledby="alertMeLabel" class="modal fade" id="alertMe" role="dialog" tabindex="-1">
-<div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
-<div class="modal-content">
-<div class="modal-header bg-danger text-light">
-<div class="modal-title" id="alertMeModalLabel"><i aria-hidden="true" class="fa fa-minus-circle"></i>取消掛號確認</div>
-<button aria-label="Close" class="close" data-dismiss="modal" type="button">
-<span aria-hidden="true">×</span>
-</button>
-</div>
-<div class="modal-body" style="overflow-x:hidden;">
-<span id="cnfMSG"></span>
-<div class="form-group">
-<div class="row text-center">
-<div class=""><label for="vcode">驗證碼</label><input autocomplete="off" id="vcode" maxlength="4" name="vcode" onfocus="this.removeAttribute('readonly');" placeholder="請輸入" readonly="" type="tel"/></div><span class="text-warning" id="errMsg"></span>
-<div class="">
-<img alt="AuthCode" classs="codeimg" id="codeimg" src="https://web-reg-server.803.org.tw/803/captcha-img" style="width:150px;height:42px; font-size:2rem; background-image:linear-gradient(45deg, #ffffff, #c4e2fc 90%);border-radius:10px;"/>
-<button data-placement="left" data-toggle="tooltip" id="authRenew" style="width:42px;height:42px;font-size:2rem;vertical-align:middle;border-radius:10px;border-color:#c4e2fc;color:#c4e2fc;" title="更新驗證碼"><i aria-hidden="true" class="fa fa-refresh"></i></button>
-<button data-placement="left" data-toggle="tooltip" id="authVoice" style="width:42px;height:42px;font-size:2rem;vertical-align:middle;border-radius:10px;border-color:#c4e2fc;color:#c4e2fc;" title="Voice"><i aria-hidden="true" class="fa fa-volume-up"></i></button>
-</div>
-</div>
-</div>
-</div>
-<div class="modal-footer">
-<div class="col-md-12 text-danger text-center">※取消後無法回復，有看診需求請重新掛號※</div>
-<span class="badge bg-danger p-3" id="cancel" style="font-size:1em;">是的，我要取消</span> <span class="badge bg-secondary p-3" data-dismiss="modal" style="font-size:1em;">按錯了</span>
-=======
-<<<<<<< HEAD
 
 <!DOCTYPE html>
 
@@ -174,7 +37,7 @@
 <input id="__EVENTTARGET" name="__EVENTTARGET" type="hidden" value=""/>
 <input id="__EVENTARGUMENT" name="__EVENTARGUMENT" type="hidden" value=""/>
 <input id="__LASTFOCUS" name="__LASTFOCUS" type="hidden" value=""/>
-<input id="__VIEWSTATE" name="__VIEWSTATE" type="hidden" value="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"/>
+<input id="__VIEWSTATE" name="__VIEWSTATE" type="hidden" value="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"/>
 </div>
 <script type="text/javascript">
 //<![CDATA[
@@ -204,11 +67,11 @@ if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構�
 <div>
 <input id="__VIEWSTATEGENERATOR" name="__VIEWSTATEGENERATOR" type="hidden" value="A576A846"/>
 <input id="__VIEWSTATEENCRYPTED" name="__VIEWSTATEENCRYPTED" type="hidden" value=""/>
-<input id="__EVENTVALIDATION" name="__EVENTVALIDATION" type="hidden" value="nGTWeJ4viPxa4fI2baN1s7EbZylXsjSeS6+RkhqfISLgbFoh1/1Wb4qWmk30keOPkX5euHBgYA1r0/ESXXzNsKc2AlJV12GFCuomcaYk37AwsRqiujHLtlxM+cVhvFY/rFD1IDDBGlkQp1XvlBk/VoELYlZASQniRk3xWfET02ybG+/ge8cP0gbAxM0Vrhzsvn32E6JHWLS1xQBpCNCUyb2OJZ31nL0MkdIMecArTOYa9oaDOi5LtdhrHL+0cmZKd9PjaHYzxYVSvW0ZIoNbrUO2hZJiFC+hfTEwO3IINewpE5744tj6EzN7hdVhGNm8zupi5SGvQPrplJ/TCdbTeji2GV/4n0W9jHlfdP9Bq8vaEg+Iwcv3euQJhMP1LNmWYlF7exDEAhpd8R4Vn1DANrOGu+OxZw8EnJ2uFiA4uU7ZmF/434KmdRR0kJ25D1ZsSPQ2tTQayKcBQLU54nWZd1TIyk8bFh/tOpxiLtYHslZTdnCa6UI2zEkHX1QP4uXighkO5YKmVz0IQpoKuFbjie9K9I0k0to4RBNHsBqsRWGUsuD6lTwO/qe7VCEPNX9Z2QpkrkaTdiNpmyDlo83CXpt53Eo="/>
+<input id="__EVENTVALIDATION" name="__EVENTVALIDATION" type="hidden" value="OByjW3jNLu6viHwkmApMsVlk3dIBxhkqnQMmgnRtht/DxOPa/fLyuqmA9/4i4gfaHGOaPf50Tt1oEwOBym/23ZKwEHZNAZrI9HFQmjaFzKqTipvrC9zi+zoaD2kxpAjjYLMjoW9TmUb+Oxe/9RNJAMxA7VUKzOq73Wb7zDr/D6QOG+xDszpVetVBl6ZzIdF/6Qy9pWi96DGvaFiw/0k4V4VACft8MiIqZ463xoX/R1BRoL8qR+VMFJMEX8OnJBDB9S6TfyWWA1DjmU27o+WcEVmr10v3gxOAW7jWQ4DXKP7Wv1kQ+ZioRCP5xG5ww4LTYauW5hnBuDLBj8W++yO3XqK9NJTAp0Zy+bXgw/tlYc53MEC/jLMGwqMaOwMq3cOqCzaKWDTmt9HhgnHczTze09yiE5pAxKEazwSaQ9IN5PlaTr/YfenKXwn4d4JwE64X5nexGqQSVowiLvXOFw0qYmC0k6OZKSw331khNxcB9S9WvK+5k2rm5kXj2fYx+TZnVokgWzzJyVFwLK+BATVLiKQzaiB5EjFAk7x5FdKdgnN20U+AKmv8FA0wWNFUqohrTtRVdprcJGG3HI7DjZC/uw0r740="/>
 </div>
 <div id="page">
 <!--for 烏日林新 ，包在iFrame下點選ImageButton無法切換頁籤問題  -->
-<input id="ctl00_hfServerTime" name="ctl00$hfServerTime" type="hidden" value="1671982643593.75"/>
+<input id="ctl00_hfServerTime" name="ctl00$hfServerTime" type="hidden" value="1673163826203.13"/>
 <div id="nav">
 <ul>
 <li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
@@ -260,7 +123,7 @@ if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構�
 <table style="width: 100%;">
 <tr>
 <td>
-<img alt="驗證碼 Security Code" id="ctl00_ContentPlaceHolder1_imgVerificationCode" src="VerificationCode.aspx?t=YYYY37DD23126406" style="border-color:#99CCFF;border-width:1px;border-style:solid;visibility:hidden"/>
+<img alt="驗證碼 Security Code" id="ctl00_ContentPlaceHolder1_imgVerificationCode" src="VerificationCode.aspx?t=YYYY43DD150125" style="border-color:#99CCFF;border-width:1px;border-style:solid;visibility:hidden"/>
 <table id="reserveTAB02-1" style="width: 100%;">
 <tr>
 <th style="width: 2%">
@@ -292,7 +155,7 @@ if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構�
 <span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblIDNOorPatientID" style="font-size:14pt;">身分證號：</span>
 </th>
 <th>
-<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID" maxlength="10" name="ctl00$ContentPlaceHolder1$txtIDNOorPatientID" style="font-size:12pt;" type="text" value="X200088416"/>
+<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID" maxlength="10" name="ctl00$ContentPlaceHolder1$txtIDNOorPatientID" style="font-size:12pt;" type="text" value="M120313527"/>
 </th>
 </tr>
 <tr>
@@ -309,14 +172,14 @@ if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構�
 <option value="0">請選擇</option>
 <option value="1">01</option>
 <option value="2">02</option>
-<option value="3">03</option>
+<option selected="selected" value="3">03</option>
 <option value="4">04</option>
 <option value="5">05</option>
 <option value="6">06</option>
 <option value="7">07</option>
 <option value="8">08</option>
 <option value="9">09</option>
-<option selected="selected" value="10">10</option>
+<option value="10">10</option>
 <option value="11">11</option>
 <option value="12">12</option>
 </select>
@@ -332,9 +195,9 @@ if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構�
 <option value="7">07</option>
 <option value="8">08</option>
 <option value="9">09</option>
-<option value="10">10</option>
+<option selected="selected" value="10">10</option>
 <option value="11">11</option>
-<option selected="selected" value="12">12</option>
+<option value="12">12</option>
 <option value="13">13</option>
 <option value="14">14</option>
 <option value="15">15</option>
@@ -374,7 +237,7 @@ if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構�
 <span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblVerificationCode" style="font-size:14pt;">驗證碼：</span>
 </td>
 <td style="width: 20%">
-<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtVerificationCode" name="ctl00$ContentPlaceHolder1$txtVerificationCode" style="font-size:12pt;" type="text" value="bNBubCa"/>
+<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtVerificationCode" name="ctl00$ContentPlaceHolder1$txtVerificationCode" style="font-size:12pt;" type="text" value="ecrtETq"/>
 </td>
 <td style="width: 15%">        
 													英文大小寫有區分<br/>
@@ -409,130 +272,10 @@ if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構�
 </tr>
 </table>
 </div>
->>>>>>> 49a1cd7c963c1b8be4e659ace5e374b79387f5c2
 </div>
 </div>
 </div>
 </div>
-<<<<<<< HEAD
-<script src="/803/js/jquery.js"></script>
-<script src="/803/js/popper.min.js"></script>
-<script src="/803/js/bootstrap.min.js"></script>
-<script src="/803/js/main.js"></script>
-<script>
-    var vcode = "";
-    $(function () {
-
-        $('.Langsel').on('change', function () {
-            //alert(this.value);
-            window.location.href = "/803/" + "webreg/lang/" + $(this).val();
-        });
-
-        $("#authRenew").click(function () {
-            $("#codeimg").attr("src", "/803/captcha-img/" + Date.now());
-            return false;
-        });
-
-        var audio;
-        $("#authVoice").click(function () {
-            $("#authVoice").attr('disabled','disabled');
-            audio=new Audio('/803/captcha-voice/' + Date.now());
-            audio.play();
-            audio.onended = function () {
-                 $("#authVoice").removeAttr('disabled');
-            };
-            return false;
-        });
-
-        $(".delme").click(function () {
-            $('#vcode').val('');//清空文字框
-            //createCode();//重新整理驗證碼
-            const rr=$(this).attr('rr');
-
-            const cdata = $(this).closest('tr');
-            if ($('.Langsel').val() == 'EN') {
-                $('#cnfMSG').html('Cancel appointment：<br><b>' + cdata.find('td:eq(0)').text() + cdata.find('td:eq(1)').text() + cdata.find('td:eq(2)').text() + '-' + cdata.find('td:eq(3)').text() + '-' + cdata.find('td:eq(4)').text() + '</b><br>');
-                $('#msgMe .modal-body').html('「<b>' + cdata.find('td:eq(0)').text() + cdata.find('td:eq(1)').text() + cdata.find('td:eq(2)').text() + '-' + cdata.find('td:eq(3)').text() + '-' + cdata.find('td:eq(4)').text() + '</b>」');
-                $('#alertMe').modal('show');
-                $("#cancel").prop("onclick", null).off('click');
-                $("#cancel").click(function () {
-                    $('#errMsg').text('');
-                    var authSTS = 0;
-                    //if ($('#vcode').val().length <= 0) { //若輸入的驗證碼長度為0
-                    //    $('#errMsg').text('Please Enter \'Auth Code\'！'); //則彈出請輸入驗證碼
-                    //    authSTS = 1;
-                    //} else if ($('#vcode').val() != vcode) { //若輸入的驗證碼與產生的驗證碼不一致時
-                    //    $('#errMsg').text('Auth Code not match！'); //則彈出驗證碼輸入錯誤
-                    //    authSTS = 1;
-                    //}
-                    if (authSTS == 1) {
-                    } else {
-                        $('#alertMe').modal('hide');
-                        var today = new Date();
-                        var currentDateTime = right('0' + (today.getMonth() + 1), 2) + '/' + right('0' + today.getDate(), 2) + ' ' + right('0' + today.getHours(), 2) + ':' + right('0' + today.getMinutes(), 2) + ':' + right('0' + today.getSeconds(), 2);
-                        //$('#msgMe .modal-body').append('<br>Cancelled at ' + currentDateTime + '.');
-                        //$('#msgMe').modal('show');
-                        cdata.hide();
-                        window.location.href = "/803/" + "webreg/book_cancel/" + rr + "?v=" + $('#vcode').val();
-                    }
-                });
-            } else {
-                $('#cnfMSG').html('如您欲取消掛號：<br><b>' + cdata.find('td:eq(0)').text() + cdata.find('td:eq(1)').text() + cdata.find('td:eq(2)').text() + '-' + cdata.find('td:eq(3)').text() + '-' + cdata.find('td:eq(4)').text() + '醫師</b><br>');
-                $('#msgMe .modal-body').html('「<b>' + cdata.find('td:eq(0)').text() + cdata.find('td:eq(1)').text() + cdata.find('td:eq(2)').text() + '-' + cdata.find('td:eq(3)').text() + '-' + cdata.find('td:eq(4)').text() + '醫師</b>」掛號');
-                $('#alertMe').modal('show');
-                $("#cancel").prop("onclick", null).off('click');
-                $("#cancel").click(function () {
-                    $('#errMsg').text('');
-                    var authSTS = 0;
-                    //if ($('#vcode').val().length <= 0) { //若輸入的驗證碼長度為0
-                    //    $('#errMsg').text('請輸入驗證碼！'); //則彈出請輸入驗證碼
-                    //    authSTS = 1;
-                    //} else if ($('#vcode').val() != vcode) { //若輸入的驗證碼與產生的驗證碼不一致時
-                    //    $('#errMsg').text('驗證碼輸入錯誤！'); //則彈出驗證碼輸入錯誤
-                    //    authSTS = 1;
-                    //}
-                    if (authSTS == 1) {
-                    } else {
-                        $('#alertMe').modal('hide');
-                        var today = new Date();
-                        var currentDateTime = right('0' + (today.getMonth() + 1), 2) + '/' + right('0' + today.getDate(), 2) + ' ' + right('0' + today.getHours(), 2) + ':' + right('0' + today.getMinutes(), 2) + ':' + right('0' + today.getSeconds(), 2);
-                        //$('#msgMe .modal-body').append('<br>已於' + currentDateTime + '刪除');
-                        //$('#msgMe').modal('show');
-                        cdata.hide();
-                        window.location.href = "/803/" + "webreg/book_cancel/" + rr + "?v=" + $('#vcode').val();
-                    }
-                });
-            }
-            return false;
-        });
-
-        if ($('#Langsel').val() == 'EN') {
-            $('#BtnPrint').prop('title', 'Print');
-            $('#BtnPrint').html('<i class=\"fa fa-print\" aria-hidden=\"true\"></i>Print');
-        }
-        $("#BtnPrint").click(function () {
-            $('[data-toggle="tooltip"]').tooltip('hide');
-            window.print();
-            return false();
-        });
-    });
-
-    function right(str, num) {
-        return str.substring(str.length - num, str.length)
-    }
-</script>
-<footer class="no-print">
-<div class="copyright">
-                © 2022 國軍臺中總醫院 禁止任何網際網路服務業者轉錄其網路資訊之內容供人點閱
-            </div>
-</footer>
-<script type="text/javascript">
-        var isIE11 = !!navigator.userAgent.match(/Trident.*rv\:11\./);
-        if (isIE11) { $('.modal').addClass('modal-ie');}
-    </script>
-</body>
-</html>
-=======
 <script type="text/javascript">
 	window.onload = function() {
     $('#ctl00_ContentPlaceHolder1_btnReg').removeClass( "buttonGreen" );
@@ -627,510 +370,3 @@ Sys.Application.initialize();
 </form>
 </body>
 </html>
-=======
-
-<!DOCTYPE html>
-
-<!--(HTML 5 新式宣告)-->
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head id="ctl00_Head1">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-115872560-2"></script>
-<script>
-
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() { dataLayer.push(arguments); }
-
-    gtag('js', new Date());
-
-
-
-    gtag('config', 'UA-115872560-2');
-
-</script>
-<!--直接指定瀏覽器版本，避開IE相容性問題-->
-<meta content="IE=EmulateIE7" http-equiv="X-UA-Compatible"/><meta content="noindex, nofollow" name="robots"/><meta content="noindex" name="googlebot"/><title>
-
-	網路掛號
-
-</title><link href="http://www.lshosp.com.tw:8001/OINetReg/css/StyleSheet.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/ZSY.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/controls.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/elements.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/option.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/reset.css" media="screen" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/mold.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/font.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/m02.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/m02a.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/m04.css" rel="stylesheet" type="text/css"/><link id="ctl00_RefStyleSheet" rel="stylesheet" type="text/css"/>
-<script src="../lib/jquery.min.js" type="text/javascript"></script> <!--引用jQuery-->
-<link href="http://www.lshosp.com.tw:8001/OINetReg/css/wlsStyle.css?112" rel="stylesheet" type="text/css"/>
-<script src="../lib/wlsHospital.js?v=4?1" type="text/javascript"></script>
-<!--[if lt IE 9]>    
-
-
-
-      <link rel="stylesheet" type="text/css" href="../css/wlsStyle-ie8.css?110" />    
-
-          
-
-    <![endif]-->
-<script type="text/javascript">
-
-
-
-        $(document).ready(showMobileView());
-
-
-
-    </script>
-</head>
-<body>
-<form action="Reg_RegConfirm1.aspx" id="aspnetForm" method="post" name="aspnetForm">
-<div>
-<input id="__EVENTTARGET" name="__EVENTTARGET" type="hidden" value=""/>
-<input id="__EVENTARGUMENT" name="__EVENTARGUMENT" type="hidden" value=""/>
-<input id="__LASTFOCUS" name="__LASTFOCUS" type="hidden" value=""/>
-<input id="__VIEWSTATE" name="__VIEWSTATE" type="hidden" value="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"/>
-</div>
-<script type="text/javascript">
-
-//<![CDATA[
-
-var theForm = document.forms['aspnetForm'];
-
-if (!theForm) {
-
-    theForm = document.aspnetForm;
-
-}
-
-function __doPostBack(eventTarget, eventArgument) {
-
-    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
-
-        theForm.__EVENTTARGET.value = eventTarget;
-
-        theForm.__EVENTARGUMENT.value = eventArgument;
-
-        theForm.submit();
-
-    }
-
-}
-
-//]]>
-
-</script>
-<script type="text/javascript">
-
-//<![CDATA[
-
-var __cultureInfo = '{"name":"zh-TW","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":".","IsReadOnly":true,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":",","CurrencySymbol":"NT$","NaNSymbol":"不是一個數字","CurrencyNegativePattern":1,"NumberNegativePattern":1,"PercentPositivePattern":1,"PercentNegativePattern":1,"NegativeInfinitySymbol":"負無窮大","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":".","NumberGroupSeparator":",","CurrencyPositivePattern":0,"PositiveInfinitySymbol":"正無窮大","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":".","PercentGroupSeparator":",","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"上午","Calendar":{"MinSupportedDateTime":"\/Date(-62135596800000)\/","MaxSupportedDateTime":"\/Date(253402271999999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":true},"DateSeparator":"/","FirstDayOfWeek":0,"CalendarWeekRule":0,"FullDateTimePattern":"yyyy\u0027年\u0027M\u0027月\u0027d\u0027日\u0027 tt hh:mm:ss","LongDatePattern":"yyyy\u0027年\u0027M\u0027月\u0027d\u0027日\u0027","LongTimePattern":"tt hh:mm:ss","MonthDayPattern":"M\u0027月\u0027d\u0027日\u0027","PMDesignator":"下午","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"yyyy/M/d","ShortTimePattern":"tt hh:mm","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"yyyy\u0027年\u0027M\u0027月\u0027","AbbreviatedDayNames":["星期日","星期一","星期二","星期三","星期四","星期五","星期六"],"ShortestDayNames":["日","一","二","三","四","五","六"],"DayNames":["星期日","星期一","星期二","星期三","星期四","星期五","星期六"],"AbbreviatedMonthNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""],"MonthNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""],"IsReadOnly":true,"NativeCalendarName":"西曆 (中文)","AbbreviatedMonthGenitiveNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""],"MonthGenitiveNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""]}}';//]]>
-
-</script>
-<script src="/OINetReg/ScriptResource.axd?d=G1TLuj3WLn6dARjclKmE9xBPG9f7tSTjBdhD6dqxxKmSPw_UChC4c3OdU2SKNQQzK9YIW8iV9CTp6H_BhcGB4cnxUhDlSZNeq4KxGRWPnuONTZYqhOUSodM2V9Cn0v94A9f426eL6zm4fq7x2rJp-Qg8Hkm7A4PTG1nxtFX7oxg-nW8j0&amp;t=2e2045e2" type="text/javascript"></script>
-<script type="text/javascript">
-
-//<![CDATA[
-
-if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構無法載入。');
-
-//]]>
-
-</script>
-<div>
-<input id="__VIEWSTATEGENERATOR" name="__VIEWSTATEGENERATOR" type="hidden" value="A576A846"/>
-<input id="__VIEWSTATEENCRYPTED" name="__VIEWSTATEENCRYPTED" type="hidden" value=""/>
-<input id="__EVENTVALIDATION" name="__EVENTVALIDATION" type="hidden" value="RE/epI6bXHt9acR0q0JiC3sxkrGL+p77L3ckAE0gVhiNB3nKaACmQDjpXYUbZyllMdtpGxG2L0YHSMbCanEE7HQRZebb8LOXHLHeUKmqNv4nE478CD7VBLUNN9Ff7YZMr8uDeDJAqD8i2zDMSNnU6m/0mQoycyk7k2n68LgLjABMI9kCly5R/KJoTmSsoWKmY4jplN4wZEnxczL/JeHmIW5+juJKN9oNJCWVjwpxPGJMeVw1pAn50kGffxByhJEeCYJvj0/4fjLh4MWMeSPKTmOTWFLIxRkzwH/h54trabWulWr52uqcarekJRmHwdGHiL/nfHlbGnSFZmfiqtI/wxq9uerwenyy7SsomcLwuZmIseIGG9Bx8gJyaupfaKjP9OAts/laxZtNjZxm4OSyYw0mwNaTJbHNO5c5p5vm4rIX+P8XYqVgULwyQszzWqule8Rn/ZESL2p1cjP9+pFaykbO8iXZzJrUXJgaujP2M6wsJ05/doWtq7C5eHJxnVmNbBOF99xAAfLgjdjiChM0cJgjMg7TgztMu0UL6RUETHtOYVKE8wFefGPjo0/nrkz063xQGpgg84qPRtZb6bsVkuW2Hog="/>
-</div>
-<div id="page">
-<!--for 烏日林新 ，包在iFrame下點選ImageButton無法切換頁籤問題  -->
-<input id="ctl00_hfServerTime" name="ctl00$hfServerTime" type="hidden" value="1671969165609.38"/>
-<div id="nav">
-<ul>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0001','')" id="ctl00_Menu1_lbtn0001" style="display:inline-block;width:332px;">網路掛號</a></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0002','')" id="ctl00_Menu1_lbtn0002" style="display:inline-block;width:333px;">查詢(取消)掛號</a></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0003','')" id="ctl00_Menu1_lbtn0003" style="display:inline-block;width:332px;">看診進度</a></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0004','')" id="ctl00_Menu1_lbtn0004" style="display:inline-block;width:167px;">門診時刻查詢</a></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-</ul>
-</div>
-<br/>
-<div id="content">
-<div id="contentGrayBG">
-<div align="center" id="UpdateProgress" style="position: relative; top: 50%; background-color: #FFE6CC;
-
-                left: 0px;">
-<div id="ctl00_ContentPlaceHolder1_UpdateProgress1" style="display:none;">
-<img alt="處理中 Loading" id="ctl00_ContentPlaceHolder1_Image1" src="http://www.lshosp.com.tw:8001/OINetReg/images/progress.gif" style="height:40px;width:40px;border-width:0px;"/>
-<span style="font-size: large; font-weight: bold; font-family: 'Arial Unicode MS';">
-
-                            處理中(Loading)...</span>
-</div>
-</div>
-<div id="divProgress" style="text-align: center; display: none; position: fixed;
-
-                top: 50%; left: 50%;">
-<img id="ctl00_ContentPlaceHolder1_imgLoading" src="http://www.lshosp.com.tw:8001/OINetReg/images/progress.gif" style="height:40px;width:40px;border-width:0px;"/>
-<span style="font-size: large; font-weight: bold; font-family: 'Arial Unicode MS';">
-
-                    處理中(Loading)...</span>
-</div>
-<div id="divMaskFrame" style="background-color: #F2F4F7; display: none; left: 0px;
-
-                position: absolute; top: 0px;">
-</div>
-<div id="titleImg">
-<div id="language">
-<a href="javascript:__doPostBack('ctl00$ContentPlaceHolder1$lbLanguage','')" id="ctl00_ContentPlaceHolder1_lbLanguage">English Version</a>
-</div>
-<img alt="確認/查詢/取消 掛號紀錄標示 Confirm/Recheck/Cancel Appointment Title" id="ctl00_ContentPlaceHolder1_ImgTitle" src="http://www.lshosp.com.tw:8001/OINetReg/images/option_cht/RegCancel.png" style="border-width:0px;"/>
-</div>
-<div id="content_main">
-<div id="ctl00_ContentPlaceHolder1_UpdatePanel1">
-<div id="reserveWay">
-<input alt="依基本資料確認/查詢 Confirm/Check by Personal Information" id="ctl00_ContentPlaceHolder1_ImgbtnPersonInf" name="ctl00$ContentPlaceHolder1$ImgbtnPersonInf" src="http://www.lshosp.com.tw:8001/OINetReg/images/btn_cht/BTN_AccordingData.jpg" style="border-width:0px;" type="image"/>
-<input alt="依病歷號碼確認/查詢 Confirm/Check by Mediacal Record Number" id="ctl00_ContentPlaceHolder1_ImgbtnPatNo" name="ctl00$ContentPlaceHolder1$ImgbtnPatNo" src="http://www.lshosp.com.tw:8001/OINetReg/images/btn_cht/BTN_AccordingNum_no.jpg" style="border-width:0px;" type="image"/>
-<table style="width: 100%;">
-<tr>
-<td>
-<img alt="驗證碼 Security Code" id="ctl00_ContentPlaceHolder1_imgVerificationCode" src="VerificationCode.aspx?t=YYYY52DD19126406" style="border-color:#99CCFF;border-width:1px;border-style:solid;visibility:hidden"/>
-<table id="reserveTAB02-1" style="width: 100%;">
-<tr>
-<th style="width: 2%">
-</th>
-<th style="width: 29%">
-</th>
-<th style="width: 69%">
-</th>
-</tr>
-<tr>
-<td>
-<span id="ctl00_ContentPlaceHolder1_lblForeignS" style="color:Red;font-weight:bold;">*</span>
-</td>
-<td>
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblForeign" style="font-size:14pt;">國別：</span>
-</td>
-<td>
-<select accesskey="F" class="elementBlack" id="ctl00_ContentPlaceHolder1_ddlForeign" name="ctl00$ContentPlaceHolder1$ddlForeign" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolder1$ddlForeign\',\'\')', 0)" style="font-size:14pt;">
-<option selected="selected" value="1">本國</option>
-<option value="2">外國</option>
-</select>
-</td>
-</tr>
-<tr>
-<th>
-<span id="ctl00_ContentPlaceHolder1_lblIDNOorPatientIDS" style="color:Red;font-weight:bold;">*</span>
-</th>
-<th>
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblIDNOorPatientID" style="font-size:14pt;">身分證號：</span>
-</th>
-<th>
-<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID" maxlength="10" name="ctl00$ContentPlaceHolder1$txtIDNOorPatientID" style="font-size:12pt;" type="text" value="T220062872"/>
-</th>
-</tr>
-<tr>
-<td>
-<span id="ctl00_ContentPlaceHolder1_lblBirthDayChS" style="color:Red;font-weight:bold;">*</span>
-</td>
-<td align="left">
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblBirthDayCh" style="font-size:14pt;">生日：</span>
-</td>
-<td>
-<div id="ctl00_ContentPlaceHolder1_BirthStyleA">
-<div id="ctl00_ContentPlaceHolder1_UpdatePanel2">
-<select class="elementBlack" id="ctl00_ContentPlaceHolder1_dd1BirthM" name="ctl00$ContentPlaceHolder1$dd1BirthM" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolder1$dd1BirthM\',\'\')', 0)" style="font-size:12pt;">
-<option value="0">請選擇</option>
-<option value="1">01</option>
-<option value="2">02</option>
-<option value="3">03</option>
-<option value="4">04</option>
-<option value="5">05</option>
-<option value="6">06</option>
-<option selected="selected" value="7">07</option>
-<option value="8">08</option>
-<option value="9">09</option>
-<option value="10">10</option>
-<option value="11">11</option>
-<option value="12">12</option>
-</select>
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblBirth2">/</span>
-<select class="elementBlack" id="ctl00_ContentPlaceHolder1_dd1BirthD" name="ctl00$ContentPlaceHolder1$dd1BirthD" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolder1$dd1BirthD\',\'\')', 0)" style="font-size:12pt;">
-<option value="">請選擇</option>
-<option value="1">01</option>
-<option value="2">02</option>
-<option value="3">03</option>
-<option value="4">04</option>
-<option selected="selected" value="5">05</option>
-<option value="6">06</option>
-<option value="7">07</option>
-<option value="8">08</option>
-<option value="9">09</option>
-<option value="10">10</option>
-<option value="11">11</option>
-<option value="12">12</option>
-<option value="13">13</option>
-<option value="14">14</option>
-<option value="15">15</option>
-<option value="16">16</option>
-<option value="17">17</option>
-<option value="18">18</option>
-<option value="19">19</option>
-<option value="20">20</option>
-<option value="21">21</option>
-<option value="22">22</option>
-<option value="23">23</option>
-<option value="24">24</option>
-<option value="25">25</option>
-<option value="26">26</option>
-<option value="27">27</option>
-<option value="28">28</option>
-<option value="29">29</option>
-<option value="30">30</option>
-<option value="31">31</option>
-</select>
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblDateFormat" style="font-size:12pt;">(月/日)</span>
-</div>
-</div>
-</td>
-</tr>
-</table>
-<table id="reserveTAB02-3" style="width: 100%;">
-<tr>
-<th colspan="5" style="height: 20px;">
-</th>
-</tr>
-<tr>
-<td style="width: 2%">
-<span id="ctl00_ContentPlaceHolder1_lblVerificationCodeS" style="color:Red;font-weight:bold;">*</span>
-</td>
-<td style="width: 29%">
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblVerificationCode" style="font-size:14pt;">驗證碼：</span>
-</td>
-<td style="width: 20%">
-<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtVerificationCode" name="ctl00$ContentPlaceHolder1$txtVerificationCode" style="font-size:12pt;" type="text" value="e5Uuxzc"/>
-</td>
-<td style="width: 15%">        
-
-													英文大小寫有區分<br/>
-<img alt="驗證碼 Security Code" src="ValidateNumber.ashx" style="border-color:#99CCFF;border-width:1px;border-style:solid;"/>
-</td>
-<td style="width: 34%">
-
-													重取驗證碼<br/>
-<input alt="重取驗證碼 Get Another Security Code" id="ctl00_ContentPlaceHolder1_imgbtGetNewCode" name="ctl00$ContentPlaceHolder1$imgbtGetNewCode" src="http://www.lshosp.com.tw:8001/OINetReg/images/retrun.png" style="height:40px;width:40px;border-width:0px;" type="image"/>
-</td>
-</tr>
-<tr>
-<th align="left" colspan="5">
-<span class="elementBlueNote" id="ctl00_ContentPlaceHolder1_Message" style="font-size:14pt;font-weight:bold;">查無資料！</span>
-<input id="ctl00_ContentPlaceHolder1_hidStatus" name="ctl00$ContentPlaceHolder1$hidStatus" type="hidden"/>
-</th>
-</tr>
-<tr>
-<th align="right" colspan="5">
-<input class="buttonGreen" id="ctl00_ContentPlaceHolder1_btnReg" name="ctl00$ContentPlaceHolder1$btnReg" onclick="if(this.value=='確認掛號'){gtag('event', 'submitBooking');} ShowLoading();" style="font-size:14pt;" subfun="btnReg" type="submit" value="查詢"/>
-<input id="ctl00_ContentPlaceHolder1_FstClick" name="ctl00$ContentPlaceHolder1$FstClick" type="hidden"/>
-<input id="ctl00_ContentPlaceHolder1_SecClick" name="ctl00$ContentPlaceHolder1$SecClick" type="hidden"/>
-</th>
-</tr>
-</table>
-</td>
-</tr>
-<tr>
-<td>
-<div>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
-<script type="text/javascript">
-
-	window.onload = function() {
-
-    $('#ctl00_ContentPlaceHolder1_btnReg').removeClass( "buttonGreen" );
-
-    $('#ctl00_ContentPlaceHolder1_btnReg').addClass( "buttonBlue" );
-
-};
-
-        //        function chkRpt() {
-
-
-
-
-
-        //            $('input[subfun="btnReg"]').each(function() {
-
-
-
-        //                var dt = new Date();
-
-        //                var $btnReg = $(this);
-
-        //                var Fst = $('#ctl00_ContentPlaceHolder1_FstClick').val();
-
-        //                var Sec = $('#ctl00_ContentPlaceHolder1_SecClick').val();
-
-        //                var T;
-
-        //                if (Fst == '')
-
-        //                    Fst = (dt.getMonth() + 1).toString() + dt.getDate().toString() + dt.getHours().toString() + dt.getMinutes().toString() + dt.getSeconds().toString();
-
-
-
-        //                $btnReg.click(function() {
-
-        //                    //                    if (Sec != '') {
-
-        //                    //                        T = Sec - Fst
-
-
-
-
-
-        //                    //                    }
-
-        //                    alert(Fst);
-
-        //                    //                Sec = Fst
-
-        //                    //                    location.reload();
-
-        //                    return false;
-
-        //                });
-
-
-
-
-
-
-
-        //            });
-
-        //        }
-
-        //        $(window).load(function(event) {
-
-        //            chkRpt();
-
-        //        });
-
-
-
-        //按下掛號按鈕顯示Loading遮罩防止連按
-
-        function ShowLoading() {
-
-            //            Sys.WebForms.PageRequestManager.getInstance().add_beginRequest(ShowProgressBar);
-
-            //            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(HideProgressBar);
-
-            ShowProgressBar();
-
-        }
-
-
-
-        //#Region ProgressBar
-
-        // 顯示讀取遮罩
-
-        function ShowProgressBar() {
-
-            displayProgress();
-
-            displayMaskFrame();
-
-
-
-            //鎖住Enter鍵
-
-            document.onkeydown = function() {
-
-                var keycode = event.which || event.keyCode;
-
-                if (keycode == 13) {
-
-                    return false;
-
-                }
-
-            }
-
-
-
-        }
-
-        // 隱藏讀取遮罩
-
-        function HideProgressBar() {
-
-            var progress = $('#divProgress');
-
-            var maskFrame = $("#divMaskFrame");
-
-            progress.hide();
-
-            maskFrame.hide();
-
-        }
-
-        // 顯示讀取畫面
-
-        function displayProgress() {
-
-            var w = $(document).width();
-
-            var h = $(window).height();
-
-            var progress = $('#divProgress');
-
-            progress.css({ "z-index": 999999, "top": (h / 2) - (progress.height() / 2), "left": (w / 2) - (progress.width() / 2) });
-
-            progress.show();
-
-        }
-
-        // 顯示遮罩畫面
-
-        function displayMaskFrame() {
-
-            var w = $(window).width();
-
-            var h = $(document).height();
-
-            var maskFrame = $("#divMaskFrame");
-
-            maskFrame.css({ "z-index": 999998, "opacity": 0.7, "width": w, "height": h });
-
-            maskFrame.show();
-
-        }
-
-        //#End Region 
-
-    </script>
-</div>
-<script type="text/javascript">
-
-//<![CDATA[
-
-Sys.Application.initialize();
-
-//]]>
-
-</script>
-</form>
-</body>
-</html>
->>>>>>> 8c20ba20e77e163d5e40c89499fdfafe6963e6d3
->>>>>>> 49a1cd7c963c1b8be4e659ace5e374b79387f5c2
