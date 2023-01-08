@@ -39,7 +39,7 @@ class PDFReader():
                     self.PersionalData['Address'] = table[1].replace('\n','').replace(' ','')
                 elif LineNum%3 == 2:
                     try:
-                        if (self.PersionalData['Name'] == '' or self.PersionalData['Born'] == '' or self.PersionalData['ID'] == ''):
+                        if (self.PersionalData['Name'] == '' or self.PersionalData['Born'] == '' or self.PersionalData['ID'] == '' or self._CheckID(self.PersionalData['ID'])):
                             non_data += 1
                             self.PersionalData.clear()
                             LineNum+=1
@@ -51,7 +51,6 @@ class PDFReader():
                         continue
                     self.Datas.append(self.PersionalData.copy())
                     self.PersionalData.clear()
-                    #LineNum = -1
                 LineNum += 1
             
             self.window.setStatusText(content="~本頁含有"+ str(non_data) +"筆資料不齊或內容異常，已跳過異常及不齊全資料~",x=0.1,y=0.8,size=12)
@@ -61,3 +60,28 @@ class PDFReader():
             self.window.setStatusText(content="~PDF解析異常，請檢查您的檔案，本系統將跳過此頁繼續執行~",x=0.1,y=0.8,size=12)
             time.sleep(5)
             return False,self.Datas,-1
+
+    # 檢查身分證字號
+    def _CheckID(self,ID):
+        if (len(ID) != 10):
+            return False
+        else:
+            num = ord(ID[0])
+            if num == 73 :
+                ID = ID.replace(ID[0],'34')
+            elif num == 79:
+                ID = ID.replace(ID[0],'35')
+            elif num <= 72:
+                ID = ID.replace(ID[0],str(num-55))
+            elif num >=74 and num <= 78 :
+                ID = ID.replace(ID[0],str(num-56))
+            elif num >= 80 :
+                ID = ID.replace(ID[0],str(num-57))
+            W = [1,9,8,7,6,5,4,3,2,1,1]
+            reslut = 0 
+            for i in range(len(ID)) :
+                reslut = reslut + int(ID[i]) * W[i]
+            if reslut % 10 == 0 :
+                return True
+            else:
+                return False
