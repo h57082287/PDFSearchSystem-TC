@@ -422,7 +422,7 @@ class MainWindows():
                 print(ProcessName)
                 ProcessNum += 1
         print(ProcessNum)
-        if ProcessNum > 2:
+        if ProcessNum > 1:
             return True
         return False
     # =================================================================
