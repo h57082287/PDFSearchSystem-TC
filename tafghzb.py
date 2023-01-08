@@ -31,14 +31,14 @@ class TAFGHZB():
         self.datalen = 0
         self.olddatalen = 0
         self.log = Log()
-        if self.window.checkVal_AUVPNM.get() :
-            self.VPN = VPN(self.window)
-            VPNWindow(self.VPN)
-            if not self.VPN.InstallationCkeck() :
-                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-                self.window.RunStatus = False
-                self.browser.quit()
-                os._exit(0)
+        # if self.window.checkVal_AUVPNM.get() :
+        #     self.VPN = VPN(self.window)
+        #     VPNWindow(self.VPN)
+        #     if not self.VPN.InstallationCkeck() :
+        #         messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+        #         self.window.RunStatus = False
+        #         self.browser.quit()
+        #         os._exit(0)
 
         # 建立header
         self.headers = {    
