@@ -111,11 +111,11 @@ class LSHOSP():
             print("a")
             VPNWindow(self.VPN)
             print("b")
-            if not self.VPN.InstallationCkeck() :
-                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-                self.window.RunStatus = False
-                self.browser.quit()
-                os._exit(0)
+            # if not self.VPN.InstallationCkeck() :
+            #     messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+            #     self.window.RunStatus = False
+            #     self.browser.quit()
+            #     os._exit(0)
             print("c")
         for self.page in range(self.currentPage-1,self.EndPage):
             if self._PDFData(self.page) and self.window.RunStatus:
@@ -165,6 +165,8 @@ class LSHOSP():
                     self.payloadM["ctl00$ContentPlaceHolder1$dd1BirthM"] = str(int(month))
                     self.respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.payloadM,headers=self.header)
                     soup = BeautifulSoup(self.respone.content,"html.parser")
+                    with open("test0109.html","wb") as f:
+                        f.write(self.respone.content)
                     
                     print("3")
                     # 發送日期請求
@@ -190,11 +192,12 @@ class LSHOSP():
                         self.OK_Payload["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
                         self.OK_Payload["ctl00$ContentPlaceHolder1$txtVerificationCode"] = self._ParseCaptcha()
                         self.respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.OK_Payload,headers=self.header)
-                        if (not self._CKCaptcha(self.respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！")) and (not self._CKCaptcha(self.respone.content,"title","Access Denied")) and (not self._CKCaptcha(self.respone.content,"span","您的查詢次數太過頻繁，請稍後再試")) :
+                        if (not self._CKCaptcha(self.respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！")) and (not self._CKCaptcha(self.respone.content,"title","Access Denied")) and (not self._CKCaptcha(self.respone.content,"span","您的查詢次數太過頻繁，請稍後再試")) and (not self._CKCaptcha(self.respone.content,"h2","Object moved to ")) :
                             with open("reslut.html","w",encoding="utf-8") as f :
                                 f.write(self._changeHTMLStyle(self.respone.content,"http://www.lshosp.com.tw:8001/OINetReg","http://www.lshosp.com.tw"))
                             break
                         else:
+                            print(self.errorNum)
                             if(self.errorNum > self.maxError):
                                 raise httpx.ConnectTimeout("錯誤次數過多，啟動VPN")
                             self.errorNum += 1
@@ -216,14 +219,41 @@ class LSHOSP():
                     self.window.Runstatus = False
                     break
             except AttributeError:
+                self.errorNum += 1
+                if(self.errorNum > self.maxError):
+                    self.errorNum = 0
+                    try:
+                        self.VPN.startVPN()
+                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                    except:
+                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                        self.window.Runstatus = False
+                        break
+                print("AttributeError")
                 time.sleep(5)
-                # print("發生找不到內容例外")
-                # try:
-                #     self.VPN.startVPN()
-                # except:
-                #     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                #     self.window.Runstatus = False
-                #     break
+            except httpx.ReadTimeout:
+                print("ReadTimeout")
+                self.errorNum = 0
+                try:
+                    self.VPN.startVPN()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
+            except httpx.ReadError:
+                print("ConnectTimeout")
+                self.errorNum = 0
+                try:
+                    self.VPN.startVPN()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
 
 
 

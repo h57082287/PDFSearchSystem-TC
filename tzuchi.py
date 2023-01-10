@@ -9,7 +9,6 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
-import requests
 
 # L122782985
 # 710208
@@ -146,7 +145,7 @@ class TZUCHI():
                                 f.write(self._changeHTMLStyle(respone.content,"https://app.tzuchi.com.tw/tchw/opdreg/",""))
                             break
                 break
-            except requests.exceptions.ConnectTimeout:
+            except httpx.ReadTimeout:
                 try:
                     self.VPN.startVPN()
                     content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"

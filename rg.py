@@ -9,7 +9,6 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
-import requests
 
 # 童綜合醫院
 class RG():
@@ -119,7 +118,7 @@ class RG():
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 童綜合醫院醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                     break
-            except requests.exceptions.ConnectTimeout :
+            except httpx.ReadTimeout :
                 try:
                     self.VPN.startVPN()
                     content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 童綜合醫院醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
