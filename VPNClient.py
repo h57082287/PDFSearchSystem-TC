@@ -31,14 +31,21 @@ class VPN():
             return False
 
     def startVPN(self):
+        print("VPN-1")
         if (self.index != len(self.fileList)) and self.window.checkVal_AUVPNM.get():
+            print("VPN-2")
             if self._CKVPNStatus():
+                print("VPN-3")
                 self.stopVPN()
             cmd = 'start openvpn --config "' + self.ovpnDir + '/' +self.fileList[self.index] + '" --auth-user-pass login.conf'
             os.system(cmd)
+            print("VPN-4")
             self.index += 1
+            print("VPN-5")
             self._CKIPChanged()
+            print("VPN-6")
         else:
+            print("無法替換ip")
             self.window.RunStatus = False
             messagebox.showerror(title="IP替換失敗",message="所有可用ip已用盡或您本次並未啟用VPN功能!!!")
             self.stopVPN()

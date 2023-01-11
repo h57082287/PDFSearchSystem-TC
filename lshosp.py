@@ -111,26 +111,28 @@ class LSHOSP():
             print("a")
             VPNWindow(self.VPN)
             print("b")
-            # if not self.VPN.InstallationCkeck() :
-            #     messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-            #     self.window.RunStatus = False
-            #     self.browser.quit()
-            #     os._exit(0)
+            if not self.VPN.InstallationCkeck() :
+                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                self.window.RunStatus = False
+                self.browser.quit()
+                os._exit(0)
             print("c")
         for self.page in range(self.currentPage-1,self.EndPage):
-            if self._PDFData(self.page) and self.window.RunStatus:
-                for self.idx in range(self.currentNum-1,self.datalen) :
-                    print(self.Data[self.idx])
-                    if ((self.page != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
-                        content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 林新醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                        self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                        self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
-                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"林新醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
-                        self.errorNum = 0
-                        time.sleep(2)
-                    else:
-                        break
+            if self.window.RunStatus:
+                if self._PDFData(self.page):
+                    for self.idx in range(self.currentNum-1,self.datalen) :
+                        print(self.Data[self.idx])
+                        if ((self.page != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
+                            content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 林新醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                            self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                            self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                            self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"林新醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                            self.errorNum = 0
+                            time.sleep(2)
+                        else:
+                            break
+                self.currentNum = 1
             else:
                 break
         try :
@@ -179,12 +181,15 @@ class LSHOSP():
                     self.payloadD["ctl00$ContentPlaceHolder1$dd1BirthD"] = str(int(day))
                     self.respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.payloadD,headers=self.header)
                     soup = BeautifulSoup(self.respone.content,"html.parser")
+                    print("4")
                     
                     while True :
+                        print("5")
                         # 請求驗證碼
                         self.respone = client.get("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/ValidateNumber.ashx")
                         with open("VaildCode.png","wb") as f :
                             f.write(self.respone.content)
+                        print("6")
                         # 發送正式請求
                         self.OK_Payload["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
                         self.OK_Payload["__VIEWSTATEGENERATOR"] = soup.find("input",{"id":"__VIEWSTATEGENERATOR"}).get("value")
@@ -192,13 +197,16 @@ class LSHOSP():
                         self.OK_Payload["ctl00$hfServerTime"] = soup.find("input",{"id":"ctl00_hfServerTime"}).get("value")
                         self.OK_Payload["ctl00$ContentPlaceHolder1$txtVerificationCode"] = self._ParseCaptcha()
                         self.respone = client.post("http://www.lshosp.com.tw:8001/OINetReg/OINetReg.Reg/Reg_RegConfirm1.aspx",data=self.OK_Payload,headers=self.header)
+                        print("7")
                         if (not self._CKCaptcha(self.respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！")) and (not self._CKCaptcha(self.respone.content,"title","Access Denied")) and (not self._CKCaptcha(self.respone.content,"span","您的查詢次數太過頻繁，請稍後再試")) and (not self._CKCaptcha(self.respone.content,"h2","Object moved to ")) :
+                            print("OK")
                             with open("reslut.html","w",encoding="utf-8") as f :
                                 f.write(self._changeHTMLStyle(self.respone.content,"http://www.lshosp.com.tw:8001/OINetReg","http://www.lshosp.com.tw"))
                             break
                         else:
-                            print(self.errorNum)
+                            print("發生重試("+str(self.errorNum)+")")
                             if(self.errorNum > self.maxError):
+                                print("錯誤次數過多，啟動VPN")
                                 raise httpx.ConnectTimeout("錯誤次數過多，啟動VPN")
                             self.errorNum += 1
                             self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
@@ -280,6 +288,7 @@ class LSHOSP():
         # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
         mPDFReader = PDFReader(self.window,self.filePath)
         status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
+        print(status)
         return status
     
     def _changeHTMLStyle(self,page_content,targer1:str,targer2:str):

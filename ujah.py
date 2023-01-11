@@ -81,33 +81,35 @@ class UJAH():
                 self.browser.quit()
                 os._exit(0)
         for self.page in range(self.currentPage-1,self.EndPage):
-            if self._PDFData(self.page) and self.window.RunStatus:
-                for self.idx in range(self.currentNum-1,self.datalen) :
-                    print(self.Data[self.idx])
-                    if ((self.page != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
-                        # 查詢狀態
-                        Q_Status = False
-                        # 初診查詢
-                        self.Val[2]['value'] = 'Y'
-                        content = "姓名 : " + self.Data[self.idx]['Name'] + "(初診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                        Q_Status = self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                        self._startBrowser(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'])
-                        self.log.write(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'],"台中仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
-                        time.sleep(2)
-                        # 複診查詢
-                        if not(Q_Status) and self.window.RunStatus:
-                            self.Val[2]['value'] = 'N'
-                            content = "姓名 : " + self.Data[self.idx]['Name'] + "(複診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+            if self.window.RunStatus:
+                if self._PDFData(self.page):
+                    for self.idx in range(self.currentNum-1,self.datalen) :
+                        print(self.Data[self.idx])
+                        if ((self.page != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
+                            # 查詢狀態
+                            Q_Status = False
+                            # 初診查詢
+                            self.Val[2]['value'] = 'Y'
+                            content = "姓名 : " + self.Data[self.idx]['Name'] + "(初診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                            Q_Status = self._getReslut(self.Data[self.idx]['Name']+"(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                            self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                            Q_Status = self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                            self._startBrowser(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'],"台中仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             time.sleep(2)
+                            # 複診查詢
+                            if not(Q_Status) and self.window.RunStatus:
+                                self.Val[2]['value'] = 'N'
+                                content = "姓名 : " + self.Data[self.idx]['Name'] + "(複診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                                Q_Status = self._getReslut(self.Data[self.idx]['Name']+"(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                                self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                                self.log.write(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'],"台中仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                                time.sleep(2)
+                            else:
+                                break
                         else:
                             break
-                    else:
-                        break
+                self.currentNum = 1
             else:
                 break
         try :
