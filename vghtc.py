@@ -41,20 +41,21 @@ class VGHTC():
         #         os._exit(0)
 
     def run(self):
-        for currentPage in range(self.currentPage-1,self.EndPage):
-            if self._PDFData(currentPage) and self.window.RunStatus:
-                for self.idx in range(self.currentNum-1,self.datalen) :
-                    print(self.Data[self.idx])
-                    print(self.window.RunStatus)
-                    if ((currentPage != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
-                        content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中榮總\n當前第" + str(currentPage+1) + "頁，第" + str(self.idx + 1) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                        self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                        self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
-                        self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"台中榮總",self.Data[self.idx]['Born'],str(currentPage + 1),str(self.idx + 1))
-                        time.sleep(2)
-                    else:
-                        break
+        for self.page in range(self.currentPage-1,self.EndPage):
+            if self.window.RunStatus:
+                if self._PDFData(self.page):
+                    for self.idx in range(self.currentNum-1,self.datalen) :
+                        print(self.Data[self.idx])
+                        if ((self.page != self.EndPage) and (self.idx != self.EndNum)) and self.window.RunStatus:
+                            content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 台中榮總\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                            self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                            # self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                            self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"台中榮總",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                            time.sleep(2)
+                        else:
+                            break
+                self.currentNum = 1 
             else:
                 break
         try :
@@ -85,16 +86,18 @@ class VGHTC():
             time.sleep(5)
             break
         self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[3]').click()
-        time.sleep(5)
-        with open('reslut.html','w', encoding='utf-8') as f :
-            f.write(self.browser.page_source)
+        time.sleep(3)
 
-    def _startBrowser(self,name,ID):
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
         if self._Screenshot("預約掛號查詢結果",(name + '_' + ID + '_台中榮總.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+
+        # with open('reslut.html','w', encoding='utf-8') as f :
+        #     f.write(self.browser.page_source)
+
+    def _startBrowser(self,name,ID):
+        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
 
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False

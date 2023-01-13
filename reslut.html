@@ -1,372 +1,64 @@
+<html lang="zh-tw"><head>
+<meta http-equiv="Content-Style-Type" content="text/css">
+<meta http-equiv="Content-Language" content="zh-tw">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="style/blueonblue.css">
+<title>臺中榮民總醫院門診預約掛號系統</title>
+<script language="JavaScript">
+function check(id) {
+	if (confirm("是否確定取消預約?")) {
+		document.forms["T" + id].submit();
+	}
+}
+function popPatDescribe(id){	
+	var objForm = document.forms["T" + id];
+	objForm.action = "patDescribePrompt.jsp";
+	objForm.target = "patDescribePrompt";
+	var popupWin = window.open("","patDescribePrompt","height=520,width=680,top=250,left=400,location=no,scrollbars=yes");
+	objForm.submit();
+}
 
-<!DOCTYPE html>
-
-<!--(HTML 5 新式宣告)-->
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head id="ctl00_Head1">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-115872560-2"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'UA-115872560-2');
 </script>
-<!--直接指定瀏覽器版本，避開IE相容性問題-->
-<meta content="IE=EmulateIE7" http-equiv="X-UA-Compatible"/><meta content="noindex, nofollow" name="robots"/><meta content="noindex" name="googlebot"/><title>
-	網路掛號
-</title><link href="http://www.lshosp.com.tw:8001/OINetReg/css/StyleSheet.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/ZSY.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/controls.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/elements.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/option.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/reset.css" media="screen" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/mold.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/font.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/m02.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/m02a.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/m04.css" rel="stylesheet" type="text/css"/><link id="ctl00_RefStyleSheet" rel="stylesheet" type="text/css"/>
-<script src="../lib/jquery.min.js" type="text/javascript"></script> <!--引用jQuery-->
-<link href="http://www.lshosp.com.tw:8001/OINetReg/css/wlsStyle.css?112" rel="stylesheet" type="text/css"/>
-<script src="../lib/wlsHospital.js?v=4?1" type="text/javascript"></script>
-<!--[if lt IE 9]>    
-
-      <link rel="stylesheet" type="text/css" href="../css/wlsStyle-ie8.css?110" />    
-          
-    <![endif]-->
-<script type="text/javascript">
-
-        $(document).ready(showMobileView());
-
-    </script>
+<style>
+A:hover {
+	color: #0000FF; font-weight: bolder
+}
+.emphasizeText{
+	text-decoration:underline;
+	font-weight:bold;
+}
+</style>
+
 </head>
-<body>
-<form action="Reg_RegConfirm1.aspx" id="aspnetForm" method="post" name="aspnetForm">
-<div>
-<input id="__EVENTTARGET" name="__EVENTTARGET" type="hidden" value=""/>
-<input id="__EVENTARGUMENT" name="__EVENTARGUMENT" type="hidden" value=""/>
-<input id="__LASTFOCUS" name="__LASTFOCUS" type="hidden" value=""/>
-<input id="__VIEWSTATE" name="__VIEWSTATE" type="hidden" value="WLs8d/8k6xj/be8xrLKkXmHb0fu4PpkPhXOfHZ/AVIv5DyBujPgWxgjhE6JHi2/WvEU2mQS3MVR7rkWESVSOh8Inf0cVaB1Qm4wxPxbbJaNUyimGIwZHDfdgxg95SxT095y2zOwY/6yxyacbVpyGqIJiAdLjVmEfug5z23w4qptrTaOkN2n3WeA4VEUMcHFxLdwwmWdjx6tQVbyoA12rV7ZP2uyYUOm2AP5CWbVpvKlBcpDVnW2N3Sz7MIq3A1tqLCljVi70PcSqwKl5cimxTjtrQFkV1KbxzA0s9/tF4optqtw9/PX4PTMOeQ3a/T7Y4UPEOTtEPa4BK/8gpIyaWOC53HGvXOzYSxndhA1/HV91bIkbwqV4x+Zdtcnmw+L87mpzFNyZcndL7lPiBbTsq4gf3KAUnOUc1VlSfPf9SKHoc9D6wRqD9ONNIzdG5GfbaypctJ+ycG3jF4hjA4DJptTNpuFb4BF1NFReMo+vSU3L3GkpdWbg9SRQmQLTXJRbQMosUdft8rPnjKuSvL6iZQM8em5Jwg2gyPXRI4vGCmYzdogWGcqvxBeAF6Qgj8T2ApbYQGe1AgV9kctHgIvGJaFU2wYBmOIkON7Um5A9PswD3rATzotLsTS/44SxSxe0vm8wVvcK+GEpXB8UWqpRiRMf99wEPB2uWLILpYGTjqZQ5MNeeLBjt7+3zVGCWc1bfAArJwVcmtdaXw17LmNy8JXVvQhCXLl2l3rhhA9E5uqLql6XEkUCpcYMFuj0AAq8KFoTK5Y0sFVlAFBSx1GHYMPfz1cCB0m8XIobAv4qo+bGZAeBlfrqQLfyazh/XNbZ5qGlqnjs65MFkJC+hNOUHr5pvh6Yqh5221sk/cdi8kV+rfuPEmAJlmvJKA/PhFviTEfad8nCaS+UdTd1yYo1cQM2Jfx4DpCf2DvJCuz/UaEmzIRAN9mptLkQYibVc2kbLpQL811PIKtnHqBpHY29TLaxOoFdVLXegf4GHrDio4s9PnV+NYUdKj+jpqPFmGV1+HLuy4YX5TNLmf3FnDFTgCpLfCG/UPgwU4ZKfbLocNEVFEfoAZDS9Gx0iOchiqpjZGLoSLsr8y5aiZaI5Zyrpj/kukCLmUsHclSqTQlkhVd362JZE8wAdzAtW3hqkyG/Q6kTCN/kc4NZDP5mFbORVXd9WI/pwyhSa7byWocH9nJOzEjJeAiKhDG7bVz5trPK3dwpxip5WoSGm/m+d7P0x2JABYlsiStwYUhtv0RobaqUCzG3Y5FjVqAiDJlxwuUl8VpX7pqakh0KmUSZdWxOAlVGDVMGgP8ICkadPXAmxCDa3F3TczIdRcTiv+7SxYjeA1iH54KPc2K/6PmVLtKjFnpk9FQAYL3Xvl3O0qhkkd3Kf+v3LP474I7xyY/vbD3RWPoy091vBq+UmwJ3HzUJ0ilXHDAGyK486kQKf7BaS0ZW069PtbrNsWcd0R1IBd3tx5jp4qyQY6HtFhyypVZOMcZDSjkJexOazHUwVHeudUF8MBnuqb6vTWiAb6qgoBPKQOOGlmLgQh1PaKPlEhDpec4bdxIK/XWZ4k+7GnnVsIvoR4t02M+b492R1KpVejdPn9fpSflQhMoB8147Cnj3nlbsRFx0k5rrDw5MKp/NDrArP9N/zKzKUvZPNghKK/H3sZKBXdHL7Zx4zQVt49jPhiZ0d74ShSRzh9PK9rvJCqObQcNUZLawNtWMueulIBVFpu//+0R6UOZ+BsuxA+OsmR5D6lw0a6FcMucRiHu/x5PtUZxca9TcJNWluv5VpisnPGLcPYagH8d8weOBsL1/gG+Gw0ZcdGuHItp8M291MK5L24yhKr4iOzdEHByqGeeKMo3X7/XVjvxIGQOLR1fABX5LM5ZB5KpCcEgJvdFBdetZ4j1SPN3t8Ml47MnHBWIHNiZX/ZABINJYHapOMw9nKrmuWGQWX3zxkMs0cWm4xkNNNLG3lKgpIypYUcXEEqr1mo5CEojDoLHasT0HPhD6oiQnYyVc8TQtoJEpdbl1rOfUo6P/b1UTFKUJJMiJIc0FkSrTyGu6QFJmM8XERld2/PClTd+2RsZUhTlTNsktHEBuLPl3um7BXZzTogF3Jx58800B1NrzgMW/7xiLezo8tWv0Zf9H35iDUOiqRK92YJeNdZXjuxi2NoDwb3VYMQ8ysPpTPXCtmqdHGiC4YywiQkEZSNXYcuSaGCQU/lmc4xDj6xd7c5yGqeamLcA7kV+yHaolZvjtiL4GJRvMpTRrgkN7dkpeHSepuQnAtCinxOwxaIPn3yDcTAMJwc91TQ9BeUZkxX+Xzu1tdstGNwYhVxagubDVCdZoDKx5bAt7pK45yaKxIehmlQQDyMno67AhbMuCnyChftAXMItBCg/1WL9QPjeXxiibqRPblke4oW0AJ1orxPbVmL+TipB8Usx6D1ceGV4YjTgcsJ/5Qksgt+3Q2JzwkhiNJKSQ/mNYO558G/hkSPvYYknkzdMgaGhL8wRCWBQxH9/VYQdSkt/sgT1xFYwN7iGDYGZTgy+cz5oFLwQEXw4yXmTc/l02cbD2ch3k3rhr0Dr2q6Mu8LFkUCRp/OExyDE3F6M+vCRYMp5cZHaByE5MltjGfK6PgMAUOry4EMoI1wnbkWSNhovYALTZdkhVJv+E4HD8QU7Btc1xzHHi7DIj+ac3SQk3bc6gU6hz2lbd25Dx6YvQk5jyuGTRH5KRC4QYo53pf8762bKF3NOd01YqfRcOPcz8+cNpbecAqkzcRgeEKUxRqeUbW0iNAwpz9p//ovLQSk/occvyrAhFLXT5tX1OUjSd8As79PSCTnlaJgTgQNVJ9lzzMdzLBAm8zEq7ssluMEwj9YofryjEEWUPXZwDIshywbZNPEAjNnfRe9VontdFbxc5BU0squSnUAsviOtNIOnH5z70k3mBqaceGyiqiUDikOsg606hpSJ0EbLXpGzuF1rfJ1h2vIBP3v5Fa1o6qACs1jQP4fkcIfknGEtiwp2zAKXERzjfX+BKpgi61k9ATqg3/9M2tjoPM3gFDC5JPZyLQRnbc21LK8Dcsjmzk9U7L49jaftKvLXNGFewEyZJ0qKqj65dn8DIADGrw2SGefUOvrhfVkIoLI9e3GjLzXOCq8g5vhO66NIBqRSVaeUSJiSF5JrgO1AOry5ofK40JRilQH8IGyjjWrifyRqo1QWqnbVcTkZXmCabU8r5G98I7vqReWGy22KGrQdXAAqwggqfrN6to9GmqoncchXbkivY3igURyUe2Shc6/Zz49zE5U4mv6rMk1MZhi/C4Snw5Gf3uJY683bT59O8DXDNA7p0DPLtwIS6lq16xU+J9lV1WqWl2JFEpRf2Ph7U+aGBBBlVhyRXVhzwx7h52hd1w/EZDrbgXenLvDDfsyVyxI+QPCZPthF7agugJlCl2pBJ2uElh2dCJY66qRsoLX6wy+DzpH7LBc1HmHCkSpDKkmKuS3F5vFKoL70Qjg7Z1OoxQof6n+yBbewPaYGE8u/2a0QVeLENB2eOEe1k8GZNIJac5Ltu2avBWVYSIeTM3FNQqB3XpHD37w8xLjhoQSOG8s5PzCYo7jbpl5Ao8Daa7CLYLy6A+WOeIh3Y1AUXGepb8Lx33fL1zVi+TXwRe59CNP/MVvEy/fcyv+Y7jxERhBJEeYnt+5Bi/v1n9Bi+oewrwCVCRijTd551JDLACccj5A/tozN04daO42gXkxbZdvJVMws1iJkypj528pdIEWs03+N6gxG437VDBKUFxRBUupA7gduGxdOtVIHLezluDIEeoOps8eX/ogQsO5KoTdL00q4ifKjED6OPvyxPsnDXkOg/uz2DHuGg3c9g5c7g6MxsZYd/kS/SxKocxGcEHRvZYrGTVj6CdUUuM4noKmiDhsov4kUFnytIcTvWVQxD9g+mUVPVTgeBTh9HIGkBaSCl9nfaVjVFLUeh60zbguZHeJqm4218QGOhC3NCZmsaWnIoRmfX2U1iZCHw6wGxpHYaC4vkt7EvECT8fq7STHUTPmIlqyCHJrLQAuiYpCHtcABlI/VVl85iAfzxg/fFoOO+RySrnoZCnA5jYkA3NtBw9OVX01Mq92Io49bBHhXBEusLkx7eHqbBNM2aKfkmOVe1pI+8QtNesZ7w5CpqEYGM0WPGRqpRmh7EfjDWhSndmj1/hHxtQOab9tEpop6KqPUrNZoowaXHP/FakDOFK8p5eqKbE2xbZGaj7as2kQwY2DJHapV+5fmnUoL8VGGajWUBSz2ez2RIVMb0i8LTRoilbuG06Vp2hANjC1a5dlTOA4XLCdTIli1uDlX+yd+eUDNeD5kXD/8M4ZToNzffRxEkTLK3gKU7JeD8F09RX7hBWvapoWgyOV3PBlUv7ba7inAv0kEwA/WhiakFIdRVOKJSeC3mKBn6G462JuaBSb+Xo2A7McgbQfo9Lh9oVROajNhtuyuJuvtFmvzIYML5BlQAQOHJrd45FbQNxY1fS6cquGjxUzGgiXYnOJPTS7HchktzfOMnD39qoja5ZhtnZBXncBte/mHDsCS4Awd2OmXH888cyUN27XtmakJNPiBn9OV7N7PVh6lZ2OIEM7RizTyzO6qGAgYqFI8pjGbgpUTt54ln/CAFh6uirE+GmKYqfU+8lM5s+6uISY1fq00f0tcMyj9SIqhyY/XM6JkT/IX/dijMLaihxsSUgHmMwW944+fROpbnXaRDiuqq5JTEUYfKUqROVPYgKcv/28TGT+ewtPjqW4ecuQ8hBHHwHSvz/KiBB9Jp3CjK5cpsv5yT9ZAvMoEiQzMYdcEjduUf5HBV9SoLN79LdaSMGS92Q10Skfchhf2OPcjEoOR3qJySAimGA4TyN/whjO9DcmnV4SSQ0v1UhRU3VXKXrm/eLh8EQUCOR6u5CeYCr7HdII2Hu8DIc2KKDPLOOPRy5hnUs2PyLBX0ruW7P4qvaShXMYGRAVmi/cSdq4WW4RKFQcYP4xLBumsryTLegg894JmkbI8eYNoDKEMysI8AeojaS0p9e9/Bh9Y5qg+U+V0k"/>
-</div>
-<script type="text/javascript">
-//<![CDATA[
-var theForm = document.forms['aspnetForm'];
-if (!theForm) {
-    theForm = document.aspnetForm;
-}
-function __doPostBack(eventTarget, eventArgument) {
-    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
-        theForm.__EVENTTARGET.value = eventTarget;
-        theForm.__EVENTARGUMENT.value = eventArgument;
-        theForm.submit();
-    }
-}
-//]]>
+<body onload="doTriStateRainbowLink()">
+
+		<p>&nbsp;</p><p class="bfont5">您的掛號查詢結果如下：</p><!-- 您的掛號(取消之)查詢結果如下: -->
+		<p id="showhint" class="bfont4" style="color: rgb(255, 204, 0);">本院尚無您的預約記錄!!</p>
+
+<script language="JavaScript">
+var rate = 500;
+var Color1 = "#FF0000";
+var Color2 = "#00FF00";
+var Color3 = "#FF00FF";
+var Color4 = "#FFCC00";
+var Color5 = "#00FFCC";
+var Color6 = "#FF00CC";
+var C = "";
+var iteration=0;
+//提示link變色
+function doTriStateRainbowLink()
+{
+	iteration++;
+	if (iteration==1) C = Color1;
+	if (iteration==2) C = Color2;
+	if (iteration==3) C = Color3;
+	if (iteration==4) C = Color4;
+	if (iteration==5) C = Color5;
+	if (iteration==6) C = Color6;
+	//document.all("showhint").style.color=C;
+	document.getElementById("showhint").style.color=C;
+	if (iteration > 5) iteration = 0;
+	setTimeout('doTriStateRainbowLink()', rate);
+}
 </script>
-<script type="text/javascript">
-//<![CDATA[
-var __cultureInfo = '{"name":"zh-TW","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":".","IsReadOnly":true,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":",","CurrencySymbol":"NT$","NaNSymbol":"不是一個數字","CurrencyNegativePattern":1,"NumberNegativePattern":1,"PercentPositivePattern":1,"PercentNegativePattern":1,"NegativeInfinitySymbol":"負無窮大","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":".","NumberGroupSeparator":",","CurrencyPositivePattern":0,"PositiveInfinitySymbol":"正無窮大","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":".","PercentGroupSeparator":",","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"上午","Calendar":{"MinSupportedDateTime":"\/Date(-62135596800000)\/","MaxSupportedDateTime":"\/Date(253402271999999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":true},"DateSeparator":"/","FirstDayOfWeek":0,"CalendarWeekRule":0,"FullDateTimePattern":"yyyy\u0027年\u0027M\u0027月\u0027d\u0027日\u0027 tt hh:mm:ss","LongDatePattern":"yyyy\u0027年\u0027M\u0027月\u0027d\u0027日\u0027","LongTimePattern":"tt hh:mm:ss","MonthDayPattern":"M\u0027月\u0027d\u0027日\u0027","PMDesignator":"下午","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"yyyy/M/d","ShortTimePattern":"tt hh:mm","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"yyyy\u0027年\u0027M\u0027月\u0027","AbbreviatedDayNames":["星期日","星期一","星期二","星期三","星期四","星期五","星期六"],"ShortestDayNames":["日","一","二","三","四","五","六"],"DayNames":["星期日","星期一","星期二","星期三","星期四","星期五","星期六"],"AbbreviatedMonthNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""],"MonthNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""],"IsReadOnly":true,"NativeCalendarName":"西曆 (中文)","AbbreviatedMonthGenitiveNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""],"MonthGenitiveNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""]}}';//]]>
-</script>
-<script src="/OINetReg/ScriptResource.axd?d=G1TLuj3WLn6dARjclKmE9xBPG9f7tSTjBdhD6dqxxKmSPw_UChC4c3OdU2SKNQQzK9YIW8iV9CTp6H_BhcGB4cnxUhDlSZNeq4KxGRWPnuONTZYqhOUSodM2V9Cn0v94A9f426eL6zm4fq7x2rJp-Qg8Hkm7A4PTG1nxtFX7oxg-nW8j0&amp;t=2e2045e2" type="text/javascript"></script>
-<script type="text/javascript">
-//<![CDATA[
-if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構無法載入。');
-//]]>
-</script>
-<div>
-<input id="__VIEWSTATEGENERATOR" name="__VIEWSTATEGENERATOR" type="hidden" value="A576A846"/>
-<input id="__VIEWSTATEENCRYPTED" name="__VIEWSTATEENCRYPTED" type="hidden" value=""/>
-<input id="__EVENTVALIDATION" name="__EVENTVALIDATION" type="hidden" value="dJ+S6GNGmCdcGNGm9zMrhSUTJH8X9HxseYTxphpuvsAXtLPSFKsIgkf9HH6ILNKfl3/hmDOKb0uJt7XPvIl3TMdSJ+UwY7tpTiPgFkqz4K8VREuagGEcismpDLc9pQdRWBUx1oJT/XyX8p1BzTTnss5znVDuz39Cbo12V1fuBa8VAXQ9TIYxRJkf2TfCedG0v6xfxNMupSYexlFr3xG3cxbG0/iIswD1ABjKEh1XiWRg4esx+oyzfIEwq06XuTGTp4vayYTjsAgbB+fSseOsfCIMQmKU7MnYq/D0X9LN3jYmtXnUlUgAGa3v74Vd+fMONcd+0puS6xsplXHnPfBBS0KsyaEjyWqvLqKj7gm/1+8CaItZ6vnRDVfoafuguWfp0k8zBkX1vMnkcsnq9GBGa4wNgHLB2laLb9UglzCEWP3HCNt4GIC7jdmiv330sXwYbUzc96fsyNwEEo/HGCmePPuPdKxHpx61oD01aOn5iGcxx6ck1rgmDhuRN0EJ1Cq5XKqlrjIowQPzP/PZlst6d1RgG1fcnhLGVfc+9U5bv2UqgI+1SmkwdkR6njZez+pGRP2ttwFguINjDpaz2dwZnQOs7Xo="/>
-</div>
-<div id="page">
-<!--for 烏日林新 ，包在iFrame下點選ImageButton無法切換頁籤問題  -->
-<input id="ctl00_hfServerTime" name="ctl00$hfServerTime" type="hidden" value="1673447691843.75"/>
-<div id="nav">
-<ul>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0001','')" id="ctl00_Menu1_lbtn0001" style="display:inline-block;width:332px;">網路掛號</a></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0002','')" id="ctl00_Menu1_lbtn0002" style="display:inline-block;width:333px;">查詢(取消)掛號</a></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0003','')" id="ctl00_Menu1_lbtn0003" style="display:inline-block;width:332px;">看診進度</a></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0004','')" id="ctl00_Menu1_lbtn0004" style="display:inline-block;width:167px;">門診時刻查詢</a></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-<li class="navA"></li>
-<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
-</ul>
-</div>
-<br/>
-<div id="content">
-<div id="contentGrayBG">
-<div align="center" id="UpdateProgress" style="position: relative; top: 50%; background-color: #FFE6CC;
-                left: 0px;">
-<div id="ctl00_ContentPlaceHolder1_UpdateProgress1" style="display:none;">
-<img alt="處理中 Loading" id="ctl00_ContentPlaceHolder1_Image1" src="http://www.lshosp.com.tw:8001/OINetReg/images/progress.gif" style="height:40px;width:40px;border-width:0px;"/>
-<span style="font-size: large; font-weight: bold; font-family: 'Arial Unicode MS';">
-                            處理中(Loading)...</span>
-</div>
-</div>
-<div id="divProgress" style="text-align: center; display: none; position: fixed;
-                top: 50%; left: 50%;">
-<img id="ctl00_ContentPlaceHolder1_imgLoading" src="http://www.lshosp.com.tw:8001/OINetReg/images/progress.gif" style="height:40px;width:40px;border-width:0px;"/>
-<span style="font-size: large; font-weight: bold; font-family: 'Arial Unicode MS';">
-                    處理中(Loading)...</span>
-</div>
-<div id="divMaskFrame" style="background-color: #F2F4F7; display: none; left: 0px;
-                position: absolute; top: 0px;">
-</div>
-<div id="titleImg">
-<div id="language">
-<a href="javascript:__doPostBack('ctl00$ContentPlaceHolder1$lbLanguage','')" id="ctl00_ContentPlaceHolder1_lbLanguage">English Version</a>
-</div>
-<img alt="確認/查詢/取消 掛號紀錄標示 Confirm/Recheck/Cancel Appointment Title" id="ctl00_ContentPlaceHolder1_ImgTitle" src="http://www.lshosp.com.tw:8001/OINetReg/images/option_cht/RegCancel.png" style="border-width:0px;"/>
-</div>
-<div id="content_main">
-<div id="ctl00_ContentPlaceHolder1_UpdatePanel1">
-<div id="reserveWay">
-<input alt="依基本資料確認/查詢 Confirm/Check by Personal Information" id="ctl00_ContentPlaceHolder1_ImgbtnPersonInf" name="ctl00$ContentPlaceHolder1$ImgbtnPersonInf" src="http://www.lshosp.com.tw:8001/OINetReg/images/btn_cht/BTN_AccordingData.jpg" style="border-width:0px;" type="image"/>
-<input alt="依病歷號碼確認/查詢 Confirm/Check by Mediacal Record Number" id="ctl00_ContentPlaceHolder1_ImgbtnPatNo" name="ctl00$ContentPlaceHolder1$ImgbtnPatNo" src="http://www.lshosp.com.tw:8001/OINetReg/images/btn_cht/BTN_AccordingNum_no.jpg" style="border-width:0px;" type="image"/>
-<table style="width: 100%;">
-<tr>
-<td>
-<img alt="驗證碼 Security Code" id="ctl00_ContentPlaceHolder1_imgVerificationCode" src="VerificationCode.aspx?t=YYYY34DD22018906" style="border-color:#99CCFF;border-width:1px;border-style:solid;visibility:hidden"/>
-<table id="reserveTAB02-1" style="width: 100%;">
-<tr>
-<th style="width: 2%">
-</th>
-<th style="width: 29%">
-</th>
-<th style="width: 69%">
-</th>
-</tr>
-<tr>
-<td>
-<span id="ctl00_ContentPlaceHolder1_lblForeignS" style="color:Red;font-weight:bold;">*</span>
-</td>
-<td>
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblForeign" style="font-size:14pt;">國別：</span>
-</td>
-<td>
-<select accesskey="F" class="elementBlack" id="ctl00_ContentPlaceHolder1_ddlForeign" name="ctl00$ContentPlaceHolder1$ddlForeign" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolder1$ddlForeign\',\'\')', 0)" style="font-size:14pt;">
-<option selected="selected" value="1">本國</option>
-<option value="2">外國</option>
-</select>
-</td>
-</tr>
-<tr>
-<th>
-<span id="ctl00_ContentPlaceHolder1_lblIDNOorPatientIDS" style="color:Red;font-weight:bold;">*</span>
-</th>
-<th>
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblIDNOorPatientID" style="font-size:14pt;">身分證號：</span>
-</th>
-<th>
-<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID" maxlength="10" name="ctl00$ContentPlaceHolder1$txtIDNOorPatientID" style="font-size:12pt;" type="text" value="Q120228991"/>
-</th>
-</tr>
-<tr>
-<td>
-<span id="ctl00_ContentPlaceHolder1_lblBirthDayChS" style="color:Red;font-weight:bold;">*</span>
-</td>
-<td align="left">
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblBirthDayCh" style="font-size:14pt;">生日：</span>
-</td>
-<td>
-<div id="ctl00_ContentPlaceHolder1_BirthStyleA">
-<div id="ctl00_ContentPlaceHolder1_UpdatePanel2">
-<select class="elementBlack" id="ctl00_ContentPlaceHolder1_dd1BirthM" name="ctl00$ContentPlaceHolder1$dd1BirthM" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolder1$dd1BirthM\',\'\')', 0)" style="font-size:12pt;">
-<option value="0">請選擇</option>
-<option value="1">01</option>
-<option value="2">02</option>
-<option value="3">03</option>
-<option value="4">04</option>
-<option value="5">05</option>
-<option value="6">06</option>
-<option selected="selected" value="7">07</option>
-<option value="8">08</option>
-<option value="9">09</option>
-<option value="10">10</option>
-<option value="11">11</option>
-<option value="12">12</option>
-</select>
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblBirth2">/</span>
-<select class="elementBlack" id="ctl00_ContentPlaceHolder1_dd1BirthD" name="ctl00$ContentPlaceHolder1$dd1BirthD" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolder1$dd1BirthD\',\'\')', 0)" style="font-size:12pt;">
-<option value="">請選擇</option>
-<option value="1">01</option>
-<option value="2">02</option>
-<option value="3">03</option>
-<option value="4">04</option>
-<option value="5">05</option>
-<option value="6">06</option>
-<option value="7">07</option>
-<option value="8">08</option>
-<option value="9">09</option>
-<option value="10">10</option>
-<option value="11">11</option>
-<option value="12">12</option>
-<option value="13">13</option>
-<option value="14">14</option>
-<option value="15">15</option>
-<option value="16">16</option>
-<option value="17">17</option>
-<option value="18">18</option>
-<option value="19">19</option>
-<option value="20">20</option>
-<option value="21">21</option>
-<option value="22">22</option>
-<option value="23">23</option>
-<option value="24">24</option>
-<option value="25">25</option>
-<option value="26">26</option>
-<option value="27">27</option>
-<option value="28">28</option>
-<option selected="selected" value="29">29</option>
-<option value="30">30</option>
-<option value="31">31</option>
-</select>
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblDateFormat" style="font-size:12pt;">(月/日)</span>
-</div>
-</div>
-</td>
-</tr>
-</table>
-<table id="reserveTAB02-3" style="width: 100%;">
-<tr>
-<th colspan="5" style="height: 20px;">
-</th>
-</tr>
-<tr>
-<td style="width: 2%">
-<span id="ctl00_ContentPlaceHolder1_lblVerificationCodeS" style="color:Red;font-weight:bold;">*</span>
-</td>
-<td style="width: 29%">
-<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblVerificationCode" style="font-size:14pt;">驗證碼：</span>
-</td>
-<td style="width: 20%">
-<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtVerificationCode" name="ctl00$ContentPlaceHolder1$txtVerificationCode" style="font-size:12pt;" type="text" value="5B6wr"/>
-</td>
-<td style="width: 15%">        
-													英文大小寫有區分<br/>
-<img alt="驗證碼 Security Code" src="ValidateNumber.ashx" style="border-color:#99CCFF;border-width:1px;border-style:solid;"/>
-</td>
-<td style="width: 34%">
-													重取驗證碼<br/>
-<input alt="重取驗證碼 Get Another Security Code" id="ctl00_ContentPlaceHolder1_imgbtGetNewCode" name="ctl00$ContentPlaceHolder1$imgbtGetNewCode" src="http://www.lshosp.com.tw:8001/OINetReg/images/retrun.png" style="height:40px;width:40px;border-width:0px;" type="image"/>
-</td>
-</tr>
-<tr>
-<th align="left" colspan="5">
-<span class="elementBlueNote" id="ctl00_ContentPlaceHolder1_Message" style="font-size:14pt;font-weight:bold;">查無資料！</span>
-<input id="ctl00_ContentPlaceHolder1_hidStatus" name="ctl00$ContentPlaceHolder1$hidStatus" type="hidden"/>
-</th>
-</tr>
-<tr>
-<th align="right" colspan="5">
-<input class="buttonGreen" id="ctl00_ContentPlaceHolder1_btnReg" name="ctl00$ContentPlaceHolder1$btnReg" onclick="if(this.value=='確認掛號'){gtag('event', 'submitBooking');} ShowLoading();" style="font-size:14pt;" subfun="btnReg" type="submit" value="查詢"/>
-<input id="ctl00_ContentPlaceHolder1_FstClick" name="ctl00$ContentPlaceHolder1$FstClick" type="hidden"/>
-<input id="ctl00_ContentPlaceHolder1_SecClick" name="ctl00$ContentPlaceHolder1$SecClick" type="hidden"/>
-</th>
-</tr>
-</table>
-</td>
-</tr>
-<tr>
-<td>
-<div>
-</div>
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
-</div>
-</div>
-<script type="text/javascript">
-	window.onload = function() {
-    $('#ctl00_ContentPlaceHolder1_btnReg').removeClass( "buttonGreen" );
-    $('#ctl00_ContentPlaceHolder1_btnReg').addClass( "buttonBlue" );
-};
-        //        function chkRpt() {
-
-
-        //            $('input[subfun="btnReg"]').each(function() {
-
-        //                var dt = new Date();
-        //                var $btnReg = $(this);
-        //                var Fst = $('#ctl00_ContentPlaceHolder1_FstClick').val();
-        //                var Sec = $('#ctl00_ContentPlaceHolder1_SecClick').val();
-        //                var T;
-        //                if (Fst == '')
-        //                    Fst = (dt.getMonth() + 1).toString() + dt.getDate().toString() + dt.getHours().toString() + dt.getMinutes().toString() + dt.getSeconds().toString();
-
-        //                $btnReg.click(function() {
-        //                    //                    if (Sec != '') {
-        //                    //                        T = Sec - Fst
-
-
-        //                    //                    }
-        //                    alert(Fst);
-        //                    //                Sec = Fst
-        //                    //                    location.reload();
-        //                    return false;
-        //                });
-
-
-
-        //            });
-        //        }
-        //        $(window).load(function(event) {
-        //            chkRpt();
-        //        });
-
-        //按下掛號按鈕顯示Loading遮罩防止連按
-        function ShowLoading() {
-            //            Sys.WebForms.PageRequestManager.getInstance().add_beginRequest(ShowProgressBar);
-            //            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(HideProgressBar);
-            ShowProgressBar();
-        }
-
-        //#Region ProgressBar
-        // 顯示讀取遮罩
-        function ShowProgressBar() {
-            displayProgress();
-            displayMaskFrame();
-
-            //鎖住Enter鍵
-            document.onkeydown = function() {
-                var keycode = event.which || event.keyCode;
-                if (keycode == 13) {
-                    return false;
-                }
-            }
-
-        }
-        // 隱藏讀取遮罩
-        function HideProgressBar() {
-            var progress = $('#divProgress');
-            var maskFrame = $("#divMaskFrame");
-            progress.hide();
-            maskFrame.hide();
-        }
-        // 顯示讀取畫面
-        function displayProgress() {
-            var w = $(document).width();
-            var h = $(window).height();
-            var progress = $('#divProgress');
-            progress.css({ "z-index": 999999, "top": (h / 2) - (progress.height() / 2), "left": (w / 2) - (progress.width() / 2) });
-            progress.show();
-        }
-        // 顯示遮罩畫面
-        function displayMaskFrame() {
-            var w = $(window).width();
-            var h = $(document).height();
-            var maskFrame = $("#divMaskFrame");
-            maskFrame.css({ "z-index": 999998, "opacity": 0.7, "width": w, "height": h });
-            maskFrame.show();
-        }
-        //#End Region 
-    </script>
-</div>
-<script type="text/javascript">
-//<![CDATA[
-Sys.Application.initialize();
-//]]>
-</script>
-</form>
-</body>
-</html>
+</body></html>
