@@ -205,6 +205,7 @@ class LSHOSP():
                             break
                         else:
                             print("發生重試("+str(self.errorNum)+")")
+                            self.window.setStatusText(content="~正在重新嘗試連線(" + str(self.errorNum) + ")~",x=0.2,y=0.8,size=20)
                             if(self.errorNum > self.maxError):
                                 print("錯誤次數過多，啟動VPN")
                                 raise httpx.ConnectTimeout("錯誤次數過多，啟動VPN")
@@ -217,6 +218,7 @@ class LSHOSP():
                 break
             except httpx.ConnectTimeout:
                 print("發生時間例外")
+                self.window.setStatusText(content="~連線超時，啟動VPN~",x=0.3,y=0.75,size=14)
                 self.errorNum = 0
                 try:
                     self.VPN.startVPN()
@@ -227,6 +229,7 @@ class LSHOSP():
                     self.window.Runstatus = False
                     break
             except AttributeError:
+                self.window.setStatusText(content="~網頁請求回應不完全，即將重試(" + str(self.errorNum) + ")~",x=0.3,y=0.75,size=14)
                 self.errorNum += 1
                 if(self.errorNum > self.maxError):
                     self.errorNum = 0
@@ -242,17 +245,19 @@ class LSHOSP():
                 time.sleep(5)
             except httpx.ReadTimeout:
                 print("ReadTimeout")
+                self.window.setStatusText(content="~網頁讀取超時，啟動VPN~",x=0.3,y=0.75,size=14)
                 self.errorNum = 0
                 try:
                     self.VPN.startVPN()
                     content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 林新醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=14)
                 except:
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
                     break
             except httpx.ReadError:
                 print("ConnectTimeout")
+                self.window.setStatusText(content="~網頁讀取錯誤，啟動VPN~",x=0.3,y=0.75,size=14)
                 self.errorNum = 0
                 try:
                     self.VPN.startVPN()

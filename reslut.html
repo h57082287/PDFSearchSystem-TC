@@ -1,64 +1,504 @@
-<html lang="zh-tw"><head>
-<meta http-equiv="Content-Style-Type" content="text/css">
-<meta http-equiv="Content-Language" content="zh-tw">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" type="text/css" href="style/blueonblue.css">
-<title>臺中榮民總醫院門診預約掛號系統</title>
-<script language="JavaScript">
-function check(id) {
-	if (confirm("是否確定取消預約?")) {
-		document.forms["T" + id].submit();
-	}
-}
-function popPatDescribe(id){	
-	var objForm = document.forms["T" + id];
-	objForm.action = "patDescribePrompt.jsp";
-	objForm.target = "patDescribePrompt";
-	var popupWin = window.open("","patDescribePrompt","height=520,width=680,top=250,left=400,location=no,scrollbars=yes");
-	objForm.submit();
-}
+
+<!DOCTYPE html>
+
+<!--(HTML 5 新式宣告)-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="ctl00_Head1">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-115872560-2"></script>
+<script>
+
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() { dataLayer.push(arguments); }
+
+    gtag('js', new Date());
+
+
+
+    gtag('config', 'UA-115872560-2');
 
 </script>
-<style>
-A:hover {
-	color: #0000FF; font-weight: bolder
-}
-.emphasizeText{
-	text-decoration:underline;
-	font-weight:bold;
-}
-</style>
+<!--直接指定瀏覽器版本，避開IE相容性問題-->
+<meta content="IE=EmulateIE7" http-equiv="X-UA-Compatible"/><meta content="noindex, nofollow" name="robots"/><meta content="noindex" name="googlebot"/><title>
 
+	網路掛號
+
+</title><link href="http://www.lshosp.com.tw:8001/OINetReg/css/StyleSheet.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/ZSY.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/controls.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/elements.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/option.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/reset.css" media="screen" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/mold.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/font.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/m02.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/m02a.css" rel="stylesheet" type="text/css"/><link href="http://www.lshosp.com.tw:8001/OINetReg/css/m04.css" rel="stylesheet" type="text/css"/><link id="ctl00_RefStyleSheet" rel="stylesheet" type="text/css"/>
+<script src="../lib/jquery.min.js" type="text/javascript"></script> <!--引用jQuery-->
+<link href="http://www.lshosp.com.tw:8001/OINetReg/css/wlsStyle.css?112" rel="stylesheet" type="text/css"/>
+<script src="../lib/wlsHospital.js?v=4?1" type="text/javascript"></script>
+<!--[if lt IE 9]>    
+
+
+
+      <link rel="stylesheet" type="text/css" href="../css/wlsStyle-ie8.css?110" />    
+
+          
+
+    <![endif]-->
+<script type="text/javascript">
+
+
+
+        $(document).ready(showMobileView());
+
+
+
+    </script>
 </head>
-<body onload="doTriStateRainbowLink()">
+<body>
+<form action="Reg_RegConfirm1.aspx" id="aspnetForm" method="post" name="aspnetForm">
+<div>
+<input id="__EVENTTARGET" name="__EVENTTARGET" type="hidden" value=""/>
+<input id="__EVENTARGUMENT" name="__EVENTARGUMENT" type="hidden" value=""/>
+<input id="__LASTFOCUS" name="__LASTFOCUS" type="hidden" value=""/>
+<input id="__VIEWSTATE" name="__VIEWSTATE" type="hidden" value="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"/>
+</div>
+<script type="text/javascript">
 
-		<p>&nbsp;</p><p class="bfont5">您的掛號查詢結果如下：</p><!-- 您的掛號(取消之)查詢結果如下: -->
-		<p id="showhint" class="bfont4" style="color: rgb(255, 204, 0);">本院尚無您的預約記錄!!</p>
+//<![CDATA[
 
-<script language="JavaScript">
-var rate = 500;
-var Color1 = "#FF0000";
-var Color2 = "#00FF00";
-var Color3 = "#FF00FF";
-var Color4 = "#FFCC00";
-var Color5 = "#00FFCC";
-var Color6 = "#FF00CC";
-var C = "";
-var iteration=0;
-//提示link變色
-function doTriStateRainbowLink()
-{
-	iteration++;
-	if (iteration==1) C = Color1;
-	if (iteration==2) C = Color2;
-	if (iteration==3) C = Color3;
-	if (iteration==4) C = Color4;
-	if (iteration==5) C = Color5;
-	if (iteration==6) C = Color6;
-	//document.all("showhint").style.color=C;
-	document.getElementById("showhint").style.color=C;
-	if (iteration > 5) iteration = 0;
-	setTimeout('doTriStateRainbowLink()', rate);
+var theForm = document.forms['aspnetForm'];
+
+if (!theForm) {
+
+    theForm = document.aspnetForm;
+
 }
+
+function __doPostBack(eventTarget, eventArgument) {
+
+    if (!theForm.onsubmit || (theForm.onsubmit() != false)) {
+
+        theForm.__EVENTTARGET.value = eventTarget;
+
+        theForm.__EVENTARGUMENT.value = eventArgument;
+
+        theForm.submit();
+
+    }
+
+}
+
+//]]>
+
 </script>
-</body></html>
+<script type="text/javascript">
+
+//<![CDATA[
+
+var __cultureInfo = '{"name":"zh-TW","numberFormat":{"CurrencyDecimalDigits":2,"CurrencyDecimalSeparator":".","IsReadOnly":true,"CurrencyGroupSizes":[3],"NumberGroupSizes":[3],"PercentGroupSizes":[3],"CurrencyGroupSeparator":",","CurrencySymbol":"NT$","NaNSymbol":"不是一個數字","CurrencyNegativePattern":1,"NumberNegativePattern":1,"PercentPositivePattern":1,"PercentNegativePattern":1,"NegativeInfinitySymbol":"負無窮大","NegativeSign":"-","NumberDecimalDigits":2,"NumberDecimalSeparator":".","NumberGroupSeparator":",","CurrencyPositivePattern":0,"PositiveInfinitySymbol":"正無窮大","PositiveSign":"+","PercentDecimalDigits":2,"PercentDecimalSeparator":".","PercentGroupSeparator":",","PercentSymbol":"%","PerMilleSymbol":"‰","NativeDigits":["0","1","2","3","4","5","6","7","8","9"],"DigitSubstitution":1},"dateTimeFormat":{"AMDesignator":"上午","Calendar":{"MinSupportedDateTime":"\/Date(-62135596800000)\/","MaxSupportedDateTime":"\/Date(253402271999999)\/","AlgorithmType":1,"CalendarType":1,"Eras":[1],"TwoDigitYearMax":2029,"IsReadOnly":true},"DateSeparator":"/","FirstDayOfWeek":0,"CalendarWeekRule":0,"FullDateTimePattern":"yyyy\u0027年\u0027M\u0027月\u0027d\u0027日\u0027 tt hh:mm:ss","LongDatePattern":"yyyy\u0027年\u0027M\u0027月\u0027d\u0027日\u0027","LongTimePattern":"tt hh:mm:ss","MonthDayPattern":"M\u0027月\u0027d\u0027日\u0027","PMDesignator":"下午","RFC1123Pattern":"ddd, dd MMM yyyy HH\u0027:\u0027mm\u0027:\u0027ss \u0027GMT\u0027","ShortDatePattern":"yyyy/M/d","ShortTimePattern":"tt hh:mm","SortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd\u0027T\u0027HH\u0027:\u0027mm\u0027:\u0027ss","TimeSeparator":":","UniversalSortableDateTimePattern":"yyyy\u0027-\u0027MM\u0027-\u0027dd HH\u0027:\u0027mm\u0027:\u0027ss\u0027Z\u0027","YearMonthPattern":"yyyy\u0027年\u0027M\u0027月\u0027","AbbreviatedDayNames":["星期日","星期一","星期二","星期三","星期四","星期五","星期六"],"ShortestDayNames":["日","一","二","三","四","五","六"],"DayNames":["星期日","星期一","星期二","星期三","星期四","星期五","星期六"],"AbbreviatedMonthNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""],"MonthNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""],"IsReadOnly":true,"NativeCalendarName":"西曆 (中文)","AbbreviatedMonthGenitiveNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""],"MonthGenitiveNames":["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月",""]}}';//]]>
+
+</script>
+<script src="/OINetReg/ScriptResource.axd?d=G1TLuj3WLn6dARjclKmE9xBPG9f7tSTjBdhD6dqxxKmSPw_UChC4c3OdU2SKNQQzK9YIW8iV9CTp6H_BhcGB4cnxUhDlSZNeq4KxGRWPnuONTZYqhOUSodM2V9Cn0v94A9f426eL6zm4fq7x2rJp-Qg8Hkm7A4PTG1nxtFX7oxg-nW8j0&amp;t=2e2045e2" type="text/javascript"></script>
+<script type="text/javascript">
+
+//<![CDATA[
+
+if (typeof(Sys) === 'undefined') throw new Error('ASP.NET Ajax 用戶端架構無法載入。');
+
+//]]>
+
+</script>
+<div>
+<input id="__VIEWSTATEGENERATOR" name="__VIEWSTATEGENERATOR" type="hidden" value="A576A846"/>
+<input id="__VIEWSTATEENCRYPTED" name="__VIEWSTATEENCRYPTED" type="hidden" value=""/>
+<input id="__EVENTVALIDATION" name="__EVENTVALIDATION" type="hidden" value="fzVoDPs/XpIufrpdmHn9hMeEwfjkllNBz2M3QTF0FrF8q3dErdrV/a2Fvowd/edhr1OwSJ4/Sbt1WQHzmVp+RZH5uqH+3meNZDd5M2G8T5/mlpr7OfBdPKi7nPx0kPbD9HetQSzgIvgIRKK0H1NJ9DYGkafK47G8AjRi0WJUf0Yg1LmJyINDNsDidNZF9VenU9OibjNN05fYnyXNHbXyerQ+gBwnGK9ZDxA8Wsf6O4w7jBWaOXx/C8pU8ircQdUviiY4e1lM0uailHnwkIFtXTb3zLyjk2/2mzg6qeGZw6hpcN0kStnlOzKQFdrTVm1/BmH1QTtbP+ryDri5Bqq2riX+tQCZmpgowHl5uityzKu+NxyYYM1LCGA+2OSRdGNo0gFULgbvi3UNNiZS7c15DzndfqqWpITqW0ioo5mftjePKlSyjRR27mFouPJfKFd92XdqFi0vJK7q04D9q3YZijb6VthRPqd+FZvTE3XULe2VdrBEOtWHVPg1nspqir9uo2HmPNporxg3Mj8nCItngeiyDbnBsqduk+anIcwa5f2g8UYzXyZuGnCfb/0K/QD/4TyraaFp9rft+RVx6j0zUWnoUh0="/>
+</div>
+<div id="page">
+<!--for 烏日林新 ，包在iFrame下點選ImageButton無法切換頁籤問題  -->
+<input id="ctl00_hfServerTime" name="ctl00$hfServerTime" type="hidden" value="1673533020390.63"/>
+<div id="nav">
+<ul>
+<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
+<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0001','')" id="ctl00_Menu1_lbtn0001" style="display:inline-block;width:332px;">網路掛號</a></li>
+<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
+<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0002','')" id="ctl00_Menu1_lbtn0002" style="display:inline-block;width:333px;">查詢(取消)掛號</a></li>
+<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
+<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0003','')" id="ctl00_Menu1_lbtn0003" style="display:inline-block;width:332px;">看診進度</a></li>
+<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
+<li class="navA"><a href="javascript:__doPostBack('ctl00$Menu1$lbtn0004','')" id="ctl00_Menu1_lbtn0004" style="display:inline-block;width:167px;">門診時刻查詢</a></li>
+<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
+<li class="navA"></li>
+<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
+<li class="navA"></li>
+<li><img alt="" height="30" src="http://www.lshosp.com.tw:8001/OINetReg/images/BTNline.jpg"/></li>
+</ul>
+</div>
+<br/>
+<div id="content">
+<div id="contentGrayBG">
+<div align="center" id="UpdateProgress" style="position: relative; top: 50%; background-color: #FFE6CC;
+
+                left: 0px;">
+<div id="ctl00_ContentPlaceHolder1_UpdateProgress1" style="display:none;">
+<img alt="處理中 Loading" id="ctl00_ContentPlaceHolder1_Image1" src="http://www.lshosp.com.tw:8001/OINetReg/images/progress.gif" style="height:40px;width:40px;border-width:0px;"/>
+<span style="font-size: large; font-weight: bold; font-family: 'Arial Unicode MS';">
+
+                            處理中(Loading)...</span>
+</div>
+</div>
+<div id="divProgress" style="text-align: center; display: none; position: fixed;
+
+                top: 50%; left: 50%;">
+<img id="ctl00_ContentPlaceHolder1_imgLoading" src="http://www.lshosp.com.tw:8001/OINetReg/images/progress.gif" style="height:40px;width:40px;border-width:0px;"/>
+<span style="font-size: large; font-weight: bold; font-family: 'Arial Unicode MS';">
+
+                    處理中(Loading)...</span>
+</div>
+<div id="divMaskFrame" style="background-color: #F2F4F7; display: none; left: 0px;
+
+                position: absolute; top: 0px;">
+</div>
+<div id="titleImg">
+<div id="language">
+<a href="javascript:__doPostBack('ctl00$ContentPlaceHolder1$lbLanguage','')" id="ctl00_ContentPlaceHolder1_lbLanguage">English Version</a>
+</div>
+<img alt="確認/查詢/取消 掛號紀錄標示 Confirm/Recheck/Cancel Appointment Title" id="ctl00_ContentPlaceHolder1_ImgTitle" src="http://www.lshosp.com.tw:8001/OINetReg/images/option_cht/RegCancel.png" style="border-width:0px;"/>
+</div>
+<div id="content_main">
+<div id="ctl00_ContentPlaceHolder1_UpdatePanel1">
+<div id="reserveWay">
+<input alt="依基本資料確認/查詢 Confirm/Check by Personal Information" id="ctl00_ContentPlaceHolder1_ImgbtnPersonInf" name="ctl00$ContentPlaceHolder1$ImgbtnPersonInf" src="http://www.lshosp.com.tw:8001/OINetReg/images/btn_cht/BTN_AccordingData.jpg" style="border-width:0px;" type="image"/>
+<input alt="依病歷號碼確認/查詢 Confirm/Check by Mediacal Record Number" id="ctl00_ContentPlaceHolder1_ImgbtnPatNo" name="ctl00$ContentPlaceHolder1$ImgbtnPatNo" src="http://www.lshosp.com.tw:8001/OINetReg/images/btn_cht/BTN_AccordingNum_no.jpg" style="border-width:0px;" type="image"/>
+<table style="width: 100%;">
+<tr>
+<td>
+<img alt="驗證碼 Security Code" id="ctl00_ContentPlaceHolder1_imgVerificationCode" src="VerificationCode.aspx?t=YYYY17DD22014218" style="border-color:#99CCFF;border-width:1px;border-style:solid;visibility:hidden"/>
+<table id="reserveTAB02-1" style="width: 100%;">
+<tr>
+<th style="width: 2%">
+</th>
+<th style="width: 29%">
+</th>
+<th style="width: 69%">
+</th>
+</tr>
+<tr>
+<td>
+<span id="ctl00_ContentPlaceHolder1_lblForeignS" style="color:Red;font-weight:bold;">*</span>
+</td>
+<td>
+<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblForeign" style="font-size:14pt;">國別：</span>
+</td>
+<td>
+<select accesskey="F" class="elementBlack" id="ctl00_ContentPlaceHolder1_ddlForeign" name="ctl00$ContentPlaceHolder1$ddlForeign" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolder1$ddlForeign\',\'\')', 0)" style="font-size:14pt;">
+<option selected="selected" value="1">本國</option>
+<option value="2">外國</option>
+</select>
+</td>
+</tr>
+<tr>
+<th>
+<span id="ctl00_ContentPlaceHolder1_lblIDNOorPatientIDS" style="color:Red;font-weight:bold;">*</span>
+</th>
+<th>
+<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblIDNOorPatientID" style="font-size:14pt;">身分證號：</span>
+</th>
+<th>
+<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID" maxlength="10" name="ctl00$ContentPlaceHolder1$txtIDNOorPatientID" style="font-size:12pt;" type="text" value="L122464759"/>
+</th>
+</tr>
+<tr>
+<td>
+<span id="ctl00_ContentPlaceHolder1_lblBirthDayChS" style="color:Red;font-weight:bold;">*</span>
+</td>
+<td align="left">
+<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblBirthDayCh" style="font-size:14pt;">生日：</span>
+</td>
+<td>
+<div id="ctl00_ContentPlaceHolder1_BirthStyleA">
+<div id="ctl00_ContentPlaceHolder1_UpdatePanel2">
+<select class="elementBlack" id="ctl00_ContentPlaceHolder1_dd1BirthM" name="ctl00$ContentPlaceHolder1$dd1BirthM" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolder1$dd1BirthM\',\'\')', 0)" style="font-size:12pt;">
+<option value="0">請選擇</option>
+<option value="1">01</option>
+<option value="2">02</option>
+<option value="3">03</option>
+<option value="4">04</option>
+<option value="5">05</option>
+<option value="6">06</option>
+<option value="7">07</option>
+<option selected="selected" value="8">08</option>
+<option value="9">09</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12">12</option>
+</select>
+<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblBirth2">/</span>
+<select class="elementBlack" id="ctl00_ContentPlaceHolder1_dd1BirthD" name="ctl00$ContentPlaceHolder1$dd1BirthD" onchange="javascript:setTimeout('__doPostBack(\'ctl00$ContentPlaceHolder1$dd1BirthD\',\'\')', 0)" style="font-size:12pt;">
+<option value="">請選擇</option>
+<option value="1">01</option>
+<option value="2">02</option>
+<option value="3">03</option>
+<option value="4">04</option>
+<option value="5">05</option>
+<option value="6">06</option>
+<option value="7">07</option>
+<option value="8">08</option>
+<option value="9">09</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12">12</option>
+<option value="13">13</option>
+<option value="14">14</option>
+<option value="15">15</option>
+<option value="16">16</option>
+<option value="17">17</option>
+<option value="18">18</option>
+<option value="19">19</option>
+<option value="20">20</option>
+<option value="21">21</option>
+<option value="22">22</option>
+<option value="23">23</option>
+<option value="24">24</option>
+<option value="25">25</option>
+<option value="26">26</option>
+<option value="27">27</option>
+<option value="28">28</option>
+<option value="29">29</option>
+<option value="30">30</option>
+<option selected="selected" value="31">31</option>
+</select>
+<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblDateFormat" style="font-size:12pt;">(月/日)</span>
+</div>
+</div>
+</td>
+</tr>
+</table>
+<table id="reserveTAB02-3" style="width: 100%;">
+<tr>
+<th colspan="5" style="height: 20px;">
+</th>
+</tr>
+<tr>
+<td style="width: 2%">
+<span id="ctl00_ContentPlaceHolder1_lblVerificationCodeS" style="color:Red;font-weight:bold;">*</span>
+</td>
+<td style="width: 29%">
+<span class="elementBlack" id="ctl00_ContentPlaceHolder1_lblVerificationCode" style="font-size:14pt;">驗證碼：</span>
+</td>
+<td style="width: 20%">
+<input class="elementBlack" id="ctl00_ContentPlaceHolder1_txtVerificationCode" name="ctl00$ContentPlaceHolder1$txtVerificationCode" style="font-size:12pt;" type="text" value="HQpVBG"/>
+</td>
+<td style="width: 15%">        
+
+													英文大小寫有區分<br/>
+<img alt="驗證碼 Security Code" src="ValidateNumber.ashx" style="border-color:#99CCFF;border-width:1px;border-style:solid;"/>
+</td>
+<td style="width: 34%">
+
+													重取驗證碼<br/>
+<input alt="重取驗證碼 Get Another Security Code" id="ctl00_ContentPlaceHolder1_imgbtGetNewCode" name="ctl00$ContentPlaceHolder1$imgbtGetNewCode" src="http://www.lshosp.com.tw:8001/OINetReg/images/retrun.png" style="height:40px;width:40px;border-width:0px;" type="image"/>
+</td>
+</tr>
+<tr>
+<th align="left" colspan="5">
+<span class="elementBlueNote" id="ctl00_ContentPlaceHolder1_Message" style="font-size:14pt;font-weight:bold;">查無資料！</span>
+<input id="ctl00_ContentPlaceHolder1_hidStatus" name="ctl00$ContentPlaceHolder1$hidStatus" type="hidden"/>
+</th>
+</tr>
+<tr>
+<th align="right" colspan="5">
+<input class="buttonGreen" id="ctl00_ContentPlaceHolder1_btnReg" name="ctl00$ContentPlaceHolder1$btnReg" onclick="if(this.value=='確認掛號'){gtag('event', 'submitBooking');} ShowLoading();" style="font-size:14pt;" subfun="btnReg" type="submit" value="查詢"/>
+<input id="ctl00_ContentPlaceHolder1_FstClick" name="ctl00$ContentPlaceHolder1$FstClick" type="hidden"/>
+<input id="ctl00_ContentPlaceHolder1_SecClick" name="ctl00$ContentPlaceHolder1$SecClick" type="hidden"/>
+</th>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+
+	window.onload = function() {
+
+    $('#ctl00_ContentPlaceHolder1_btnReg').removeClass( "buttonGreen" );
+
+    $('#ctl00_ContentPlaceHolder1_btnReg').addClass( "buttonBlue" );
+
+};
+
+        //        function chkRpt() {
+
+
+
+
+
+        //            $('input[subfun="btnReg"]').each(function() {
+
+
+
+        //                var dt = new Date();
+
+        //                var $btnReg = $(this);
+
+        //                var Fst = $('#ctl00_ContentPlaceHolder1_FstClick').val();
+
+        //                var Sec = $('#ctl00_ContentPlaceHolder1_SecClick').val();
+
+        //                var T;
+
+        //                if (Fst == '')
+
+        //                    Fst = (dt.getMonth() + 1).toString() + dt.getDate().toString() + dt.getHours().toString() + dt.getMinutes().toString() + dt.getSeconds().toString();
+
+
+
+        //                $btnReg.click(function() {
+
+        //                    //                    if (Sec != '') {
+
+        //                    //                        T = Sec - Fst
+
+
+
+
+
+        //                    //                    }
+
+        //                    alert(Fst);
+
+        //                    //                Sec = Fst
+
+        //                    //                    location.reload();
+
+        //                    return false;
+
+        //                });
+
+
+
+
+
+
+
+        //            });
+
+        //        }
+
+        //        $(window).load(function(event) {
+
+        //            chkRpt();
+
+        //        });
+
+
+
+        //按下掛號按鈕顯示Loading遮罩防止連按
+
+        function ShowLoading() {
+
+            //            Sys.WebForms.PageRequestManager.getInstance().add_beginRequest(ShowProgressBar);
+
+            //            Sys.WebForms.PageRequestManager.getInstance().add_endRequest(HideProgressBar);
+
+            ShowProgressBar();
+
+        }
+
+
+
+        //#Region ProgressBar
+
+        // 顯示讀取遮罩
+
+        function ShowProgressBar() {
+
+            displayProgress();
+
+            displayMaskFrame();
+
+
+
+            //鎖住Enter鍵
+
+            document.onkeydown = function() {
+
+                var keycode = event.which || event.keyCode;
+
+                if (keycode == 13) {
+
+                    return false;
+
+                }
+
+            }
+
+
+
+        }
+
+        // 隱藏讀取遮罩
+
+        function HideProgressBar() {
+
+            var progress = $('#divProgress');
+
+            var maskFrame = $("#divMaskFrame");
+
+            progress.hide();
+
+            maskFrame.hide();
+
+        }
+
+        // 顯示讀取畫面
+
+        function displayProgress() {
+
+            var w = $(document).width();
+
+            var h = $(window).height();
+
+            var progress = $('#divProgress');
+
+            progress.css({ "z-index": 999999, "top": (h / 2) - (progress.height() / 2), "left": (w / 2) - (progress.width() / 2) });
+
+            progress.show();
+
+        }
+
+        // 顯示遮罩畫面
+
+        function displayMaskFrame() {
+
+            var w = $(window).width();
+
+            var h = $(document).height();
+
+            var maskFrame = $("#divMaskFrame");
+
+            maskFrame.css({ "z-index": 999998, "opacity": 0.7, "width": w, "height": h });
+
+            maskFrame.show();
+
+        }
+
+        //#End Region 
+
+    </script>
+</div>
+<script type="text/javascript">
+
+//<![CDATA[
+
+Sys.Application.initialize();
+
+//]]>
+
+</script>
+</form>
+</body>
+</html>
