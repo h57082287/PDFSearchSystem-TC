@@ -27,6 +27,8 @@ class PTCCGH():
         self.page = 0
         self.datalen = 0
         self.log = Log()
+        self.errorNum = 0
+        self.maxError = 10
 
         # 建立header
         self.headers = {
