@@ -202,7 +202,7 @@ class MainWindows():
         
         # 檢查授權
         l = License(self)
-        l.TimeLicense("2023-1-31")
+        l.TimeLicense("2023-2-15")
         
         #-----------------------------------------------------------------------------------------啟動視窗
         # 建立設定頁面內容
@@ -247,7 +247,7 @@ class MainWindows():
         self.type_text.place(relx=0.1,rely=0.16)
         self.status_text = tk.Label(self.VersionInfo,text="授權 : 未授權" ,font=("標楷體", 12))
         self.status_text.place(relx=0.1,rely=0.27)
-        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-1-14" ,font=("標楷體", 12))
+        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-1-15" ,font=("標楷體", 12))
         self.release_date.place(relx=0.1,rely=0.38)
         self.evmt = tk.Label(self.VersionInfo,text="支援環境 : Windows 10 、 Windows 11" ,font=("標楷體", 12))
         self.evmt.place(relx=0.1,rely=0.49)
