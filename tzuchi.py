@@ -131,7 +131,7 @@ class TZUCHI():
                         soup = BeautifulSoup(respone.content,"html.parser")
                         if self._CKCaptcha(respone.content,"span","驗證失敗!"): 
                             self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
-                            content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                            content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                             time.sleep(1)
                         elif not self._SencordCK(str(soup),"請輸入第二道驗證碼【個人出生日期】！"):
