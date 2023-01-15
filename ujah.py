@@ -131,25 +131,30 @@ class UJAH():
         while True:
             try:
                 with httpx.Client(http2=True) as client :
+                    print(1)
                     respone = client.get('https://www.jah.org.tw/JCHReg/Query/U')
                     soup = BeautifulSoup(respone.content,"html.parser")
                     time.sleep(1)
 
+                    print(2)
                     # 獲取隱藏元素
                     self.payload['__RequestVerificationToken'] = soup.find('form',{'id':'QueryForm'}).find('input',{'name':'__RequestVerificationToken'}).get('value')
 
                     # 利用迴圈自動重試
                     while True:
+                        print(3)
                         # 請求驗證碼
                         respone = client.get('https://www.jah.org.tw/JCHReg/Content/BuildCaptcha.aspx')
                         with open('VaildCode.png','wb') as f :
                             f.write(respone.content)
                         self.Val[6]['value'] = self._ParseCaptcha()
 
+                        print(4)
                         # 發送請求
                         self.payload['Val'] = quote(str(self.Val))
                         time.sleep(5)
                         respone = client.post('https://www.jah.org.tw/JCHReg/Ajax',data=self.payload)
+                        print(5)
                         if respone.json()['QueryList'] != '' :
                             status = True
                         if self._JSONDataToHTML(respone.json()) :
@@ -214,6 +219,18 @@ class UJAH():
             except httpx.ConnectError:
                 print("發生連線錯誤")
                 self.window.setStatusText(content="~連線錯誤，啟動VPN~",x=0.3,y=0.75,size=14)
+                self.errorNum = 0
+                try:
+                    self.VPN.startVPN()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 台中仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
+            except json.JSONDecodeError:
+                print("json解析異常")
+                self.window.setStatusText(content="~json解析錯誤，啟動VPN~",x=0.3,y=0.75,size=14)
                 self.errorNum = 0
                 try:
                     self.VPN.startVPN()

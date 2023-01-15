@@ -223,6 +223,18 @@ class JJAH():
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
                     break
+            except json.JSONDecodeError:
+                print("json解析異常")
+                self.window.setStatusText(content="~json解析錯誤，啟動VPN~",x=0.3,y=0.75,size=14)
+                self.errorNum = 0
+                try:
+                    self.VPN.startVPN()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 大里仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
         return status
 
     def _startBrowser(self,name,ID):
