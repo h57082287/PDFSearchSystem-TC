@@ -39,8 +39,8 @@ class MainWindows():
     def __init__(self):
         
         # 檢查是否多開
-        if self._MultiProcessCK("PDFSearchSystem-TC.exe") :
-            self.MultiProcessErr()
+        # if self._MultiProcessCK("PDFSearchSystem-TC.exe") :
+        #     self.MultiProcessErr()
 
         # 取得管理員權限
         self.getAdmin()
