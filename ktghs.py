@@ -17,6 +17,7 @@ class KTGHS():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
         if E_Num == '':
             E_Num = 5
+        self.code_rule = [400,500,503,404,408]
         self.EndPage = int(E_Page)
         self.EndNum = int(E_Num)
         self.outputFile = outputFile
@@ -103,32 +104,32 @@ class KTGHS():
         time.sleep(3)
         
         while True:
-                if '因系統安全驗證檢核，' in str(self.browser.page_source):
-                    self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.7,size=20)
-                    self.browser.find_element(by=By.XPATH, value='//*[@id="Sizebox"]/table/tbody/tr[2]/td[2]/table/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[2]/td/input').click()
-                    self.browser.find_element(by=By.XPATH, value='//*[@id="reg"]/table/tbody/tr[4]/td[2]/table/tbody/tr[2]/td/a/b/font').click()
-                    self.browser.find_element(by=By.XPATH, value='//*[@id="ChkNum"]').clear()
-                    time.sleep(3)
-                    Captcha = self._ParseCaptcha(self.browser.find_element(by=By.XPATH, value='//*[@id="imgnum"]'),self.browser,mode=1)
-                    # print(Captcha)
-                    time.sleep(3)
-                    self.browser.find_element(by=By.XPATH, value='//*[@id="ChkNum"]').send_keys(Captcha)
-                    time.sleep(1)
-                    self.browser.find_element(by=By.XPATH, value='//*[@id="reg"]/table/tbody/tr[6]/td/input[2]').click()
-                    time.sleep(3)
-                else:
-                    break
+            if '因系統安全驗證檢核，' in str(self.browser.page_source):
+                self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.7,size=20)
+                self.browser.find_element(by=By.XPATH, value='//*[@id="Sizebox"]/table/tbody/tr[2]/td[2]/table/tbody/tr[2]/td/table/tbody/tr[2]/td[2]/table/tbody/tr[2]/td/input').click()
+                self.browser.find_element(by=By.XPATH, value='//*[@id="reg"]/table/tbody/tr[4]/td[2]/table/tbody/tr[2]/td/a/b/font').click()
+                self.browser.find_element(by=By.XPATH, value='//*[@id="ChkNum"]').clear()
+                time.sleep(3)
+                Captcha = self._ParseCaptcha(self.browser.find_element(by=By.XPATH, value='//*[@id="imgnum"]'),self.browser,mode=1)
+                # print(Captcha)
+                time.sleep(3)
+                self.browser.find_element(by=By.XPATH, value='//*[@id="ChkNum"]').send_keys(Captcha)
+                time.sleep(1)
+                self.browser.find_element(by=By.XPATH, value='//*[@id="reg"]/table/tbody/tr[6]/td/input[2]').click()
+                time.sleep(3)
+            else:
+                break
         
         try:
-            if ("看診醫師" not in self.browser.page_source):
-                # print("AAAA")
+            if ("醫師代碼" in self.browser.page_source):
                 raise requests.exceptions.ConnectTimeout("ip已被封鎖")
-            with open('reslut.html','w', encoding='utf-8') as f :
-                f.write(self._changeHTMLStyle(self.browser.page_source))
-            # print("BBBBB")
+            # with open('reslut.html','w', encoding='utf-8') as f :
+            #     f.write(self._changeHTMLStyle(self.browser.page_source))
         except requests.exceptions.ConnectTimeout:
             try:
                 self.VPN.startVPN()
+                content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 光田醫院：沙鹿總院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
             except:
                 messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                 self.window.Runstatus = False
