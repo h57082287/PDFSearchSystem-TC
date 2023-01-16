@@ -139,12 +139,13 @@ class KTGHS():
         else:
             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
 
+        self.browser.delete_all_cookies()
+
         # with open('reslut.html','w', encoding='utf-8') as f :
         #     f.write(self._changeHTMLStyle(self.browser.page_source))
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        
 
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
