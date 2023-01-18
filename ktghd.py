@@ -1,5 +1,4 @@
 import time
-from urllib.parse import quote
 from bs4 import BeautifulSoup
 import ddddocr
 import os
@@ -11,6 +10,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import requests
 
 
 # 光田醫院：大甲院區
@@ -18,6 +18,7 @@ class KTGHD():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
         if E_Num == '':
             E_Num = 5
+        self.code_rule = [400,500,503,404,408]
         self.EndPage = int(E_Page)
         self.EndNum = int(E_Num)
         self.outputFile = outputFile
@@ -106,10 +107,26 @@ class KTGHD():
             else:
                 break
 
-        if self._Screenshot("病情簡述",(name + '_' + ID + '_光田醫院：大甲院區.png')) :
+        try:
+            if ("醫師代碼" in self.browser.page_source):
+                raise requests.exceptions.ConnectTimeout("ip已被封鎖")
+            # with open('reslut.html','w', encoding='utf-8') as f :
+            #     f.write(self._changeHTMLStyle(self.browser.page_source))
+        except requests.exceptions.ConnectTimeout:
+            try:
+                self.VPN.startVPN()
+                content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 光田醫院：大甲院區\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+            except:
+                messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                self.window.Runstatus = False
+
+        if self._Screenshot("病情簡述",(name + '_' + ID + '_光田醫院：沙鹿總院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+
+        self.browser.delete_all_cookies()
 
         # with open('reslut.html','w', encoding='utf-8') as f :
         #     f.write(self._changeHTMLStyle(self.browser.page_source))
