@@ -14,6 +14,7 @@ from tzuchi import TZUCHI
 from ujah import UJAH
 from jjah import JJAH
 from cmuh import CMUH
+from cmuhh import CMUHH
 from fyh import FYH
 from rg import RG
 from wlshosp import WLSHOSP
@@ -56,6 +57,7 @@ class MainWindows():
             "台中仁愛醫院" : None,
             "大里仁愛醫院" : None,
             "中國醫學大學豐原分院" : None,
+            "中國醫學大學" : None,
             "林新醫院" : None,
             "部立台中醫院" : None,
             "慈濟醫院台中分院" : None,
@@ -253,7 +255,7 @@ class MainWindows():
         self.evmt.place(relx=0.1,rely=0.49)
         self.ChangeInfo = tk.LabelFrame(self.VersionInfo,text="變更內容",width=280,height=77)
         self.ChangeInfo.place(relx=0.1,rely=0.60)
-        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="在各醫院加入適當延遲時間避免頻繁啟動VPN",font=("標楷體", 12))
+        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="在各醫院加入適當延遲時間避免頻繁啟動VPN\n增加中國醫學大學",font=("標楷體", 12))
         self.ChangeInfo_content.place(relx=0.1,rely=0.01)
         # ----------------------------------------------------------------------------------------
         # 選擇預設標籤
@@ -358,6 +360,7 @@ class MainWindows():
             "台中仁愛醫院" : UJAH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "大里仁愛醫院" : JJAH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "中國醫學大學豐原分院" : CMUH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
+            "中國醫學大學" : CMUHH(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "林新醫院" : LSHOSP(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "部立台中醫院" : MOHW(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
             "慈濟醫院台中分院" : TZUCHI(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
