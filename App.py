@@ -29,7 +29,7 @@ from ktghs import KTGHS
 from ktghd import KTGHD
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
-from VPNClient import VPN
+# from VPNClient import VPN
 
 # ========================================================
 # 注意 : 每次添加新的醫院時須同時調整所有的URLList
@@ -241,19 +241,19 @@ class MainWindows():
         # 版本說明
         self.VersionInfo = tk.LabelFrame(self.SetupTab,text="版本資訊",width=350,height=230)
         self.VersionInfo.place(relx=0.2,rely=0.55)
-        self.version_text = tk.Label(self.VersionInfo,text="版本 : v3.0.0" ,font=("標楷體", 12))
+        self.version_text = tk.Label(self.VersionInfo,text="版本 : v3.0.1" ,font=("標楷體", 12))
         self.version_text.place(relx=0.1,rely=0.05)
         self.type_text = tk.Label(self.VersionInfo,text="類型 : 試用版" ,font=("標楷體", 12))
         self.type_text.place(relx=0.1,rely=0.16)
         self.status_text = tk.Label(self.VersionInfo,text="授權 : 未授權" ,font=("標楷體", 12))
         self.status_text.place(relx=0.1,rely=0.27)
-        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-1-15" ,font=("標楷體", 12))
+        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-1-19" ,font=("標楷體", 12))
         self.release_date.place(relx=0.1,rely=0.38)
         self.evmt = tk.Label(self.VersionInfo,text="支援環境 : Windows 10 、 Windows 11" ,font=("標楷體", 12))
         self.evmt.place(relx=0.1,rely=0.49)
         self.ChangeInfo = tk.LabelFrame(self.VersionInfo,text="變更內容",width=280,height=77)
         self.ChangeInfo.place(relx=0.1,rely=0.60)
-        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="全面汰換比對方式: \n瀏覽器控制 <-> 後端API比對",font=("標楷體", 12))
+        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="在各醫院加入適當延遲時間避免頻繁啟動VPN",font=("標楷體", 12))
         self.ChangeInfo_content.place(relx=0.1,rely=0.01)
         # ----------------------------------------------------------------------------------------
         # 選擇預設標籤

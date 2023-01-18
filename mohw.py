@@ -1,3 +1,4 @@
+import random
 import httpx
 from bs4 import BeautifulSoup
 import ddddocr
@@ -150,7 +151,8 @@ class MOHW():
                 with httpx.Client(http2=True) as client :
                     respone = client.get("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx")
                     soup = BeautifulSoup(respone.content,"html.parser")
-                    
+                    time.sleep(random.randint(0,5))
+
                     # 發送月份請求
                     self.payloadM["ctl00$ScriptManager1"] = "ctl00$ContentPlaceHolder1$UpdatePanel2|ctl00$ContentPlaceHolder1$dd1BirthM"
                     self.payloadM["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
@@ -160,7 +162,8 @@ class MOHW():
                     self.payloadM["ctl00$ContentPlaceHolder1$dd1BirthM"] = str(int(month))
                     respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.payloadM,headers=self.header)
                     soup = BeautifulSoup(respone.content,"html.parser")
-                    
+                    time.sleep(random.randint(0,5))
+
                     # 發送日期請求
                     self.payloadD["ctl00$ScriptManager1"] = "ctl00$ContentPlaceHolder1$UpdatePanel2|ctl00$ContentPlaceHolder1$dd1BirthD"
                     self.payloadD["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
@@ -171,6 +174,7 @@ class MOHW():
                     self.payloadD["ctl00$ContentPlaceHolder1$dd1BirthD"] = str(int(day))
                     respone = client.post("https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx",data=self.payloadD,headers=self.header)
                     soup = BeautifulSoup(respone.content,"html.parser")
+                    time.sleep(random.randint(0,5))
 
                     while True:
                         # 請求驗證碼
@@ -188,13 +192,14 @@ class MOHW():
                         with open("reslut.html","w",encoding="utf-8") as f :
                             if not self._CKCaptcha(respone.content,"span","驗證碼錯誤! 請輸入正確的驗證碼！"):
                                 f.write(self._changeHTMLStyle(respone.content,"https://www03.taic.mohw.gov.tw/OINetReg/",""))
-                                time.sleep(2)
+                                time.sleep(1)
                                 break
                             else:
                                 self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                                 time.sleep(1)
                                 content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 部立台中醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                                 self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                                time.sleep(random.randint(0,5))
                 break
             except httpx.ReadTimeout:
                 try:

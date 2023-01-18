@@ -1,3 +1,4 @@
+import random
 import time
 from PDFReader import PDFReader
 from bs4 import BeautifulSoup
@@ -9,6 +10,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import selenium
 
 # L122782985
 # 710208
@@ -113,6 +115,7 @@ class TZUCHI():
                     # 請求查詢頁
                     respone = client.get("https://app.tzuchi.com.tw/tchw/opdreg/RegQryCancel.aspx?Loc=TC")
                     soup = BeautifulSoup(respone.content,"html.parser")
+                    time.sleep(random.randint(0,5))
 
                     # 獲取隱藏資料
                     self.Q_Payload["__VIEWSTATE"] = soup.find("input",{"id":"__VIEWSTATE"}).get("value")
@@ -125,15 +128,18 @@ class TZUCHI():
                         with open("VaildCode.png","wb") as f :
                             f.write(respone.content)
                         self.Q_Payload["ctl00$ContentPlaceHolder1$txtVCode"] = self._ParseCaptcha()
+                        time.sleep(random.randint(0,5))
 
                         # 發送查詢請求
                         respone = client.post("https://app.tzuchi.com.tw/tchw/opdreg/RegQryCancel.aspx?Loc=TC",data=self.Q_Payload,headers=self.header)
                         soup = BeautifulSoup(respone.content,"html.parser")
+                        time.sleep(random.randint(0,5))
                         if self._CKCaptcha(respone.content,"span","驗證失敗!"): 
                             self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                             time.sleep(1)
+                            time.sleep(random.randint(0,5))
                         elif not self._SencordCK(str(soup),"請輸入第二道驗證碼【個人出生日期】！"):
                             with open("reslut.html","w",encoding="utf-8") as f :
                                 f.write(self._changeHTMLStyle(respone.content,"https://app.tzuchi.com.tw/tchw/opdreg/",""))
@@ -147,20 +153,37 @@ class TZUCHI():
                             respone = client.post("https://app.tzuchi.com.tw/tchw/opdreg/RegQryCancel.aspx?Loc=TC",data=self.V_Payload,headers=self.header)
                             with open("reslut.html","w",encoding="utf-8") as f :
                                 f.write(self._changeHTMLStyle(respone.content,"https://app.tzuchi.com.tw/tchw/opdreg/",""))
+                            time.sleep(random.randint(0,5))
                             break
                 break
-            except httpx.ConnectTimeout:
-                print("發生時間例外")
-                self.window.setStatusText(content="~連線超時，啟動VPN~",x=0.3,y=0.75,size=14)
-                self.errorNum = 0
-                try:
-                    self.VPN.startVPN()
-                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                    self.window.Runstatus = False
-                    break
+            except httpx.ReadTimeout:
+                print("ReadTimeout")
+                self.window.setStatusText(content="~網頁讀取超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
+                self.errorNum += 1
+                if(self.errorNum > self.maxError):
+                    self.errorNum = 0
+                    try:
+                        self.VPN.startVPN()
+                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                    except:
+                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                        self.window.Runstatus = False
+                        break
+            except httpx.ReadError:
+                print("ConnectTimeout")
+                self.window.setStatusText(content="~網頁讀取錯誤，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
+                self.errorNum += 1
+                if(self.errorNum > self.maxError):
+                    self.errorNum = 0
+                    try:
+                        self.VPN.startVPN()
+                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                    except:
+                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                        self.window.Runstatus = False
+                        break
             except AttributeError:
                 self.window.setStatusText(content="~網頁請求回應不完全，即將重試(" + str(self.errorNum) + ")~",x=0.3,y=0.75,size=14)
                 self.errorNum += 1
@@ -176,30 +199,48 @@ class TZUCHI():
                         break
                 print("AttributeError")
                 time.sleep(5)
-            except httpx.ReadTimeout:
-                print("ReadTimeout")
-                self.window.setStatusText(content="~網頁讀取超時，啟動VPN~",x=0.3,y=0.75,size=14)
-                self.errorNum = 0
-                try:
-                    self.VPN.startVPN()
-                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=14)
-                except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                    self.window.Runstatus = False
-                    break
-            except httpx.ReadError:
-                print("ConnectTimeout")
-                self.window.setStatusText(content="~網頁讀取錯誤，啟動VPN~",x=0.3,y=0.75,size=14)
-                self.errorNum = 0
-                try:
-                    self.VPN.startVPN()
-                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                    self.window.Runstatus = False
-                    break
+            except httpx.ConnectTimeout:
+                print("發生時間例外")
+                self.window.setStatusText(content="~連線超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
+                self.errorNum += 1
+                if(self.errorNum > self.maxError):
+                    self.errorNum = 0
+                    try:
+                        self.VPN.startVPN()
+                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                    except:
+                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                        self.window.Runstatus = False
+                        break
+            except httpx.ConnectError:
+                print("發生連線錯誤")
+                self.window.setStatusText(content="~連線錯誤，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
+                self.errorNum += 1
+                if(self.errorNum > self.maxError):
+                    self.errorNum = 0
+                    try:
+                        self.VPN.startVPN()
+                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                    except:
+                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                        self.window.Runstatus = False
+                        break
+            except selenium.common.exceptions.TimeoutException:
+                print("瀏覽器超時")
+                self.window.setStatusText(content="~瀏覽器超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
+                self.errorNum += 1
+                if(self.errorNum > self.maxError):
+                    self.errorNum = 0
+                    try:
+                        self.VPN.startVPN()
+                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 慈濟醫院台中分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                    except:
+                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                        self.window.Runstatus = False
+                        break
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
