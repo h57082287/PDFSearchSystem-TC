@@ -89,18 +89,19 @@ class CKCCGH():
         self.payload['birthDate'] = year + month + day
         while True:
             try:
-                with httpx.Client(http2=True) as client :
+                with httpx.Client(http2=True, verify=False, timeout=None) as client :
                     print(1)
                     respone = client.get('https://ck.ccgh.com.tw/register_search.htm')
                     soup = BeautifulSoup(respone.content,"html.parser")
                     time.sleep(random.randint(0,5))
+                    print(2)
 
                     # 讀取隱藏元素
                     self.payload['csrf'] = soup.find('input',{'name':'csrf'}).get('value')
 
                     # 發送請求
-                    print(2)
                     respone = client.post('https://ck.ccgh.com.tw/register_search_detail.htm',data=self.payload,headers=self.headers)
+                    print(3)
                     with open('reslut.html','w',encoding='utf-8') as f :
                         f.write(self._changeHTMLStyle(respone.text,"https://ck.ccgh.com.tw/"))
                     time.sleep(random.randint(0,5))
