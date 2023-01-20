@@ -220,7 +220,7 @@ class MainWindows():
         self.checkVal_AULL.set(True)
 
         self.checkVal_AUVPNM = tk.BooleanVar()
-        self.checkVal_AUVPNM.set(True)
+        self.checkVal_AUVPNM.set(False)
 
         # 建立勾選
         self.allowNetworkDebug = tk.Checkbutton(self.SetupTab,text="允許使用網路偵錯功能(開發者可遠端除錯)",var=self.checkVal_AND,state="disable")
