@@ -104,6 +104,7 @@ class CKCCGH():
                     with open('reslut.html','w',encoding='utf-8') as f :
                         f.write(self._changeHTMLStyle(respone.text,"https://ck.ccgh.com.tw/"))
                     time.sleep(random.randint(0,5))
+                self.errorNum = 0
                 break
             except httpx.ReadTimeout:
                 print("ReadTimeout")
@@ -120,7 +121,7 @@ class CKCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
                 elif(self.errorNum == int((self.maxError)/2)):
                     print("進入時間控制阻隔")
                     self.errorNum += 1
@@ -142,7 +143,7 @@ class CKCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
                 elif(self.errorNum == int((self.maxError)/2)):
                     print("進入時間控制阻隔")
                     self.errorNum += 1
@@ -163,7 +164,7 @@ class CKCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
                 elif(self.errorNum == int((self.maxError)/2)):
                     print("進入時間控制阻隔")
                     self.errorNum += 1
@@ -187,7 +188,7 @@ class CKCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
                 elif(self.errorNum == int((self.maxError)/2)):
                     print("進入時間控制阻隔")
                     self.errorNum += 1
@@ -209,7 +210,7 @@ class CKCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
                 elif(self.errorNum == int((self.maxError)/2)):
                     print("進入時間控制阻隔")
                     self.errorNum += 1
@@ -231,7 +232,7 @@ class CKCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
                 elif(self.errorNum == int((self.maxError)/2)):
                     print("進入時間控制阻隔")
                     self.errorNum += 1
