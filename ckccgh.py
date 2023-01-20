@@ -122,6 +122,7 @@ class CKCCGH():
                         self.window.Runstatus = False
                         break
                 elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
                     self.errorNum += 1
                     self.TimeBlock()
                     content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院中港分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
@@ -143,6 +144,7 @@ class CKCCGH():
                         self.window.Runstatus = False
                         break
                 elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
                     self.errorNum += 1
                     self.TimeBlock()
                     content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院中港分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
@@ -163,6 +165,7 @@ class CKCCGH():
                         self.window.Runstatus = False
                         break
                 elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
                     self.errorNum += 1
                     self.TimeBlock()
                     content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院中港分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
@@ -186,6 +189,7 @@ class CKCCGH():
                         self.window.Runstatus = False
                         break
                 elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
                     self.errorNum += 1
                     self.TimeBlock()
                     content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院中港分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
@@ -207,6 +211,7 @@ class CKCCGH():
                         self.window.Runstatus = False
                         break
                 elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
                     self.errorNum += 1
                     self.TimeBlock()
                     content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院中港分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
@@ -228,6 +233,7 @@ class CKCCGH():
                         self.window.Runstatus = False
                         break
                 elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
                     self.errorNum += 1
                     self.TimeBlock()
                     content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院中港分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
