@@ -89,7 +89,7 @@ class PTCCGH():
         self.payload['birthDate'] = year + month + day
         while True:
             try:
-                with httpx.Client(http2=True) as client :
+                with httpx.Client(http2=True, verify=False, timeout=None) as client :
                     respone = client.get('https://pt.ccgh.com.tw/register_search.htm')
                     soup = BeautifulSoup(respone.content,"html.parser")
                     time.sleep(random.randint(0,5))
@@ -107,6 +107,8 @@ class PTCCGH():
                 print("ReadTimeout")
                 self.window.setStatusText(content="~網頁讀取超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
                 self.errorNum += 1
+                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 if(self.errorNum > self.maxError):
                     self.errorNum = 0
                     try:
@@ -116,11 +118,19 @@ class PTCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
+                elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
+                    self.errorNum += 1
+                    self.TimeBlock()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
             except httpx.ReadError:
                 print("ConnectTimeout")
                 self.window.setStatusText(content="~網頁讀取錯誤，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
                 self.errorNum += 1
+                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 if(self.errorNum > self.maxError):
                     self.errorNum = 0
                     try:
@@ -130,10 +140,18 @@ class PTCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
+                elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
+                    self.errorNum += 1
+                    self.TimeBlock()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
             except AttributeError:
                 self.window.setStatusText(content="~網頁請求回應不完全，即將重試(" + str(self.errorNum) + ")~",x=0.3,y=0.75,size=14)
                 self.errorNum += 1
+                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 if(self.errorNum > self.maxError):
                     self.errorNum = 0
                     try:
@@ -143,13 +161,21 @@ class PTCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
+                elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
+                    self.errorNum += 1
+                    self.TimeBlock()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 print("AttributeError")
                 time.sleep(5)
             except httpx.ConnectTimeout:
                 print("發生時間例外")
                 self.window.setStatusText(content="~連線超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
                 self.errorNum += 1
+                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 if(self.errorNum > self.maxError):
                     self.errorNum = 0
                     try:
@@ -159,11 +185,19 @@ class PTCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
+                elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
+                    self.errorNum += 1
+                    self.TimeBlock()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
             except httpx.ConnectError:
                 print("發生連線錯誤")
                 self.window.setStatusText(content="~連線錯誤，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
                 self.errorNum += 1
+                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 if(self.errorNum > self.maxError):
                     self.errorNum = 0
                     try:
@@ -173,11 +207,19 @@ class PTCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
+                elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
+                    self.errorNum += 1
+                    self.TimeBlock()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
             except selenium.common.exceptions.TimeoutException:
                 print("瀏覽器超時")
                 self.window.setStatusText(content="~瀏覽器超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
                 self.errorNum += 1
+                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 if(self.errorNum > self.maxError):
                     self.errorNum = 0
                     try:
@@ -187,7 +229,13 @@ class PTCCGH():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         self.window.Runstatus = False
-                        break
+                        os._exit(0)
+                elif(self.errorNum == int((self.maxError)/2)):
+                    print("進入時間控制阻隔")
+                    self.errorNum += 1
+                    self.TimeBlock()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 澄清醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
