@@ -132,7 +132,7 @@ class JJAH():
         status = False
         while True:
             try:
-                with httpx.Client(http2=True) as client :
+                with httpx.Client(http2=True, verify=False, timeout=None) as client :
                     respone = client.get('https://www.jah.org.tw/JCHReg/Query/U')
                     soup = BeautifulSoup(respone.content,"html.parser")
                     time.sleep(random.randint(0,5))
