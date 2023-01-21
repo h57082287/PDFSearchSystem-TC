@@ -155,7 +155,6 @@ class UJAH():
                         print(4)
                         # 發送請求
                         self.payload['Val'] = quote(str(self.Val))
-                        time.sleep(5)
                         respone = client.post('https://www.jah.org.tw/JCHReg/Ajax',data=self.payload)
                         print(5)
                         if respone.json()['QueryList'] != '' :
