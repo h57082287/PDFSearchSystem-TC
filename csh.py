@@ -67,10 +67,10 @@ class CSH():
                         '__ASYNCPOST': 'true',
                         'btnRegister': '確定',
                     }
-                    
+
         self.options = webdriver.ChromeOptions()
         self.options.add_argument('--disable-software-rasterizer')
-        self.browser = browser(chrome_options = self.options)
+        self.browser = browser(options = self.options)
 
     def run(self):
         for self.page in range(self.currentPage-1,self.EndPage):
