@@ -26,6 +26,8 @@ class TAFGHZB():
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
         self.Data = []
+        self.ErrorNum = 0
+        self.ErrorMax = 20
         # 各醫院新增項目
         self.idx = 0
         self.datalen = 0
@@ -75,6 +77,7 @@ class TAFGHZB():
                             time.sleep(sec)
                         else:
                             break
+                        self.ErrorNum = 0
                 self.currentNum = 1 
             else:
                 break
@@ -127,19 +130,21 @@ class TAFGHZB():
                             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
                             with open("reslut.html", "w", encoding="utf-8") as f:
                                 f.write("病患不存在")
+                            status = True
                             break
                         # 有病歷資料的話即為驗證碼輸入錯誤，進行重試
                         self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+                        self.ErrorNum += 1
+                        if(self.ErrorNum == self.ErrorMax):
+                            
                         time.sleep(1)
                         content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-中清\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 except:
                     print("跳過")
-                    continue
+                    break
             client.close()
         return status
-
-        return True
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
