@@ -132,7 +132,7 @@ class JJAH():
         status = False
         while True:
             try:
-                with httpx.Client(http2=True) as client :
+                with httpx.Client(http2=True, verify=False, timeout=None) as client :
                     respone = client.get('https://www.jah.org.tw/JCHReg/Query/U')
                     soup = BeautifulSoup(respone.content,"html.parser")
                     time.sleep(random.randint(0,5))
@@ -151,7 +151,6 @@ class JJAH():
 
                         # 發送請求
                         self.payload['Val'] = quote(str(self.Val))
-                        time.sleep(random.randint(0,5))
                         respone = client.post('https://www.jah.org.tw/JCHReg/Ajax',data=self.payload)
                         time.sleep(random.randint(0,5))
                         if respone.json()['QueryList'] != '' :
@@ -164,7 +163,8 @@ class JJAH():
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "(複診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 大里仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                             time.sleep(random.randint(0,5))
-                    break
+                self.errorNum = 0
+                break
             except httpx.ReadTimeout:
                 print("ReadTimeout")
                 self.window.setStatusText(content="~網頁讀取超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
