@@ -68,9 +68,9 @@ class CSH():
                         'btnRegister': '確定',
                     }
 
-        self.options = webdriver.ChromeOptions()
-        self.options.add_argument('--disable-software-rasterizer')
-        self.browser = browser(options = self.options)
+        # self.options = webdriver.ChromeOptions()
+        # self.options.add_argument('--disable-software-rasterizer')
+        self.browser = browser
 
     def run(self):
         for self.page in range(self.currentPage-1,self.EndPage):
@@ -125,17 +125,20 @@ class CSH():
             while True:
                 # 請求驗證碼
                 self.respone = client.get('https://sysint.csh.org.tw/Register/ValidateCookie.aspx')
+                print("6")
                 with open('VaildCode.png','wb') as f :
                     f.write(self.respone.content)
                 self.payload['tbValid'] = self._ParseCaptcha()
 
                 # 發送登入請求
                 self.respone = client.post('https://sysint.csh.org.tw/Register/SearchReg.aspx', headers=self.headers, data=self.payload)
+                print("7")
                 soup = BeautifulSoup(self.respone.content, "html.parser")
                 if('對不起，您輸入的驗證碼有誤，請再輸入一次，謝謝!' not in soup):
                     break
                 
             self._changeHTMLStyle(self.respone.content)
+            print("8")
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
