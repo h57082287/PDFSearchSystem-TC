@@ -107,7 +107,7 @@ class UJAH():
                                 self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                                 Q_Status = self._getReslut(self.Data[self.idx]['Name']+"(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                                 self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
-                                self.log.write(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'],"台中仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                                self.log.write(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'],"台中仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                                 time.sleep(2)
                             else:
                                 break
