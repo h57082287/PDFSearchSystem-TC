@@ -89,6 +89,7 @@ class TAFGHZB():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str) -> bool:
+        status = False
         self.payload['idno'] = ID
         self.payload['birth'] = str(int(year)) + month + day
         with httpx.Client(http2=True) as client :
@@ -117,6 +118,7 @@ class TAFGHZB():
                         self.respone = client.get('https://web-reg-server.803.org.tw/816/WebReg/book_detail')
                         with open('reslut.html','w', encoding='utf-8') as f :
                             f.write(self._changeHTMLStyle(self.respone.content))
+                        status = True
                         break
                     else:
                         # 沒有登入成功的話先檢查有沒有病歷資料
@@ -135,6 +137,7 @@ class TAFGHZB():
                     print("跳過")
                     continue
             client.close()
+        return status
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
