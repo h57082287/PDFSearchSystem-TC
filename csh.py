@@ -101,14 +101,18 @@ class CSH():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
+        print("1")
         self.payload['tbIdNo'] = ID
         self.payload['tbBirthday'] = str(int(year) + 1911) + month + day
 
+        print("2")
         with httpx.Client(http2=True) as client :
+            print("3")
             self.respone = client.get('https://sysint.csh.org.tw/Register/SearchReg.aspx')
             # print(respone.status_code)
             soup = BeautifulSoup(self.respone.content,"html.parser")
             time.sleep(1)
+            print("4")
 
             # 獲取隱藏元素
             self.payload['ToolkitScriptManager1_HiddenField'] = soup.find('form',{'id':'form1'}).find('input',{'name':'ToolkitScriptManager1_HiddenField'}).get('value')
@@ -116,6 +120,7 @@ class CSH():
             self.payload['__PREVIOUSPAGE'] = soup.find('input',{'id':'__PREVIOUSPAGE'}).get('value')
             self.payload['__VIEWSTATEGENERATOR'] = soup.find('input',{'id':'__VIEWSTATEGENERATOR'}).get('value')
             self.payload['__EVENTVALIDATION'] = soup.find('input',{'id':'__EVENTVALIDATION'}).get('value')
+            print("5")
 
             while True:
                 # 請求驗證碼

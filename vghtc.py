@@ -58,6 +58,7 @@ class VGHTC():
                 self.currentNum = 1 
             else:
                 break
+
         try :
             self.VPN.stopVPN()
         except:
@@ -100,6 +101,7 @@ class VGHTC():
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
 
     def _Screenshot(self,condition:str,fileName:str) -> bool:
+        print(fileName)
         found = False
         soup = BeautifulSoup(self.browser.page_source,"html.parser")
         Tags = soup.find_all(['a','button','input','h1','h2','h3','h4','h5','span','b'])
