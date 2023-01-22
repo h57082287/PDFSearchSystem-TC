@@ -9,7 +9,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
-
+from selenium import webdriver
 
 # 中山醫
 class CSH():
@@ -67,7 +67,10 @@ class CSH():
                         '__ASYNCPOST': 'true',
                         'btnRegister': '確定',
                     }
-        self.browser = browser
+                    
+        self.options = webdriver.ChromeOptions()
+        self.options.add_argument('--disable-software-rasterizer')
+        self.browser = browser(chrome_options = self.options)
 
     def run(self):
         for self.page in range(self.currentPage-1,self.EndPage):

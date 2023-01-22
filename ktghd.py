@@ -110,8 +110,6 @@ class KTGHD():
         try:
             if ("醫師代碼" in self.browser.page_source):
                 raise requests.exceptions.ConnectTimeout("ip已被封鎖")
-            # with open('reslut.html','w', encoding='utf-8') as f :
-            #     f.write(self._changeHTMLStyle(self.browser.page_source))
         except requests.exceptions.ConnectTimeout:
             try:
                 self.VPN.startVPN()
