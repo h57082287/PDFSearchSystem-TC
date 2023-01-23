@@ -1,5 +1,5 @@
 /__pycache__
-*.txt
-login.conf
-reslut.html
-*.png
+/*.txt
+/login.conf
+/reslut.html
+/*.png
