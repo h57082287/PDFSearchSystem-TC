@@ -135,8 +135,7 @@ class TAFGHZB():
                         # 有病歷資料的話即為驗證碼輸入錯誤，進行重試
                         self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                         self.ErrorNum += 1
-                        if(self.ErrorNum == self.ErrorMax):
-                            
+                        # if(self.ErrorNum > self.ErrorMax):
                         time.sleep(1)
                         content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-中清\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
