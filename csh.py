@@ -68,8 +68,6 @@ class CSH():
                         'btnRegister': '確定',
                     }
 
-        # self.options = webdriver.ChromeOptions()
-        # self.options.add_argument('--disable-software-rasterizer')
         self.browser = browser
 
     def run(self):
@@ -106,7 +104,7 @@ class CSH():
         self.payload['tbBirthday'] = str(int(year) + 1911) + month + day
 
         print("2")
-        with httpx.Client(http2=True) as client :
+        with httpx.Client(http2=True, timeout=None, verify=False) as client :
             print("3")
             self.respone = client.get('https://sysint.csh.org.tw/Register/SearchReg.aspx')
             # print(respone.status_code)
