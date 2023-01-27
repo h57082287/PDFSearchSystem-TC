@@ -23,6 +23,8 @@ class CSH():
         self.filePath = filePath
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
+        self.errorNum = 0
+        self.maxError = 10
         self.Data = []
         # 各醫院新增項目
         self.idx = 0
@@ -104,39 +106,64 @@ class CSH():
         self.payload['tbBirthday'] = str(int(year) + 1911) + month + day
 
         print("2")
-        with httpx.Client(http2=True, timeout=None, verify=False) as client :
-            print("3")
-            self.respone = client.get('https://sysint.csh.org.tw/Register/SearchReg.aspx')
-            # print(respone.status_code)
-            soup = BeautifulSoup(self.respone.content,"html.parser")
-            time.sleep(1)
-            print("4")
+        try:
+            with httpx.Client(http2=True, timeout=None, verify=False) as client :
+                print("3")
+                self.respone = client.get('https://sysint.csh.org.tw/Register/SearchReg.aspx')
+                # print(respone.status_code)
+                soup = BeautifulSoup(self.respone.content,"html.parser")
+                time.sleep(1)
+                print("4")
 
-            # 獲取隱藏元素
-            self.payload['ToolkitScriptManager1_HiddenField'] = soup.find('form',{'id':'form1'}).find('input',{'name':'ToolkitScriptManager1_HiddenField'}).get('value')
-            self.payload['__VIEWSTATE'] = soup.find('input',{'id':'__VIEWSTATE'}).get('value')
-            self.payload['__PREVIOUSPAGE'] = soup.find('input',{'id':'__PREVIOUSPAGE'}).get('value')
-            self.payload['__VIEWSTATEGENERATOR'] = soup.find('input',{'id':'__VIEWSTATEGENERATOR'}).get('value')
-            self.payload['__EVENTVALIDATION'] = soup.find('input',{'id':'__EVENTVALIDATION'}).get('value')
-            print("5")
+                # 獲取隱藏元素
+                self.payload['ToolkitScriptManager1_HiddenField'] = soup.find('form',{'id':'form1'}).find('input',{'name':'ToolkitScriptManager1_HiddenField'}).get('value')
+                self.payload['__VIEWSTATE'] = soup.find('input',{'id':'__VIEWSTATE'}).get('value')
+                self.payload['__PREVIOUSPAGE'] = soup.find('input',{'id':'__PREVIOUSPAGE'}).get('value')
+                self.payload['__VIEWSTATEGENERATOR'] = soup.find('input',{'id':'__VIEWSTATEGENERATOR'}).get('value')
+                self.payload['__EVENTVALIDATION'] = soup.find('input',{'id':'__EVENTVALIDATION'}).get('value')
+                print("5")
 
-            while True:
-                # 請求驗證碼
-                self.respone = client.get('https://sysint.csh.org.tw/Register/ValidateCookie.aspx')
-                print("6")
-                with open('VaildCode.png','wb') as f :
-                    f.write(self.respone.content)
-                self.payload['tbValid'] = self._ParseCaptcha()
+                while True:
+                    # 請求驗證碼
+                    self.respone = client.get('https://sysint.csh.org.tw/Register/ValidateCookie.aspx')
+                    print("6")
+                    with open('VaildCode.png','wb') as f :
+                        f.write(self.respone.content)
+                    self.payload['tbValid'] = self._ParseCaptcha()
 
-                # 發送登入請求
-                self.respone = client.post('https://sysint.csh.org.tw/Register/SearchReg.aspx', headers=self.headers, data=self.payload)
-                print("7")
-                soup = BeautifulSoup(self.respone.content, "html.parser")
-                if('對不起，您輸入的驗證碼有誤，請再輸入一次，謝謝!' not in soup):
-                    break
-                
-            self._changeHTMLStyle(self.respone.content)
-            print("8")
+                    # 發送登入請求
+                    self.respone = client.post('https://sysint.csh.org.tw/Register/SearchReg.aspx', headers=self.headers, data=self.payload)
+                    print("7")
+                    soup = BeautifulSoup(self.respone.content, "html.parser")
+                    if('對不起，您輸入的驗證碼有誤，請再輸入一次，謝謝!' not in soup):
+                        break
+                    
+                self._changeHTMLStyle(self.respone.content)
+                print("8")
+        except httpx.ConnectTimeout:
+            print("發生時間例外")
+            self.window.setStatusText(content="~連線超時，啟動VPN~",x=0.3,y=0.75,size=14)
+            self.errorNum = 0
+            try:
+                self.VPN.startVPN()
+                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 中山醫\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+            except:
+                messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                self.window.Runstatus = False
+        except AttributeError:
+            self.window.setStatusText(content="~網頁請求回應不完全，即將重試(" + str(self.errorNum) + ")~",x=0.3,y=0.75,size=14)
+            self.errorNum += 1
+            if(self.errorNum > self.maxError):
+                self.errorNum = 0
+                try:
+                    self.VPN.startVPN()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 中山醫\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+            time.sleep(5)
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
