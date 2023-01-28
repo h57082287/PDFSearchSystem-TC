@@ -97,19 +97,43 @@ class FYH():
         self.payload['birthday'] = year + '-' + month + '-' + day
         self.payload2['cardid'] = ID
         self.payload2['birthday'] = str(int(year) + 1911) + month + day
-
-        with httpx.Client(http2=True) as client :
-            # 進入網頁
-            self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
-            if(self.respone.json()[0]['msg'] == "病患不存在"):
-                self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-                with open("reslut.html", "w", encoding="utf-8") as f:
-                    f.write(self.respone.json()[0]['msg'])
-            else:
-                self.respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords', timeout=20)
-                self.respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
-                self._JSONDataToHTML(self.respone2,self.respone.text)
-        client.close()
+        try:
+            with httpx.Client(http2=True, timeout=None, verify=False) as client :
+                # 進入網頁
+                self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
+                if(self.respone.json()[0]['msg'] == "病患不存在"):
+                    self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+                    with open("reslut.html", "w", encoding="utf-8") as f:
+                        f.write(self.respone.json()[0]['msg'])
+                else:
+                    self.respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords', timeout=20)
+                    self.respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
+                    self._JSONDataToHTML(self.respone2,self.respone.text)
+            client.close()
+        except httpx.ConnectTimeout:
+            print("發生時間例外")
+            self.window.setStatusText(content="~連線超時，啟動VPN~",x=0.3,y=0.75,size=14)
+            self.errorNum = 0
+            try:
+                self.VPN.startVPN()
+                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 豐原醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+            except:
+                messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                self.window.Runstatus = False
+        except AttributeError:
+            self.window.setStatusText(content="~網頁請求回應不完全，即將重試(" + str(self.errorNum) + ")~",x=0.3,y=0.75,size=14)
+            self.errorNum += 1
+            if(self.errorNum > self.maxError):
+                self.errorNum = 0
+                try:
+                    self.VPN.startVPN()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 豐原醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+            time.sleep(5)
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
