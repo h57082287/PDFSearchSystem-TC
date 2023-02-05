@@ -1,16 +1,19 @@
-import random
-import httpx
+# import random
+# import httpx
 from bs4 import BeautifulSoup
 import ddddocr
-import os
+# import os
 import time
 from PDFReader import PDFReader
 # 2022/12/24加入
 from LogController import Log
-from VPNClient import VPN
-from VPNWindow import VPNWindow
-from tkinter import messagebox
-import selenium
+# from VPNClient import VPN
+# from VPNWindow import VPNWindow
+# from tkinter import messagebox
+# import selenium
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.common.alert import Alert
 
 # 童綜合醫院
 class RG():
@@ -30,6 +33,7 @@ class RG():
         self.page = 0
         self.datalen = 0
         self.log = Log()
+        self.url = "https://rg.sltung.com.tw/frmRgQuery.aspx?chartNam="
 
         # 建立header
         self.headers = {
@@ -52,14 +56,14 @@ class RG():
 
     def run(self):
         # 2022/12/24加入 (VPN 檢測)
-        if self.window.checkVal_AUVPNM.get() :
-            self.VPN = VPN(self.window)
-            VPNWindow(self.VPN)
-            if not self.VPN.InstallationCkeck() :
-                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-                self.window.RunStatus = False
-                self.browser.quit()
-                os._exit(0)
+        # if self.window.checkVal_AUVPNM.get() :
+        #     self.VPN = VPN(self.window)
+        #     VPNWindow(self.VPN)
+        #     if not self.VPN.InstallationCkeck() :
+        #         messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+        #         self.window.RunStatus = False
+        #         self.browser.quit()
+        #         os._exit(0)
         for self.page in range(self.currentPage-1,self.EndPage):
             if self.window.RunStatus:
                 if self._PDFData(self.page):
@@ -88,131 +92,33 @@ class RG():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        self.payload['ctl00$ContentPlaceHolder2$tbID'] = ID
-        self.payload['ctl00$ContentPlaceHolder2$ddlMonth'] = int(month)
-        self.payload['ctl00$ContentPlaceHolder2$ddlDay'] = int(day)
-        while True : # 加入VPN切換功能
-            try:
-                with httpx.Client(http2=True) as client :
-                    # 進入網頁
-                    respone = client.get('https://rg.sltung.com.tw/frmRgQuery.aspx?chartNam=' + ID)
-                    soup = BeautifulSoup(respone.content,"html.parser")
-                    time.sleep(random.randint(0,5))
-                    
-                    # 獲取隱藏驗證
-                    self.payload['__VIEWSTATE'] = soup.find('input',{'id':'__VIEWSTATE'}).get('value')
-                    self.payload['__VIEWSTATEGENERATOR'] = soup.find('input',{'id':'__VIEWSTATEGENERATOR'}).get('value')
-                    self.payload['__EVENTVALIDATION'] = soup.find('input',{'id':'__EVENTVALIDATION'}).get('value')
-                    
-                    while True:
-                        # 請求驗證碼
-                        respone = client.get('https://rg.sltung.com.tw/img.aspx')
-                        with open('VaildCode.png','wb') as f :
-                            f.write(respone.content)
-                        self.payload['ctl00$ContentPlaceHolder2$TextBox1'] = self._ParseCaptcha()
-                        time.sleep(random.randint(0,5))
-
-                        # 發送查詢請求
-                        respone = client.post('https://rg.sltung.com.tw/frmRgQuery.aspx?chartNam=' + ID,data=(self.payload),headers=self.headers)
-                        if not self._CKCaptcha(respone.content,"scrtpt","識別碼錯誤"):
-                            with open("reslut.html",'wb') as f :
-                                f.write(respone.content)
-                            break
-                        else:
-                            self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
-                            time.sleep(1)
-                            content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 童綜合醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                            time.sleep(random.randint(0,5))
-                    break
-            except httpx.ReadTimeout:
-                print("ReadTimeout")
-                self.window.setStatusText(content="~網頁讀取超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
-                self.errorNum += 1
-                if(self.errorNum > self.maxError):
-                    self.errorNum = 0
-                    try:
-                        self.VPN.startVPN()
-                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 童綜合醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                    except:
-                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                        self.window.Runstatus = False
-                        break
-            except httpx.ReadError:
-                print("ConnectTimeout")
-                self.window.setStatusText(content="~網頁讀取錯誤，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
-                self.errorNum += 1
-                if(self.errorNum > self.maxError):
-                    self.errorNum = 0
-                    try:
-                        self.VPN.startVPN()
-                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 童綜合醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                    except:
-                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                        self.window.Runstatus = False
-                        break
-            except AttributeError:
-                self.window.setStatusText(content="~網頁請求回應不完全，即將重試(" + str(self.errorNum) + ")~",x=0.3,y=0.75,size=14)
-                self.errorNum += 1
-                if(self.errorNum > self.maxError):
-                    self.errorNum = 0
-                    try:
-                        self.VPN.startVPN()
-                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 童綜合醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                    except:
-                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                        self.window.Runstatus = False
-                        break
-                print("AttributeError")
-                time.sleep(5)
-            except httpx.ConnectTimeout:
-                print("發生時間例外")
-                self.window.setStatusText(content="~連線超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
-                self.errorNum += 1
-                if(self.errorNum > self.maxError):
-                    self.errorNum = 0
-                    try:
-                        self.VPN.startVPN()
-                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 童綜合醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                    except:
-                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                        self.window.Runstatus = False
-                        break
-            except httpx.ConnectError:
-                print("發生連線錯誤")
-                self.window.setStatusText(content="~連線錯誤，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
-                self.errorNum += 1
-                if(self.errorNum > self.maxError):
-                    self.errorNum = 0
-                    try:
-                        self.VPN.startVPN()
-                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 童綜合醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                    except:
-                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                        self.window.Runstatus = False
-                        break
-            except selenium.common.exceptions.TimeoutException:
-                print("瀏覽器超時")
-                self.window.setStatusText(content="~瀏覽器超時，重新嘗試(" + str(self.errorNum) + ")",x=0.3,y=0.75,size=14)
-                self.errorNum += 1
-                if(self.errorNum > self.maxError):
-                    self.errorNum = 0
-                    try:
-                        self.VPN.startVPN()
-                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 童綜合醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                        self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                    except:
-                        messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                        self.window.Runstatus = False
-                        break
+        while True:
+            print(1)
+            self.browser.get(self.url + ID)
+            print(2)
+            time.sleep(1)
+            print(3)
+            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_tbID"]').send_keys(ID)
+            print(4)
+            time.sleep(1)
+            Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_ddlMonth"]')).select_by_value(str(int(month)))
+            print(5)
+            time.sleep(1)
+            Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_ddlDay"]')).select_by_value(str(int(day)))
+            print(6)
+            time.sleep(1)
+            ans = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH , '//*[@id="ctl00_ContentPlaceHolder2_Image1"]'))
+            print(7)
+            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_TextBox1"]').send_keys(ans)
+            time.sleep(1)
+            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_btConfirm"]').click()
+            time.sleep(1)
+            reslut = self._CKCaptcha("Alert", "識別碼錯誤")
+            print("結果為 :" + str(reslut))
+            if reslut :
+                break
 
     def _startBrowser(self,name,ID):
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
         if self._Screenshot("看診進度查詢",(name + '_' + ID + '_童綜合醫院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
@@ -235,33 +141,44 @@ class RG():
         mPDFReader = PDFReader(self.window,self.filePath)
         status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
         return status
-    
-    # def _changeHTMLStyle(self,page_content,targer:str):
-    #     soup = BeautifulSoup(page_content,"html.parser")
-    #     # 替換屬性內容，強制複寫資源路徑(針對img)
-    #     Tags = soup.find_all(['img'])
-    #     for Tag in Tags:
-    #         Tag['src'] = targer + Tag['src'] 
-    #     # 替換屬性內容，強制複寫資源路徑(針對link)
-    #     Tags = soup.find_all(['link'])
-    #     for Tag in Tags:
-    #         Tag['href'] = targer + Tag['href']
-    #     return str(soup)
-    
-    def _CKCaptcha(self,page_content,contentType,keyWord) -> bool:
-        soup = BeautifulSoup(page_content,"html.parser")
-        if keyWord in str(soup.find_all(contentType)):
-            return True
-        return False
 
     # 驗證碼辨識
-    def _ParseCaptcha(self):
-        with open("VaildCode.png",'rb') as f :
-            img_bytes = f.read()
+    def _ParseCaptcha4Img(self, element):
+        image_base64 = self.browser.execute_script("\
+                var ele = arguments[0];\
+                var cnv = document.createElement('canvas');\
+                cnv.width = ele.width;\
+                cnv.height = ele.height;\
+                cnv.fillStyle = '#FFFFFF';\
+                cnv.getContext('2d').drawImage(ele,0,0);\
+                return cnv.toDataURL('image/png').substring(22);\
+            ",element)
         orc = ddddocr.DdddOcr()
-        result = orc.classification(img_bytes)
-        os.remove("VaildCode.png")
+        result = orc.classification(image_base64)
         return result
+    
+    # 檢查驗證是否成功
+    def _CKCaptcha(self, CK_Method, msg):
+        try:
+            if CK_Method == "Alert":
+                print("這是彈窗訊息 : " + Alert(self.browser).text.strip())
+                print("這是條件訊息 : " + msg)
+                if Alert(self.browser).text.strip() == msg:
+                    Alert(self.browser).accept()
+                    return False
+                else:
+                    print(Alert(self.browser).text)
+                    Alert(self.browser).accept()
+                    return True
+            if CK_Method == "Web":
+                html = BeautifulSoup(self.browser,"html.parser")
+                for msg in html.text:
+                    return False
+                return True
+        except Exception as e :
+            print("這是錯誤訊息 : " + str(e))
+            return True
+
 
     def _endBrowser(self):
         self.browser.quit()
