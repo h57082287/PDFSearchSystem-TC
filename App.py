@@ -351,6 +351,7 @@ class MainWindows():
     def Start(self):
         self._LockUI()
         self.browser = webdriver.Chrome(ChromeDriverManager().install())
+        self.browser.set_page_load_timeout(180)
         print("Init URLList")
         self.URLList = {
             "童綜合醫院" : RG(self.browser,self,self.beginPage.get(),self.beginNum.get(),self.endPage.get(),self.endNum.get(),self.outputPath,self.filePath),
