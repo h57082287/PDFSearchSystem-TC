@@ -171,8 +171,9 @@ class RG():
                     Alert(self.browser).accept()
                     return True
             if CK_Method == "Web":
-                html = BeautifulSoup(self.browser,"html.parser")
-                for msg in html.text:
+                html = str(BeautifulSoup(self.browser.page_source,"html.parser"))
+                print(html)
+                if msg in html:
                     return False
                 return True
         except Exception as e :
