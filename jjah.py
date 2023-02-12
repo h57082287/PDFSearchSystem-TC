@@ -1,18 +1,16 @@
 import time
-from urllib.parse import quote
-import httpx
 from bs4 import BeautifulSoup
 import ddddocr
 import os
 from PDFReader import PDFReader
-import json
 # 2022/12/24加入
 from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
-import selenium
-import random
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.alert import Alert
+
 
 # 大里仁愛醫院
 class JJAH():
@@ -32,9 +30,9 @@ class JJAH():
         self.page = 0
         self.datalen = 0
         self.log = Log()
+        self.maxError =10
         self.errorNum = 0
-        self.maxError = 10
-        self.url = ""
+        self.url = "https://www.jah.org.tw/JCHReg/Query/J"
         self.browser = browser
 
     def run(self):
@@ -56,20 +54,18 @@ class JJAH():
                             # 查詢狀態
                             Q_Status = False
                             # 初診查詢
-                            self.Val[2]['value'] = 'Y'
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "(初診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 大里仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                            Q_Status = self._getReslut(self.Data[self.idx]['Name'] + "(初診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                            self._startBrowser(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'])
+                            self._getReslut(self.Data[self.idx]['Name']+"(初診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                            Q_Status = self._startBrowser(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'],"大里仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             time.sleep(2)
                             # 複診查詢
                             if not(Q_Status) and self.window.RunStatus:
-                                self.Val[2]['value'] = 'N'
                                 content = "姓名 : " + self.Data[self.idx]['Name'] + "(複診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 大里仁愛醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                                 self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                                Q_Status = self._getReslut(self.Data[self.idx]['Name'] + "(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                                self._startBrowser(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'])
+                                Q_Status = self._getReslut(self.Data[self.idx]['Name']+"(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                                self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                                 self.log.write(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'],"大里仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                                 time.sleep(2)
                             else:
@@ -89,16 +85,53 @@ class JJAH():
         self._endBrowser()
         del self
 
-    def _getReslut(self,name:str, ID:str, year:str, month:str, day:str) -> bool:
+    def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
+        while True:
+            self.browser.get(self.url)
+            time.sleep(2)
+            print(name)
+            if "(初診)" in name:
+                self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[1]/label[2]/span').click()
+                time.sleep(2)
+            print(1)
+            # ActionChains(driver).move_to_element(driver.find_element_by_xpath('//*[@id="QueryForm"]/div[1]/label[2]/input')).click().perform()
+            self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/input').send_keys(ID)
+            time.sleep(2)
+            print(2)
+            bornDate = str(int(year) + 1911) + month + day
+            self.browser.find_element(By.XPATH, '//*[@id="birthday"]').send_keys(bornDate)
+            time.sleep(2)
+            print(3)
+            Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="captcha"]'))
+            time.sleep(3)
+            print(4)
+            self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/div[3]/input').send_keys(Captcha)
+            time.sleep(3)
+            print(5)
+            self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/div[4]/div/button[1]').click()
+            time.sleep(3)
+            print(6)
+            dropDown="var q=document.documentElement.scrollTop=500"  
+            self.browser.execute_script(dropDown)
+            time.sleep(3)
+            print(7)
+            reslut = self._CKCaptcha("Web", "驗證碼比對錯誤，請重新輸入")
+            if not reslut:
+                print("8-1")
+                self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.7,size=20)
+            else:
+                dropUp="var q=document.documentElement.scrollTop=0"  
+                self.browser.execute_script(dropUp)
+                print("8-2")
+                break
         
-        return status
-
-    def _startBrowser(self,name,ID):
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
+    def _startBrowser(self,name,ID) -> bool:
         if self._Screenshot("取消掛號",(name + '_' + ID + '_大里仁愛醫院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
+            return True
         else:
             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+            return False
 
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
@@ -118,74 +151,42 @@ class JJAH():
         status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
         return status
     
-    # def _changeHTMLStyle(self,page_content,targer:str):
-    #     soup = BeautifulSoup(page_content,"html.parser")
-    #     # 替換屬性內容，強制複寫資源路徑(針對img)
-    #     Tags = soup.find_all(['img'])
-    #     for Tag in Tags:
-    #         Tag['src'] = targer + Tag['src'] 
-    #     # 替換屬性內容，強制複寫資源路徑(針對link)
-    #     Tags = soup.find_all(['link'])
-    #     for Tag in Tags:
-    #         Tag['href'] = targer + Tag['href']
-    #     return str(soup)
-    
-    def _JSONDataToHTML(self,jsonData) -> bool:
-        tableData = ''
-        datas = []
-        if jsonData['codeError'] != 'Y':
-            if jsonData['QueryList'] != '':
-                datas = json.loads(jsonData['QueryList'])
-            for data in datas:
-                tableData += '<tr><td>大里仁愛醫院</td>\
-                                <td>' + data['opdDate'][0:4] + '-' + data['opdDate'][4:6] + '-' + data['opdDate'][6:8] + '(' + data['week'] + ')</td>\
-                                <td></td>\
-                                <td>' + data['deptName'] + '</td>\
-                                <td>' + data['doctorName'] + '</td>\
-                                <td>' + data['opdTimeID'] + '</td>\
-                                <td></td>\
-                                <td></td>\
-                                <td>' + data['estiTime'] + '</td>\
-                                <td><a class="btn cancel openCheckCancelReg" href="#modal-cancel" data-lity="">取消掛號</a></td>\
-                                </tr>'
-            html = '<html>\
-                        <head>\
-                            <link href="https://www.jah.org.tw/JCHReg/Styles/style.css" rel="stylesheet">\
-                            <link href="https://www.jah.org.tw/JCHReg/Styles/sweetalert.css" rel="stylesheet">\
-                        </head>\
-                        <span><sapn id="name">初診病患</sapn>  君，您的掛號資料：</span>\
-                        <table class="table wide10 two-tone query">\
-                            <thead>\
-                                <tr>\
-                                    <th>院區</th>\
-                                    <th>看診日期</th>\
-                                    <th>診別</th>\
-                                    <th>科別</th>\
-                                    <th>醫師姓名	</th>\
-                                    <th>序號</th>\
-                                    <th>門診視訊</th>\
-                                    <th>就診地點</th>\
-                                    <th>預定看診時間</th>\
-                                    <th>是否取消掛號</th>\
-                                </tr>\
-                            </thead>\
-                            <tbody id="regViewList">' + tableData + '\
-                            </tbody>\
-                        </table>\
-                    </html>'
-            with open('reslut.html','w',encoding='utf-8') as f :
-                f.write(html)
+    # 檢查驗證是否成功
+    def _CKCaptcha(self, CK_Method, msg):
+        try:
+            if CK_Method == "Alert":
+                print("這是彈窗訊息 : " + Alert(self.browser).text.strip())
+                print("這是條件訊息 : " + msg)
+                if Alert(self.browser).text.strip() == msg:
+                    Alert(self.browser).accept()
+                    return False
+                else:
+                    print(Alert(self.browser).text)
+                    Alert(self.browser).accept()
+                    return True
+            if CK_Method == "Web":
+                html = BeautifulSoup(self.browser,"html.parser")
+                for msg in html.text:
+                    return False
+                return True
+        except Exception as e :
+            print("這是錯誤訊息 : " + str(e))
             return True
-        else:
-            return False
+    
     
     # 驗證碼辨識
-    def _ParseCaptcha(self):
-        with open("VaildCode.png",'rb') as f :
-            img_bytes = f.read()
+    def _ParseCaptcha4Img(self, element):
+        image_base64 = self.browser.execute_script("\
+                var ele = arguments[0];\
+                var cnv = document.createElement('canvas');\
+                cnv.width = ele.width;\
+                cnv.height = ele.height;\
+                cnv.fillStyle = '#FFFFFF';\
+                cnv.getContext('2d').drawImage(ele,0,0);\
+                return cnv.toDataURL('image/png').substring(22);\
+            ",element)
         orc = ddddocr.DdddOcr()
-        result = orc.classification(img_bytes)
-        os.remove("VaildCode.png")
+        result = orc.classification(image_base64)
         return result
 
     def _endBrowser(self):
