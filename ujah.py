@@ -1,12 +1,8 @@
-import random
 import time
-from urllib.parse import quote
-import httpx
 from bs4 import BeautifulSoup
 import ddddocr
 import os
 from PDFReader import PDFReader
-import json
 # 2022/12/24加入
 from LogController import Log
 from VPNClient import VPN
@@ -14,7 +10,6 @@ from VPNWindow import VPNWindow
 from tkinter import messagebox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.alert import Alert
-from selenium.webdriver.support.ui import Select
 
 
 # 台中仁愛醫院
