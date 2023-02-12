@@ -166,7 +166,6 @@ class JJAH():
                     return True
             if CK_Method == "Web":
                 html = str(BeautifulSoup(self.browser.page_source,"html.parser"))
-                print(html)
                 if msg in html:
                     return False
                 return True
