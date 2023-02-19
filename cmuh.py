@@ -51,7 +51,7 @@ class CMUH():
                             # 初診查詢
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "(初診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                            self._getReslut(self.Data[self.idx]['Name'] + "(初診)", self.Data[self.idx]['ID'], "088","01","01")
+                            self._getReslut_1(self.Data[self.idx]['Name'] + "(初診)", self.Data[self.idx]['ID'], "088","01","01")
                             Q_Status = self._startBrowser(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'] + "(初診)","中國醫學大學豐原分院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             time.sleep(2)
@@ -59,7 +59,7 @@ class CMUH():
                             if not(Q_Status) and self.window.RunStatus:
                                 content = "姓名 : " + self.Data[self.idx]['Name'] + "(複診)\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                                 self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                                self._getReslut(self.Data[self.idx]['Name'] + "(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
+                                self._getReslut_2(self.Data[self.idx]['Name'] + "(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                                 self._startBrowser(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'])
                                 self.log.write(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'],"中國醫學大學豐原分院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                                 time.sleep(2)
@@ -82,10 +82,27 @@ class CMUH():
         self._endBrowser()
         del self
 
-    def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
+    def _getReslut_1(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
             try:
-                respone = requests.get('http://61.66.117.10/cgi-bin/eng/reg21.cgi?Tel=' + ID + '&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=' + day + '&month=' + month + '&Year=' + year)
+                respone = requests.get('http://61.66.117.10/cgi-bin/eng/reg21.cgi?Tel=' + ID + '&&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=88')
+                if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
+                    raise requests.exceptions.ConnectTimeout("ip已被封鎖")
+                with open("reslut.html",'wb') as f :
+                    f.write(respone.content)
+                break
+            except requests.exceptions.ConnectTimeout:
+                try:
+                    self.VPN.startVPN()
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+                    break
+    
+    def _getReslut_2(self,name:str, ID:str, year:str, month:str, day:str):
+        while True:
+            try:
+                respone = requests.get('http://61.66.117.10/cgi-bin/eng/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
                 if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
                     raise requests.exceptions.ConnectTimeout("ip已被封鎖")
                 with open("reslut.html",'wb') as f :
