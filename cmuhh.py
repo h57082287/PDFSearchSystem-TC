@@ -87,12 +87,14 @@ class CMUHH():
             try:
                 print("查詢網址 : " + 'https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01')
                 respone = requests.get('https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01', timeout=None, verify=False)
+                print(respone.status_code)
                 if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
                     raise requests.exceptions.ConnectTimeout("ip已被封鎖")
                 with open("reslut.html",'wb') as f :
                     f.write(respone.content)
                 break
             except requests.exceptions.ConnectTimeout:
+                print("發生超時")
                 try:
                     self.VPN.startVPN()
                 except:
@@ -105,6 +107,7 @@ class CMUHH():
             try:
                 print("查詢網址 : " + 'https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
                 respone = requests.get('https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
+                print(respone.status_code)
                 if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
                     raise requests.exceptions.ConnectTimeout("ip已被封鎖")
                 with open("reslut.html",'wb') as f :
