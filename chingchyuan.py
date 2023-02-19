@@ -10,6 +10,8 @@ from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
 import random
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 
 # 清泉醫院
@@ -72,7 +74,7 @@ class CHINGCHYUAN():
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 清泉醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                             self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                            self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                            # self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"清泉醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             sec = random.randint(1, 5)
                             print(sec)
@@ -93,56 +95,93 @@ class CHINGCHYUAN():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        self.payload['cardid'] = ID
-        self.payload['birthday'] = year + '-' + month + '-' + day
-        self.payload2['cardid'] = ID
-        self.payload2['birthday'] = str(int(year) + 1911) + month + day
+        # self.payload['cardid'] = ID
+        # self.payload['birthday'] = year + '-' + month + '-' + day
+        # self.payload2['cardid'] = ID
+        # self.payload2['birthday'] = str(int(year) + 1911) + month + day
 
-        try:
-            with httpx.Client(http2=True, timeout=None, verify=False) as client :
-                # 進入網頁
-                self.respone = client.post('http://webreg.ching-chyuan.com.tw:81/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
-                if(self.respone.json()[0]['msg'] == "病患不存在"):
-                    self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-                    with open("reslut.html", "w", encoding="utf-8") as f:
-                        f.write(self.respone.json()[0]['msg'])
-                else:
-                    self.respone = client.get('http://webreg.ching-chyuan.com.tw:81/OReg/ScheduledRecords', timeout=20)
-                    self.respone2 = client.post('http://webreg.ching-chyuan.com.tw:81/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
-                    self._JSONDataToHTML(self.respone2,self.respone.text)
-            client.close()
-        except httpx.ConnectTimeout:
-            print("發生時間例外")
-            self.window.setStatusText(content="~連線超時，啟動VPN~",x=0.3,y=0.75,size=14)
-            self.errorNum = 0
-            try:
-                self.VPN.startVPN()
-                content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 清泉醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-            except:
-                messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                self.window.Runstatus = False
-        except AttributeError:
-            self.window.setStatusText(content="~網頁請求回應不完全，即將重試(" + str(self.errorNum) + ")~",x=0.3,y=0.75,size=14)
-            self.errorNum += 1
-            if(self.errorNum > self.maxError):
-                self.errorNum = 0
-                try:
-                    self.VPN.startVPN()
-                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 清泉醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                    self.window.Runstatus = False
-            time.sleep(5)
-        
+        # try:
+        #     with httpx.Client(http2=True, timeout=None, verify=False) as client :
+        #         # 進入網頁
+        #         self.respone = client.post('http://webreg.ching-chyuan.com.tw:81/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
+        #         if(self.respone.json()[0]['msg'] == "病患不存在"):
+        #             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        #             with open("reslut.html", "w", encoding="utf-8") as f:
+        #                 f.write(self.respone.json()[0]['msg'])
+        #         else:
+        #             self.respone = client.get('http://webreg.ching-chyuan.com.tw:81/OReg/ScheduledRecords', timeout=20)
+        #             self.respone2 = client.post('http://webreg.ching-chyuan.com.tw:81/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
+        #             self._JSONDataToHTML(self.respone2,self.respone.text)
+        #     client.close()
+        # except httpx.ConnectTimeout:
+        #     print("發生時間例外")
+        #     self.window.setStatusText(content="~連線超時，啟動VPN~",x=0.3,y=0.75,size=14)
+        #     self.errorNum = 0
+        #     try:
+        #         self.VPN.startVPN()
+        #         content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 清泉醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+        #         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+        #     except:
+        #         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+        #         self.window.Runstatus = False
+        # except AttributeError:
+        #     self.window.setStatusText(content="~網頁請求回應不完全，即將重試(" + str(self.errorNum) + ")~",x=0.3,y=0.75,size=14)
+        #     self.errorNum += 1
+        #     if(self.errorNum > self.maxError):
+        #         self.errorNum = 0
+        #         try:
+        #             self.VPN.startVPN()
+        #             content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 清泉醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+        #             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+        #         except:
+        #             messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+        #             self.window.Runstatus = False
+        #     time.sleep(5)
+
+        self.browser.get("http://webreg.ching-chyuan.com.tw:81/OReg/HomePage?_gl=1*1o9jpf3*_ga*MzgxOTkwODA4LjE2NjIxNjk0MTg.*_ga_ZP6S52ZB6K*MTY2MjE2OTQxNy4xLjEuMTY2MjE2OTYwNi42MC4wLjA.*_ga_GWGX916MXP*MTY2MjE2OTQxNy4xLjEuMTY2MjE2OTYwNi4wLjAuMA..#")
+        time.sleep(3)
+        self.browser.find_element(by=By.XPATH, value='//*[@id="scheduledrecords"]').click()
+        time.sleep(2)
+        self.browser.find_element(By.XPATH,'//*[@id="user-cardid"]').send_keys(ID)
+        time.sleep(2)
+        bornDate = year + month + day
+        self.browser.find_element(By.XPATH,'//*[@id="user-birthday"]').send_keys(bornDate)
+        time.sleep(2)
+        self.browser.find_element(By.XPATH,'//*[@id="login-confirm"]').click()
+        time.sleep(3)
+        # 檢查登入狀況
+        result = EC.alert_is_present()(self.browser)  # 檢查驗證碼是否正確的彈窗
+        if result:
+            alert = self.browser.switch_to_alert()
+            alert.accept()
+            self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        else:
+            soup = BeautifulSoup(self.browser.page_source,"html.parser")
+            status = False
+            Btns = soup.find_all("div")
+            for b in Btns :
+                print(b.text)
+                if b.text == "取消" :
+                    status = True
+                    # self.Screenshot(driver=driver,webPage=driver.page_source,element="",condition="",YN=None,fileName =self.Datas[i]['Name'] + "_" + self.Datas[i]['ID']  + "_" + str(self.select).replace('\n','') + ".png",manual=True)
+                    if self._Screenshot("預約成功",(name + '_' + ID + '_清泉醫院.png')) :
+                        self.browser.find_element(by=By.XPATH, value='//*[@id="btn-logout"]').click()
+                        self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
+                    else:
+                        self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+                    break
+            if not status :
+                self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        time.sleep(2)
+        self.browser.get("http://webreg.ching-chyuan.com.tw:81/OReg/HomePage?_gl=1*1o9jpf3*_ga*MzgxOTkwODA4LjE2NjIxNjk0MTg.*_ga_ZP6S52ZB6K*MTY2MjE2OTQxNy4xLjEuMTY2MjE2OTYwNi42MC4wLjA.*_ga_GWGX916MXP*MTY2MjE2OTQxNy4xLjEuMTY2MjE2OTYwNi4wLjAuMA..#")
+
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        if self._Screenshot("預約成功",(name + '_' + ID + '_清泉醫院.png')) :
-            self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
-        else:
-            self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        # if self._Screenshot("預約成功",(name + '_' + ID + '_清泉醫院.png')) :
+        #     self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
+        # else:
+        #     self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
 
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
