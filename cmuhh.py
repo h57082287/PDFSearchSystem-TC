@@ -85,6 +85,7 @@ class CMUHH():
     def _getReslut_1(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
             try:
+                print("查詢網址 : " + 'https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01')
                 respone = requests.get('https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01')
                 if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
                     raise requests.exceptions.ConnectTimeout("ip已被封鎖")
@@ -102,6 +103,7 @@ class CMUHH():
     def _getReslut_2(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
             try:
+                print("查詢網址 : " + 'https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
                 respone = requests.get('https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
                 if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
                     raise requests.exceptions.ConnectTimeout("ip已被封鎖")
