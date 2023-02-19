@@ -86,7 +86,6 @@ class AUH():
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
                     break
-
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
         if self._Screenshot(" 取消此筆掛號 ",(name + '_' + ID + '_亞洲大學.png')) :
