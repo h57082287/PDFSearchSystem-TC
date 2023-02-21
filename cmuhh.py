@@ -1,3 +1,4 @@
+import random
 import time
 import requests
 from PDFReader import PDFReader
@@ -8,6 +9,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import selenium
 
 # 中國醫學大學
 class CMUHH():
@@ -29,6 +31,8 @@ class CMUHH():
         self.page = 0
         self.datalen = 0
         self.log = Log()
+        self.reTry = 0
+        self.maxTry = 5
 
     def run(self):
         # 2022/12/25加入 (VPN 檢測)
@@ -54,6 +58,7 @@ class CMUHH():
                             self._getReslut_1(self.Data[self.idx]['Name'] + "(初診)", self.Data[self.idx]['ID'], "088","01","01")
                             Q_Status = self._startBrowser(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'] + "(初診)","中國醫學大學",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                            self.reTry = 0
                             time.sleep(2)
                             # 複診查詢
                             if not(Q_Status) and self.window.RunStatus:
@@ -62,6 +67,7 @@ class CMUHH():
                                 self._getReslut_2(self.Data[self.idx]['Name'] + "(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                                 self._startBrowser(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'])
                                 self.log.write(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'],"中國醫學大學",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                                self.reTry = 0
                                 time.sleep(2)
                             else:
                                 break
@@ -86,15 +92,17 @@ class CMUHH():
         while True:
             try:
                 print("查詢網址 : " + 'https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01')
-                respone = requests.get('https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01', timeout=None, verify=False)
-                print(respone.status_code)
-                if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
-                    raise requests.exceptions.ConnectTimeout("ip已被封鎖")
-                with open("reslut.html",'wb') as f :
-                    f.write(respone.content)
+                self.browser.get('https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01')
+                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                    raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
+                time.sleep(random.randint(1, 10))
                 break
-            except requests.exceptions.ConnectTimeout:
+            except selenium.common.exceptions.TimeoutException:
                 print("發生超時")
+                if self.reTry < self.maxTry :
+                    print("重新嘗試(" + str(self.reTry) + ")")
+                    self.reTry += 1
+                    return self._getReslut_1(name, ID, year, month, day)
                 try:
                     self.VPN.startVPN()
                 except:
@@ -106,14 +114,17 @@ class CMUHH():
         while True:
             try:
                 print("查詢網址 : " + 'https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
-                respone = requests.get('https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
-                print(respone.status_code)
-                if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
-                    raise requests.exceptions.ConnectTimeout("ip已被封鎖")
-                with open("reslut.html",'wb') as f :
-                    f.write(respone.content)
+                self.browser.get('https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
+                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                    raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
+                time.sleep(random.randint(1, 10))
                 break
-            except requests.exceptions.ConnectTimeout:
+            except selenium.common.exceptions.TimeoutException:
+                print("發生超時")
+                if self.reTry < self.maxTry :
+                    print("重新嘗試(" + str(self.reTry) + ")")
+                    self.reTry += 1
+                    return self._getReslut_2(name, ID, year, month, day)
                 try:
                     self.VPN.startVPN()
                 except:
@@ -122,21 +133,25 @@ class CMUHH():
                     break
 
     def _startBrowser(self,name,ID) -> bool:
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        status = self._Screenshot(" 未看診 ",(name + '_' + ID + '_中國醫學大學豐原分院.png'))
-        if status :
-            self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
-        else:
-            self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        try:
+            status = self._Screenshot("未看診",(name + '_' + ID + '_中國醫學大學.png'))
+            print(status)
+            if status :
+                self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
+            else:
+                self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        except:
+            return self._startBrowser(name, ID)
         return status
 
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
         soup = BeautifulSoup(self.browser.page_source,"html.parser")
-        Tags = soup.find_all(['a','input','h1','h2','h3','h4','h5','td'])
+        Tags = soup.find_all(['a','input','h1','h2','h3','h4','h5','td','font'])
         for tag in Tags :
-            # print(tag.text)
-            if tag.text == condition :
+            print(tag.text.strip() + ':' + condition)
+            if tag.text.strip() == condition :
+                print("OKOK")
                 found = True
                 self.browser.save_screenshot(self.outputFile + '/' + fileName)
                 break

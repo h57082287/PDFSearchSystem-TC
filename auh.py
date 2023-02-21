@@ -8,6 +8,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import selenium
 
 # 亞洲大學附設醫院
 class AUH():
@@ -87,13 +88,11 @@ class AUH():
         while True:
             try:
                 print("查詢網址: " + 'https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel='+ ID +'&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
-                respone = requests.get('https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel='+ ID +'&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
-                if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
-                    raise requests.exceptions.ConnectTimeout("ip已被封鎖")
-                with open("reslut.html",'wb') as f :
-                    f.write(respone.content)
+                self.browser.get('https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel='+ ID +'&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
+                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                    raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
                 break
-            except requests.exceptions.ConnectTimeout:
+            except selenium.common.exceptions.TimeoutException:
                 try:
                     self.VPN.startVPN()
                 except:
@@ -105,13 +104,11 @@ class AUH():
         while True:
             try:
                 print("查詢網址: " + 'https://appointment.auh.org.tw/cgi-bin/as/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
-                respone = requests.get('https://appointment.auh.org.tw/cgi-bin/as/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
-                if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
-                    raise requests.exceptions.ConnectTimeout("ip已被封鎖")
-                with open("reslut.html",'wb') as f :
-                    f.write(respone.content)
+                self.browser.get('https://appointment.auh.org.tw/cgi-bin/as/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
+                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                    raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
                 break
-            except requests.exceptions.ConnectTimeout:
+            except selenium.common.exceptions.TimeoutException:
                 try:
                     self.VPN.startVPN()
                 except:
@@ -120,8 +117,7 @@ class AUH():
                     break
 
     def _startBrowser(self,name,ID) -> bool:
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        status = self._Screenshot(" 取消此筆掛號 ",(name + '_' + ID + '_亞洲大學附設醫院.png'))
+        status = self._Screenshot("取消此筆掛號",(name + '_' + ID + '_亞洲大學附設醫院.png'))
         if status :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
@@ -131,9 +127,11 @@ class AUH():
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
         soup = BeautifulSoup(self.browser.page_source,"html.parser")
-        Tags = soup.find_all(['a','input','h1','h2','h3','h4','h5'])
+        Tags = soup.find_all(['a','input','h1','h2','h3','h4','h5','td','font'])
         for tag in Tags :
-            if tag.text == condition :
+            print(tag.text.strip() + ':' + condition)
+            if tag.text.strip() == condition :
+                print("OKOK")
                 found = True
                 self.browser.save_screenshot(self.outputFile + '/' + fileName)
                 break

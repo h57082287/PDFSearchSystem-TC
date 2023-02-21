@@ -1,3 +1,4 @@
+import random
 import time
 import requests
 from PDFReader import PDFReader
@@ -8,6 +9,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import selenium
 
 # 中國醫學大學豐原分院
 class CMUH():
@@ -86,13 +88,12 @@ class CMUH():
         while True:
             try:
                 print("查詢網址 :" + 'http://61.66.117.10/cgi-bin/eng/reg21.cgi?Tel=' + ID + '&&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=88')
-                respone = requests.get('http://61.66.117.10/cgi-bin/eng/reg21.cgi?Tel=' + ID + '&&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=88')
-                if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
-                    raise requests.exceptions.ConnectTimeout("ip已被封鎖")
-                with open("reslut.html",'wb') as f :
-                    f.write(respone.content)
+                self.browser.get('http://61.66.117.10/cgi-bin/eng/reg21.cgi?Tel=' + ID + '&&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=88')
+                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                    raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
+                time.sleep(random.randint(1,10))
                 break
-            except requests.exceptions.ConnectTimeout:
+            except selenium.common.exceptions.TimeoutException:
                 try:
                     self.VPN.startVPN()
                 except:
@@ -104,13 +105,12 @@ class CMUH():
         while True:
             try:
                 print("查詢網址 : " + 'http://61.66.117.10/cgi-bin/eng/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
-                respone = requests.get('http://61.66.117.10/cgi-bin/eng/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
-                if ("對不起!此ip查詢或取消資料次數過多;" in respone.text) or (respone.status_code in self.code_rule) :
-                    raise requests.exceptions.ConnectTimeout("ip已被封鎖")
-                with open("reslut.html",'wb') as f :
-                    f.write(respone.content)
+                self.browser.get('http://61.66.117.10/cgi-bin/eng/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
+                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                    raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
+                time.sleep(random.randint(1,10))
                 break
-            except requests.exceptions.ConnectTimeout:
+            except selenium.common.exceptions.TimeoutException:
                 try:
                     self.VPN.startVPN()
                 except:
@@ -119,8 +119,7 @@ class CMUH():
                     break
 
     def _startBrowser(self,name,ID) -> bool:
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        status = self._Screenshot(" 未看診 ",(name + '_' + ID + '_中國醫學大學豐原分院.png'))
+        status = self._Screenshot("未看診",(name + '_' + ID + '_中國醫學大學豐原分院.png'))
         if status :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
@@ -130,10 +129,11 @@ class CMUH():
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
         soup = BeautifulSoup(self.browser.page_source,"html.parser")
-        Tags = soup.find_all(['a','input','h1','h2','h3','h4','h5','td'])
+        Tags = soup.find_all(['a','input','h1','h2','h3','h4','h5','td','font'])
         for tag in Tags :
-            # print(tag.text)
-            if tag.text == condition :
+            print(tag.text.strip() + ':' + condition)
+            if tag.text.strip() == condition :
+                print("OKOK")
                 found = True
                 self.browser.save_screenshot(self.outputFile + '/' + fileName)
                 break
