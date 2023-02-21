@@ -93,7 +93,7 @@ class CMUHH():
             try:
                 print("查詢網址 : " + 'https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01')
                 self.browser.get('https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01')
-                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
                 time.sleep(random.randint(1, 10))
                 break
@@ -115,7 +115,7 @@ class CMUHH():
             try:
                 print("查詢網址 : " + 'https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
                 self.browser.get('https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
-                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
                 time.sleep(random.randint(1, 10))
                 break

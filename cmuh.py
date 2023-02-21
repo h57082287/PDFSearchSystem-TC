@@ -89,7 +89,7 @@ class CMUH():
             try:
                 print("查詢網址 :" + 'http://61.66.117.10/cgi-bin/eng/reg21.cgi?Tel=' + ID + '&&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=88')
                 self.browser.get('http://61.66.117.10/cgi-bin/eng/reg21.cgi?Tel=' + ID + '&&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=88')
-                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
                 time.sleep(random.randint(1,10))
                 break
@@ -106,7 +106,9 @@ class CMUH():
             try:
                 print("查詢網址 : " + 'http://61.66.117.10/cgi-bin/eng/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
                 self.browser.get('http://61.66.117.10/cgi-bin/eng/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
-                if ("對不起!此ip查詢或取消資料次數過多;" in BeautifulSoup(self.browser.page_source, "html.parser").text) :
+                print(BeautifulSoup(self.browser.page_source, "html.parser").text.strip())
+                print("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip())
+                if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
                 time.sleep(random.randint(1,10))
                 break
