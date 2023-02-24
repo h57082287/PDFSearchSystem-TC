@@ -204,7 +204,7 @@ class MainWindows():
         
         # 檢查授權
         l = License(self)
-        l.TimeLicense("2023-3-21")
+        l.TimeLicense("2023-3-25")
         
         #-----------------------------------------------------------------------------------------啟動視窗
         # 建立設定頁面內容
@@ -232,7 +232,7 @@ class MainWindows():
         self.allowUseLocalLog = tk.Checkbutton(self.SetupTab,text="產生本地端記錄檔(與執行檔相同資料夾)",var=self.checkVal_AULL,state="disabled")
         self.allowUseLocalLog.place(relx=0.25,rely=0.28)
 
-        self.allowUseVPNMode = tk.Checkbutton(self.SetupTab,text="允許使用VPN繞過IP封鎖機制(初步測試版本可能會有穩定性問題)",var=self.checkVal_AUVPNM)
+        self.allowUseVPNMode = tk.Checkbutton(self.SetupTab,text="允許使用VPN繞過IP封鎖機制\n(目前僅中國學大學系列醫院提供，若有其他醫院也需要再回報給我們)",var=self.checkVal_AUVPNM)
         self.allowUseVPNMode.place(relx=0.25,rely=0.38)
 
         # 建立按鈕
@@ -243,19 +243,19 @@ class MainWindows():
         # 版本說明
         self.VersionInfo = tk.LabelFrame(self.SetupTab,text="版本資訊",width=350,height=230)
         self.VersionInfo.place(relx=0.2,rely=0.55)
-        self.version_text = tk.Label(self.VersionInfo,text="版本 : v3.0.1" ,font=("標楷體", 12))
+        self.version_text = tk.Label(self.VersionInfo,text="版本 : v3.2.1" ,font=("標楷體", 12))
         self.version_text.place(relx=0.1,rely=0.05)
         self.type_text = tk.Label(self.VersionInfo,text="類型 : 試用版" ,font=("標楷體", 12))
         self.type_text.place(relx=0.1,rely=0.16)
         self.status_text = tk.Label(self.VersionInfo,text="授權 : 未授權" ,font=("標楷體", 12))
         self.status_text.place(relx=0.1,rely=0.27)
-        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-1-24" ,font=("標楷體", 12))
+        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-2-25" ,font=("標楷體", 12))
         self.release_date.place(relx=0.1,rely=0.38)
         self.evmt = tk.Label(self.VersionInfo,text="支援環境 : Windows 10 、 Windows 11" ,font=("標楷體", 12))
         self.evmt.place(relx=0.1,rely=0.49)
         self.ChangeInfo = tk.LabelFrame(self.VersionInfo,text="變更內容",width=280,height=77)
         self.ChangeInfo.place(relx=0.1,rely=0.60)
-        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="在各醫院加入適當延遲時間避免頻繁啟動VPN\n增加中國醫學大學",font=("標楷體", 12))
+        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="修正中國醫學大學系列不截圖問題\n將各醫院轉換回網頁模式(中國醫系列除外)",font=("標楷體", 8))
         self.ChangeInfo_content.place(relx=0.1,rely=0.01)
         # ----------------------------------------------------------------------------------------
         # 選擇預設標籤
