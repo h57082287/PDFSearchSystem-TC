@@ -1,5 +1,7 @@
 # import random
 # import httpx
+import os
+import tkinter.messagebox
 from bs4 import BeautifulSoup
 import ddddocr
 # import os
@@ -32,26 +34,10 @@ class RG():
         self.idx = 0
         self.page = 0
         self.datalen = 0
+        self.errorNum = 0
+        self.maxError = 10
         self.log = Log()
         self.url = "https://rg.sltung.com.tw/frmRgQuery.aspx?chartNam="
-
-        # 建立header
-        self.headers = {
-                    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36 Edg/106.0.1370.47'
-                }
-        # 建立payload
-        self.payload = {
-                        '__EVENTTARGET': '',
-                        '__EVENTARGUMENT': '',
-                        '__VIEWSTATE': '/wEPDwUKLTM1ODk1MTQwMg9kFgJmD2QWAgIFD2QWAgIBD2QWAgIVDzwrAAsAZGTjtjGPHsFF6aiKkbzNalc9WkBmO0uYT3oK4jaSH3FgrQ==',
-                        '__VIEWSTATEGENERATOR': 'C8064417',
-                        '__EVENTVALIDATION': '/wEdADCntmjCPnemxwEgA8Qw39TO+F+XK/o0ZXRunx0e+5mTEkOmLsViywxU1fjDNw6LeeyNLCVxVr7ocYBfPqFwSsrKKmSs05+DODKdILgmyiIAp6KtLfallEXN7ARHVTyRJMWsWvsuLGrBj/e6Daa8Ptp+eLVgCewbRHI4cJKaDjhMyLUq80sN4EnrYMuPMu+DpFb65hNpAzHM27mb9stByOsy2tNKRK7Af8mPDhoUzZ6+DkwkR2cGWMaAUEp07yvnxd0Fns2NIoQw54TQMBHdf58t1fsEQpc97cM/MQ85BoFkQYxl6kHlttWfQU0UCigQEN9a20QvoFomklTujOoZVHgdRggsczUkN7CErJIIFb4oIAv1JL2J79aJstLMiETbgAz7HjPKnKtR/qrewkLjy63ZJ1gMI0uchWVQ10N83zkdI0k77J3/lvXamijpJmPBIc5SUxve6MtH2pC352mSvW4Ob7Tqy+Da37ayHMGn0HS+heikZ1IzjrIrwElvOhwsc/6d7lRda3Glht9iphnHvucqaKPix+d7sT1bNpeK7hsfAERPvyrrFB0I1IzoxCzRmYrrr+Ba2QETUIqKk6pK9g4Ud7TsaJns+AaEW6mRcGrRu71lVzi1AVNpMR5ewdirqQa88lVqSjsvZiLnYH+BCtszSwkJjvHggkBvFp+JdTaNbQf04z6qCchhqabhGZttcIOGcOoYCWfPut244Hc3CNy/COwy84sx7e+BrUFQbJMDB136eH8u5VFKwkcy+rpQs6jheaOD+sxh8SlbYLbODh6Oq8YTsIfuAZJmcd4kD6AKrbI44oxCKoRUj9FOf4y/Pwv4TsNCjeeW2nfOLtPmYVDtL3SeUlIdGk93/MP8QKHw06Ge3rHN2hIhaUkN/vXr4RZrny8l9V2zKkeI6YIFNAqu+OOW+jjiPfTFv8FDx5JtJqzX1PBLqZt/Bt7Uv3C7sxFws7p4ngo1V8u5xaLpj9akIJcsxFyJ/Hl60Z83VtrpigeUDhMOtfKrXL/ULF5Yz7CuPok95d+tZ758wraPnIbxjUG3Wf1wynmSysX4Llc6yw==',
-                        'ctl00$ContentPlaceHolder2$tbID': 'H125087083',
-                        'ctl00$ContentPlaceHolder2$btConfirm': '確認',
-                        'ctl00$ContentPlaceHolder2$ddlMonth': '7',
-                        'ctl00$ContentPlaceHolder2$ddlDay': '1',
-                        'ctl00$ContentPlaceHolder2$TextBox1': '5376'
-                    }
         self.browser = browser
 
     def run(self):
@@ -93,31 +79,41 @@ class RG():
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
-            print(1)
-            self.browser.get(self.url + ID)
-            print(2)
-            time.sleep(1)
-            print(3)
-            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_tbID"]').send_keys(ID)
-            print(4)
-            time.sleep(1)
-            Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_ddlMonth"]')).select_by_value(str(int(month)))
-            print(5)
-            time.sleep(1)
-            Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_ddlDay"]')).select_by_value(str(int(day)))
-            print(6)
-            time.sleep(1)
-            ans = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH , '//*[@id="ctl00_ContentPlaceHolder2_Image1"]'))
-            print(7)
-            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_TextBox1"]').send_keys(ans)
-            time.sleep(1)
-            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_btConfirm"]').click()
-            time.sleep(1)
-            reslut = self._CKCaptcha("Alert", "識別碼錯誤")
-            print("結果為 :" + str(reslut))
-            if reslut :
-                break
+            try:
+                print(1)
+                self.browser.get(self.url + ID)
+                print(2)
+                time.sleep(1)
+                print(3)
+                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_tbID"]').send_keys(ID)
+                print(4)
+                time.sleep(1)
+                Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_ddlMonth"]')).select_by_value(str(int(month)))
+                print(5)
+                time.sleep(1)
+                Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_ddlDay"]')).select_by_value(str(int(day)))
+                print(6)
+                time.sleep(1)
+                ans = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH , '//*[@id="ctl00_ContentPlaceHolder2_Image1"]'))
+                print(7)
+                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_TextBox1"]').send_keys(ans)
+                time.sleep(1)
+                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder2_btConfirm"]').click()
+                time.sleep(1)
+                reslut = self._CKCaptcha("Alert", "識別碼錯誤")
+                print("結果為 :" + str(reslut))
+                if reslut :
+                    break
+            except:
+                print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                if(self.errorNum >= self.maxError):
+                    tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
+                self.errorNum += 1
+                time.sleep(5)
 
+                
     def _startBrowser(self,name,ID):
         if self._Screenshot("看診進度查詢",(name + '_' + ID + '_童綜合醫院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
