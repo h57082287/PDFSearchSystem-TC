@@ -80,34 +80,44 @@ class LSHOSP():
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
-            self.browser.get(self.url)
-            print(1)
-            time.sleep(2)
-            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID"]').send_keys(ID)
-            print(2)
-            time.sleep(2)
-            Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthM"]')).select_by_value(str(int(month)))
-            print(3)
-            time.sleep(2)
-            Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthD"]')).select_by_value(str(int(day)))
-            print(4)
-            time.sleep(2)
-            Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="reserveTAB02-3"]/tbody/tr[2]/td[4]/img'))
-            print(5)
-            time.sleep(2)
-            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtVerificationCode"]').send_keys(Captcha)
-            print(6)
-            time.sleep(2)
-            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_btnReg"]').click()
-            print(7)
-            time.sleep(2)
-            if not self._CKCaptcha("Web", "驗證碼錯誤! 請輸入正確的驗證碼！"):
-                self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+            try:
+                self.browser.get(self.url)
+                print(1)
                 time.sleep(2)
-                print("8-1")
-            else:
-                print("8-2")
-                break
+                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID"]').send_keys(ID)
+                print(2)
+                time.sleep(2)
+                Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthM"]')).select_by_value(str(int(month)))
+                print(3)
+                time.sleep(2)
+                Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthD"]')).select_by_value(str(int(day)))
+                print(4)
+                time.sleep(2)
+                Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="reserveTAB02-3"]/tbody/tr[2]/td[4]/img'))
+                print(5)
+                time.sleep(2)
+                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtVerificationCode"]').send_keys(Captcha)
+                print(6)
+                time.sleep(2)
+                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_btnReg"]').click()
+                print(7)
+                time.sleep(2)
+                if not self._CKCaptcha("Web", "驗證碼錯誤! 請輸入正確的驗證碼！"):
+                    self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+                    time.sleep(2)
+                    print("8-1")
+                else:
+                    print("8-2")
+                    self.errorNum = 0
+                    break
+            except:
+                print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                if(self.errorNum >= self.maxError):
+                    messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
+                self.errorNum += 1
+                time.sleep(5)
 
     def _startBrowser(self,name,ID):
         if self._Screenshot("就診序號",(name + '_' + ID + '_林新醫院.png')) :

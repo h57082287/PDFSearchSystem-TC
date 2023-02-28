@@ -103,6 +103,7 @@ class RG():
                 reslut = self._CKCaptcha("Alert", "識別碼錯誤")
                 print("結果為 :" + str(reslut))
                 if reslut :
+                    self.errorNum = 0
                     break
             except:
                 print("發生錯誤即將重試(" + str(self.errorNum) + ")")

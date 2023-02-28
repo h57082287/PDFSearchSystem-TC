@@ -10,6 +10,7 @@ from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
 from selenium.webdriver.common.by import By
+import tkinter.messagebox
 
 # 澄清醫院中港分院
 class CKCCGH():
@@ -73,18 +74,30 @@ class CKCCGH():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        self.browser.get(self.url)
-        print(1)
-        time.sleep(1)
-        self.browser.find_element(By.XPATH, '//*[@id="patData"]').send_keys(ID)
-        print(2)
-        time.sleep(1)
-        self.browser.find_element(By.XPATH, '//*[@id="birthDate"]').send_keys(year + month + day)
-        print(3)
-        time.sleep(1)
-        self.browser.find_element(By.XPATH, '//*[@id="confirm"]').click()
-        print(4)
-        time.sleep(1)
+        while True:
+            try:
+                self.browser.get(self.url)
+                print(1)
+                time.sleep(1)
+                self.browser.find_element(By.XPATH, '//*[@id="patData"]').send_keys(ID)
+                print(2)
+                time.sleep(1)
+                self.browser.find_element(By.XPATH, '//*[@id="birthDate"]').send_keys(year + month + day)
+                print(3)
+                time.sleep(1)
+                self.browser.find_element(By.XPATH, '//*[@id="confirm"]').click()
+                print(4)
+                time.sleep(1)
+                self.currentNum = 0
+                break
+            except:
+                print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                if(self.errorNum >= self.maxError):
+                    tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
+                self.errorNum += 1
+                time.sleep(5)
 
 
     def _startBrowser(self,name,ID):

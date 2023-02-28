@@ -10,6 +10,7 @@ from VPNWindow import VPNWindow
 from tkinter import messagebox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.alert import Alert
+import tkinter.messagebox
 
 
 # 台中仁愛醫院
@@ -87,43 +88,53 @@ class UJAH():
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
-            self.browser.get(self.url)
-            time.sleep(2)
-            print(name)
-            if "(初診)" in name:
-                self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[1]/label[2]/span').click()
+            try:
+                self.browser.get(self.url)
                 time.sleep(2)
-            print(1)
-            # ActionChains(driver).move_to_element(driver.find_element_by_xpath('//*[@id="QueryForm"]/div[1]/label[2]/input')).click().perform()
-            self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/input').send_keys(ID)
-            time.sleep(2)
-            print(2)
-            bornDate = str(int(year) + 1911) + month + day
-            self.browser.find_element(By.XPATH, '//*[@id="birthday"]').send_keys(bornDate)
-            time.sleep(2)
-            print(3)
-            Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="captcha"]'))
-            time.sleep(3)
-            print(4)
-            self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/div[3]/input').send_keys(Captcha)
-            time.sleep(3)
-            print(5)
-            self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/div[4]/div/button[1]').click()
-            time.sleep(3)
-            print(6)
-            dropDown="var q=document.documentElement.scrollTop=500"  
-            self.browser.execute_script(dropDown)
-            time.sleep(3)
-            print(7)
-            reslut = self._CKCaptcha("Web", "驗證碼比對錯誤，請重新輸入")
-            if not reslut:
-                print("8-1")
-                self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.7,size=20)
-            else:
-                dropUp="var q=document.documentElement.scrollTop=0"  
-                self.browser.execute_script(dropUp)
-                print("8-2")
-                break
+                print(name)
+                if "(初診)" in name:
+                    self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[1]/label[2]/span').click()
+                    time.sleep(2)
+                print(1)
+                # ActionChains(driver).move_to_element(driver.find_element_by_xpath('//*[@id="QueryForm"]/div[1]/label[2]/input')).click().perform()
+                self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/input').send_keys(ID)
+                time.sleep(2)
+                print(2)
+                bornDate = str(int(year) + 1911) + month + day
+                self.browser.find_element(By.XPATH, '//*[@id="birthday"]').send_keys(bornDate)
+                time.sleep(2)
+                print(3)
+                Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="captcha"]'))
+                time.sleep(3)
+                print(4)
+                self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/div[3]/input').send_keys(Captcha)
+                time.sleep(3)
+                print(5)
+                self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/div[4]/div/button[1]').click()
+                time.sleep(3)
+                print(6)
+                dropDown="var q=document.documentElement.scrollTop=500"  
+                self.browser.execute_script(dropDown)
+                time.sleep(3)
+                print(7)
+                reslut = self._CKCaptcha("Web", "驗證碼比對錯誤，請重新輸入")
+                if not reslut:
+                    print("8-1")
+                    self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.7,size=20)
+                else:
+                    dropUp="var q=document.documentElement.scrollTop=0"  
+                    self.browser.execute_script(dropUp)
+                    print("8-2")
+                    self.errorNum = 0
+                    break
+            except:
+                print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                if(self.errorNum >= self.maxError):
+                    tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
+                self.errorNum += 1
+                time.sleep(5)
         
     def _startBrowser(self,name,ID) -> bool:
         if self._Screenshot("取消掛號",(name + '_' + ID + '_台中仁愛醫院.png')) :

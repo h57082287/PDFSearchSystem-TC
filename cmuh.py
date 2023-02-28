@@ -31,6 +31,8 @@ class CMUH():
         self.page = 0
         self.datalen = 0
         self.log = Log()
+        self.errorNum = 0
+        self.maxError = 10
 
     def run(self):
         # 2022/12/25加入 (VPN 檢測)
@@ -92,6 +94,7 @@ class CMUH():
                 if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
                 time.sleep(random.randint(1,10))
+                self.errorNum = 0
                 break
             except selenium.common.exceptions.TimeoutException:
                 try:
@@ -100,6 +103,14 @@ class CMUH():
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
                     break
+            except:
+                print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                if(self.errorNum >= self.maxError):
+                    messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
+                self.errorNum += 1
+                time.sleep(5)
     
     def _getReslut_2(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
@@ -111,6 +122,7 @@ class CMUH():
                 if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
                 time.sleep(random.randint(1,10))
+                self.errorNum = 0
                 break
             except selenium.common.exceptions.TimeoutException:
                 try:
@@ -119,6 +131,14 @@ class CMUH():
                     messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
                     break
+            except:
+                print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                if(self.errorNum >= self.maxError):
+                    messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
+                self.errorNum += 1
+                time.sleep(5)
 
     def _startBrowser(self,name,ID) -> bool:
         status = self._Screenshot("未看診",(name + '_' + ID + '_中國醫學大學豐原分院.png'))

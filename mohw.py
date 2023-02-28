@@ -34,6 +34,8 @@ class MOHW():
         self.log = Log()
         self.url = "https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx"
         self.browser = browser
+        self.errorNum = 0
+        self.maxError = 10
 
     def run(self):
         # 2022/12/24加入 (VPN 檢測)
@@ -74,36 +76,46 @@ class MOHW():
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
-            self.browser.get(self.url)
-            time.sleep(2)
-            print(1)
-            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID"]').send_keys(ID)
-            time.sleep(2)
-            print(2)
-            Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthM"]')).select_by_visible_text(month)
-            time.sleep(2)
-            print(3)
-            Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthD"]')).select_by_visible_text(day)
-            time.sleep(2)
-            print(4)
-            Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_imgVerificationCode"]'))
-            time.sleep(2)
-            print(5)
-            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtVerificationCode"]').send_keys(Captcha)
-            time.sleep(2)
-            print(6)
-            self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_btnReg"]').click()
-            time.sleep(2)
-            print(7)
-            # 檢查驗證碼
-            reslut = self._CKCaptcha("Web", "驗證碼錯誤! 請輸入正確的驗證碼！")
-            if not reslut:
-                self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+            try:
+                self.browser.get(self.url)
                 time.sleep(2)
-                print("8-1")
-            else:
-                print("8-2")
-                break
+                print(1)
+                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID"]').send_keys(ID)
+                time.sleep(2)
+                print(2)
+                Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthM"]')).select_by_visible_text(month)
+                time.sleep(2)
+                print(3)
+                Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthD"]')).select_by_visible_text(day)
+                time.sleep(2)
+                print(4)
+                Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_imgVerificationCode"]'))
+                time.sleep(2)
+                print(5)
+                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtVerificationCode"]').send_keys(Captcha)
+                time.sleep(2)
+                print(6)
+                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_btnReg"]').click()
+                time.sleep(2)
+                print(7)
+                # 檢查驗證碼
+                reslut = self._CKCaptcha("Web", "驗證碼錯誤! 請輸入正確的驗證碼！")
+                if not reslut:
+                    self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+                    time.sleep(2)
+                    print("8-1")
+                else:
+                    print("8-2")
+                    self.errorNum = 0
+                    break
+            except:
+                print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                if(self.errorNum >= self.maxError):
+                    messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
+                self.errorNum += 1
+                time.sleep(5)
             
 
     def _startBrowser(self,name,ID):

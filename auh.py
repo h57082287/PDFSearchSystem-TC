@@ -1,4 +1,5 @@
 import time
+import tkinter
 import requests
 from PDFReader import PDFReader
 from bs4 import BeautifulSoup
@@ -7,7 +8,7 @@ import os
 from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
-from tkinter import messagebox
+import tkinter.messagebox
 import selenium
 
 # 亞洲大學附設醫院
@@ -30,6 +31,8 @@ class AUH():
         self.page = 0
         self.datalen = 0
         self.log = Log()
+        self.errorNum = 0
+        self.maxError = 10
 
 
     def run(self):
@@ -38,7 +41,7 @@ class AUH():
             self.VPN = VPN(self.window)
             VPNWindow(self.VPN)
             if not self.VPN.InstallationCkeck() :
-                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                tkinter.messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
                 self.window.RunStatus = False
                 self.browser.quit()
                 os._exit(0)
@@ -91,14 +94,23 @@ class AUH():
                 self.browser.get('https://appointment.auh.org.tw/cgi-bin/as/reg21.cgi?Tel='+ ID +'&sentbtn=%E7%A2%BA++++%E5%AE%9A&day=01&month=01&Year=088')
                 if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
+                self.errorNum = 0
                 break
             except selenium.common.exceptions.TimeoutException:
                 try:
                     self.VPN.startVPN()
                 except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
                     break
+            except:
+                print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                if(self.errorNum >= self.maxError):
+                    tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
+                self.errorNum += 1
+                time.sleep(5)
     
     def _getReslut_2(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
@@ -107,14 +119,23 @@ class AUH():
                 self.browser.get('https://appointment.auh.org.tw/cgi-bin/as/reg22.cgi?day=01&month=01&Year=088&CrtIdno='+ ID +'&sYear='+ year +'&sMonth='+ month +'&sDay='+ day +'&surebtn=%E7%A2%BA++%E5%AE%9A')
                 if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
+                self.errorNum = 0
                 break
             except selenium.common.exceptions.TimeoutException:
                 try:
                     self.VPN.startVPN()
                 except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                     self.window.Runstatus = False
                     break
+            except:
+                print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                if(self.errorNum >= self.maxError):
+                    tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
+                self.errorNum += 1
+                time.sleep(5)
 
     def _startBrowser(self,name,ID) -> bool:
         status = self._Screenshot("取消此筆掛號",(name + '_' + ID + '_亞洲大學附設醫院.png'))
