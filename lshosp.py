@@ -10,7 +10,8 @@ from VPNWindow import VPNWindow
 from tkinter import messagebox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.common.alert import Alert 
+from selenium.webdriver.common.alert import Alert
+import selenium 
 
 
 # 林新醫院
@@ -82,15 +83,19 @@ class LSHOSP():
         while True:
             try:
                 self.browser.get(self.url)
+                self._CKWebStatus()
                 print(1)
                 time.sleep(2)
                 self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID"]').send_keys(ID)
+                self._CKWebStatus()
                 print(2)
                 time.sleep(2)
                 Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthM"]')).select_by_value(str(int(month)))
+                self._CKWebStatus()
                 print(3)
                 time.sleep(2)
                 Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthD"]')).select_by_value(str(int(day)))
+                self._CKWebStatus()
                 print(4)
                 time.sleep(2)
                 Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="reserveTAB02-3"]/tbody/tr[2]/td[4]/img'))
@@ -100,6 +105,7 @@ class LSHOSP():
                 print(6)
                 time.sleep(2)
                 self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_btnReg"]').click()
+                self._CKWebStatus()
                 print(7)
                 time.sleep(2)
                 if not self._CKCaptcha("Web", "驗證碼錯誤! 請輸入正確的驗證碼！"):
@@ -110,6 +116,12 @@ class LSHOSP():
                     print("8-2")
                     self.errorNum = 0
                     break
+            except selenium.common.exceptions.TimeoutException:
+                try:
+                    self.VPN.startVPN()
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    os._exit(0)
             except:
                 print("發生錯誤即將重試(" + str(self.errorNum) + ")")
                 self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
@@ -118,6 +130,10 @@ class LSHOSP():
                     os._exit(0)
                 self.errorNum += 1
                 time.sleep(5)
+
+    def _CKWebStatus(self):
+        if "yahoo" in self.browser.current_url:
+            raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
 
     def _startBrowser(self,name,ID):
         if self._Screenshot("就診序號",(name + '_' + ID + '_林新醫院.png')) :
