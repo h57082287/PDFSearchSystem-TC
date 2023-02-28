@@ -16,7 +16,7 @@ class VPN():
         self.window = MainWindowsObj
         self.ovpnDir = ""
         self.fileList = []
-        self.index = 0
+        self.index = self._VPNHistory("r")
         
     def InstallationCkeck(self):
         self.window.setStatusText(content="檢測OpenVPN安裝狀態...",x=0.23,y=0.7,size=24)
@@ -31,6 +31,7 @@ class VPN():
             return False
 
     def startVPN(self):
+        self._VPNHistory("w", self.index)
         print("VPN-1")
         if (self.index != len(self.fileList)) and self.window.checkVal_AUVPNM.get():
             print("VPN-2")
@@ -48,6 +49,7 @@ class VPN():
             print("無法替換ip")
             self.window.RunStatus = False
             messagebox.showerror(title="IP替換失敗",message="所有可用ip已用盡或您本次並未啟用VPN功能!!!")
+            os.remove("VPN.conf")
             self.stopVPN()
             os._exit(0)
     
@@ -76,7 +78,18 @@ class VPN():
     def stopVPN(self):
         os.system("taskkill /F /IM openvpn.exe")
     
-    # def ChangingIPCK(self):
-    #     while(not self.IPStatus):
-    #         pass
-    #     self.IPStatus = True
+    def _VPNHistory(self, mode:str, data=None):
+        if mode == "w":
+            try:
+                os.remove("VPN.conf")
+            except:
+                pass
+            with open("VPN.conf", "a+") as f:
+                print(data)
+                f.writelines(str(data))
+        elif mode == "r":
+            with open("VPN.conf", "a+") as f:
+                try:
+                    return int(f.readline())
+                except:
+                    return 0
