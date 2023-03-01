@@ -1,3 +1,4 @@
+import random
 import time
 from bs4 import BeautifulSoup
 import ddddocr
@@ -59,6 +60,7 @@ class JJAH():
                             self._getReslut(self.Data[self.idx]['Name']+"(初診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                             Q_Status = self._startBrowser(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'] + "(初診)",self.Data[self.idx]['ID'],"大里仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                            self._ClearCookie(self.browser)
                             time.sleep(2)
                             # 複診查詢
                             if not(Q_Status) and self.window.RunStatus:
@@ -67,6 +69,7 @@ class JJAH():
                                 Q_Status = self._getReslut(self.Data[self.idx]['Name']+"(複診)", self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                                 self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                                 self.log.write(self.Data[self.idx]['Name'] + "(複診)",self.Data[self.idx]['ID'],"大里仁愛醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                                self._ClearCookie(self.browser)
                                 time.sleep(2)
                             else:
                                 break
@@ -86,6 +89,7 @@ class JJAH():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
+        self._errorReTryTime()
         while True:
             try:
                 self.browser.get(self.url)
@@ -128,7 +132,7 @@ class JJAH():
                     break
             except:
                 print("發生錯誤即將重試(" + str(self.errorNum) + ")")
-                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候重新執行當前人員查詢~",x=0.3,y=0.8,size=12)
+                self._errorReTryTime()
                 if(self.errorNum >= self.maxError):
                     messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                     os._exit(0)
@@ -204,3 +208,21 @@ class JJAH():
 
     def __del__(self):
         print("物件刪除")
+    
+    def _errorReTryTime(self):
+        self._ClearCookie(self.browser)
+        self.browser.get("about:blank")
+        min = random.randint(0,1)
+        sec = 5
+        for m in range(min, -1, -1):
+            for s in range(sec, -1, -1):
+                if m < 10:
+                    mm = '0' + str(m)
+                if s < 10:
+                    ss = '0' + str(s)     
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候" + mm + ":" + ss + "重新執行~",x=0.3,y=0.8,size=12)
+                time.sleep(1)
+    
+     # 清除快取
+    def _ClearCookie(self,driver):
+        driver.delete_all_cookies()
