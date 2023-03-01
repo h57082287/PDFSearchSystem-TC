@@ -89,7 +89,6 @@ class JJAH():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        self._errorReTryTime()
         while True:
             try:
                 self.browser.get(self.url)
