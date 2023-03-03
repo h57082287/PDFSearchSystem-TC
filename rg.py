@@ -188,8 +188,8 @@ class RG():
     def _errorReTryTime(self):
         self._ClearCookie(self.browser)
         self.browser.get("about:blank")
-        min = random.randint(0,1)
-        sec = 5
+        min = random.randint(0,10)
+        sec = 59
         for m in range(min, -1, -1):
             for s in range(sec, -1, -1):
                 if m < 10:
