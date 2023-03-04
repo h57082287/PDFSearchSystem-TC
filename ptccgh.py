@@ -150,6 +150,7 @@ class PTCCGH():
         sec = 59
         for m in range(min, -1, -1):
             for s in range(sec, -1, -1):
+                ss = '0' + str(s)
                 if m < 10:
                     mm = '0' + str(m)
                 if s < 10:
