@@ -74,10 +74,10 @@ class FYH():
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 豐原醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                             self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                            # self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                            self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"豐原醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             sec = random.randint(1, 5)
-                            print(sec)
+                            # print(sec)
                             time.sleep(sec)
                         else:
                             break
@@ -95,66 +95,76 @@ class FYH():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        # self.payload['cardid'] = ID
-        # self.payload['birthday'] = year + '-' + month + '-' + day
-        # self.payload2['cardid'] = ID
-        # self.payload2['birthday'] = str(int(year) + 1911) + month + day
+        self.payload['cardid'] = ID
+        self.payload['birthday'] = year + '-' + month + '-' + day
+        self.payload2['cardid'] = ID
+        self.payload2['birthday'] = str(int(year) + 1911) + month + day
 
-        # with httpx.Client(http2=True) as client :
-        #     # 進入網頁
-        #     self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
-        #     if(self.respone.json()[0]['msg'] == "病患不存在"):
-        #         self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-        #         with open("reslut.html", "w", encoding="utf-8") as f:
-        #             f.write(self.respone.json()[0]['msg'])
-        #     else:
-        #         self.respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords', timeout=20)
-        #         self.respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
-        #         self._JSONDataToHTML(self.respone2,self.respone.text)
-        # client.close()
+        print("A")
+        with httpx.Client(http2=True) as client :
+            print("B")
+            # 進入網頁
+            self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
+            print("C")
+            if(self.respone.json()[0]['msg'] == "病患不存在"):
+                print("D")
+                self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+                with open("reslut_豐原醫院.html", "w", encoding="utf-8") as f:
+                    f.write(self.respone.json()[0]['msg'])
+                print("E")
+            else:
+                print("F")
+                self.respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords', timeout=20)
+                print("G")
+                self.respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
+                print("H")
+                self._JSONDataToHTML(self.respone2,self.respone.text)
+                print("I")
+        print("J")
+        client.close()
         
-        self.browser.get("https://nreg.fyh.mohw.gov.tw/OReg/HomePage#")
-        time.sleep(3)
-        self.browser.find_element(by=By.XPATH, value='//*[@id="btn-login"]').click()
-        time.sleep(1)
-        self.browser.find_element(by=By.XPATH, value='//*[@id="user-cardid"]').send_keys(ID)
-        birthday = year + month + day
-        self.browser.find_element(by=By.XPATH, value='//*[@id="user-birthday"]').send_keys(birthday)
-        time.sleep(5)
-        self.browser.find_element(by=By.XPATH, value='//*[@id="login-confirm"]').click()
-        time.sleep(1)
-        status  = False
-        result1 = EC.alert_is_present()(self.browser)  #檢查是否為初診
-        print(result1)
-        if result1:
-            alert = self.browser.switch_to_alert()
-            alert.accept()
-            self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-        else:
-            try:
-                if '此證號已有資料病歷，請輸入正確。或請與本院聯絡，謝謝！' in str(self.browser.page_source):
-                    self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-                    status = True
-            except:
-                pass
-            if not status :
-                time.sleep(5)
-                self.browser.find_element(by=By.XPATH, value='//*[@id="scheduledrecords"]').click()
-                time.sleep(5)
-                if self._Screenshot("預約成功",(name + '_' + ID + '_豐原醫院.png')) :
-                    self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
-                else:
-                    self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)  
-                self.browser.find_element(by=By.XPATH, value='//*[@id="btn-logout"]').click()
-        self.browser.get("https://nreg.fyh.mohw.gov.tw/OReg/HomePage#")
+        # self.browser.get("https://nreg.fyh.mohw.gov.tw/OReg/HomePage#")
+        # time.sleep(3)
+        # self.browser.find_element(by=By.XPATH, value='//*[@id="btn-login"]').click()
+        # time.sleep(1)
+        # self.browser.find_element(by=By.XPATH, value='//*[@id="user-cardid"]').send_keys(ID)
+        # birthday = year + month + day
+        # self.browser.find_element(by=By.XPATH, value='//*[@id="user-birthday"]').send_keys(birthday)
+        # time.sleep(5)
+        # self.browser.find_element(by=By.XPATH, value='//*[@id="login-confirm"]').click()
+        # time.sleep(1)
+        # status  = False
+        # result1 = EC.alert_is_present()(self.browser)  #檢查是否為初診
+        # print(result1)
+        # if result1:
+        #     alert = self.browser.switch_to_alert()
+        #     alert.accept()
+        #     self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        # else:
+        #     try:
+        #         if '此證號已有資料病歷，請輸入正確。或請與本院聯絡，謝謝！' in str(self.browser.page_source):
+        #             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        #             status = True
+        #     except:
+        #         pass
+        #     if not status :
+        #         time.sleep(5)
+        #         self.browser.find_element(by=By.XPATH, value='//*[@id="scheduledrecords"]').click()
+        #         time.sleep(5)
+        #         if self._Screenshot("預約成功",(name + '_' + ID + '_豐原醫院.png')) :
+        #             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
+        #         else:
+        #             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)  
+        #         self.browser.find_element(by=By.XPATH, value='//*[@id="btn-logout"]').click()
+        # self.browser.get("https://nreg.fyh.mohw.gov.tw/OReg/HomePage#")
 
 
     def _startBrowser(self,name,ID):
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        # if self._Screenshot("預約成功",(name + '_' + ID + '_豐原醫院.png')) :
-        #     self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
-        # else:
-        #     self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut_豐原醫院.html')
+        if self._Screenshot("預約成功",(name + '_' + ID + '_豐原醫院.png')) :
+            self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
+        else:
+            self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
 
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
@@ -247,7 +257,7 @@ class FYH():
             new_td_tag.string = datas[i]['statuname']
             target_tag[i+1].append(new_td_tag)
 
-        with open('reslut.html','w',encoding='utf-8') as f :
+        with open('reslut_豐原醫院.html','w',encoding='utf-8') as f :
             f.write(str(soup))
 
     
