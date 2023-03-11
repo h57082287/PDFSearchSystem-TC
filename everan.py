@@ -74,10 +74,10 @@ class EVERAN():
                             content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 太平長安醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                             self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                             self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
-                            # self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
+                            self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"太平長安醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             sec = random.randint(1, 5)
-                            print(sec)
+                            # print(sec)
                             time.sleep(sec)
                         else:
                             break
@@ -95,57 +95,68 @@ class EVERAN():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
-        # self.payload['cardid'] = ID
-        # self.payload['birthday'] = year + '-' + month + '-' + day
-        # self.payload2['cardid'] = ID
-        # self.payload2['birthday'] = str(int(year) + 1911) + month + day
-        # with httpx.Client(http2=True) as client :
-        #     # 進入網頁
-        #     self.respone = client.post('http://www.everanhospital.com.tw:9099/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
-        #     if(self.respone.json()[0]['msg'] == "病患不存在"):
-        #         self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-        #         with open("reslut.html", "w", encoding="utf-8") as f:
-        #             f.write(self.respone.json()[0]['msg'])
-        #     else:
-        #         self.respone = client.get('http://www.everanhospital.com.tw:9099/OReg/ScheduledRecords', timeout=20)
-        #         self.respone2 = client.post('http://www.everanhospital.com.tw:9099/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
-        #         self._JSONDataToHTML(self.respone2,self.respone.text)
-        # client.close()
+        self.payload['cardid'] = ID
+        self.payload['birthday'] = year + '-' + month + '-' + day
+        self.payload2['cardid'] = ID
+        self.payload2['birthday'] = str(int(year) + 1911) + month + day
 
-        self.browser.get("http://www.everanhospital.com.tw:9099/OReg/HomePage#")
-        time.sleep(3)
-        self.browser.find_element(by=By.XPATH, value='//*[@id="btn-login"]').click()
-        time.sleep(1)
-        self.browser.find_element(by=By.XPATH, value='//*[@id="user-cardid"]').send_keys(ID)
-        birthday = year + month + day
-        self.browser.find_element(by=By.XPATH, value='//*[@id="user-birthday"]').send_keys(birthday)
-        time.sleep(1)
-        self.browser.find_element(by=By.XPATH, value='//*[@id="login-confirm"]').click()
-        time.sleep(1)
-        result1 = EC.alert_is_present()(self.browser)  #檢查是否為初診的彈窗
-        if result1:
-            alert = self.browser.switch_to_alert()
-            alert.accept()
-            self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-        else:
-            time.sleep(5)
-            self.browser.find_element(by=By.XPATH, value='//*[@id="scheduledrecords"]').click()
-            time.sleep(5)
-            # self.Screenshot(driver=self.browser,webPage=self.browser.page_source,element="div",condition='<div class="records_row_style1" onclick="CancelScheduled($(this).closest(\'tr\'))">取消</div>',YN=True,fileName =self.Datas[i]['Name'] + "_" + self.Datas[i]['ID']  + "_" + str(self.select).replace('\n','') + ".png",manual=False)
-            
-            if self._Screenshot("預約成功",(name + '_' + ID + '_太平長安醫院.png')) :
-                self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
-            else:
+        print("A")
+        with httpx.Client(http2=True) as client :
+            print("B")
+            # 進入網頁
+            self.respone = client.post('http://www.everanhospital.com.tw:9099/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
+            print("C")
+            if(self.respone.json()[0]['msg'] == "病患不存在"):
+                print("D")
                 self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-            self.browser.find_element(by=By.XPATH, value='//*[@id="btn-logout"]').click()
-        self.browser.get("http://www.everanhospital.com.tw:9099/OReg/HomePage#")
+                with open("reslut_太平長安.html", "w", encoding="utf-8") as f:
+                    f.write(self.respone.json()[0]['msg'])
+                print("E")
+            else:
+                print("F")
+                self.respone = client.get('http://www.everanhospital.com.tw:9099/OReg/ScheduledRecords', timeout=20)
+                print("G")
+                self.respone2 = client.post('http://www.everanhospital.com.tw:9099/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
+                print("H")
+                self._JSONDataToHTML(self.respone2,self.respone.text)
+                print("I")
+        print("J")
+        client.close()
+
+        # self.browser.get("http://www.everanhospital.com.tw:9099/OReg/HomePage#")
+        # time.sleep(3)
+        # self.browser.find_element(by=By.XPATH, value='//*[@id="btn-login"]').click()
+        # time.sleep(1)
+        # self.browser.find_element(by=By.XPATH, value='//*[@id="user-cardid"]').send_keys(ID)
+        # birthday = year + month + day
+        # self.browser.find_element(by=By.XPATH, value='//*[@id="user-birthday"]').send_keys(birthday)
+        # time.sleep(1)
+        # self.browser.find_element(by=By.XPATH, value='//*[@id="login-confirm"]').click()
+        # time.sleep(1)
+        # result1 = EC.alert_is_present()(self.browser)  #檢查是否為初診的彈窗
+        # if result1:
+        #     alert = self.browser.switch_to_alert()
+        #     alert.accept()
+        #     self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        # else:
+        #     time.sleep(5)
+        #     self.browser.find_element(by=By.XPATH, value='//*[@id="scheduledrecords"]').click()
+        #     time.sleep(5)
+        #     # self.Screenshot(driver=self.browser,webPage=self.browser.page_source,element="div",condition='<div class="records_row_style1" onclick="CancelScheduled($(this).closest(\'tr\'))">取消</div>',YN=True,fileName =self.Datas[i]['Name'] + "_" + self.Datas[i]['ID']  + "_" + str(self.select).replace('\n','') + ".png",manual=False)
+            
+        #     if self._Screenshot("預約成功",(name + '_' + ID + '_太平長安醫院.png')) :
+        #         self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
+        #     else:
+        #         self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        #     self.browser.find_element(by=By.XPATH, value='//*[@id="btn-logout"]').click()
+        # self.browser.get("http://www.everanhospital.com.tw:9099/OReg/HomePage#")
 
     def _startBrowser(self,name,ID):
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
-        # if self._Screenshot("預約成功",(name + '_' + ID + '_太平長安醫院.png')) :
-        #     self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
-        # else:
-        #     self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut_太平長安.html')
+        if self._Screenshot("預約成功",(name + '_' + ID + '_太平長安醫院.png')) :
+            self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
+        else:
+            self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
 
     def _Screenshot(self,condition:str,fileName:str) -> bool:
         found = False
@@ -226,7 +237,7 @@ class EVERAN():
             new_td_tag.string = datas[i]['statuname']
             target_tag[i+1].append(new_td_tag)
 
-        with open('reslut.html','w',encoding='utf-8') as f :
+        with open('reslut_太平長安.html','w',encoding='utf-8') as f :
             f.write(str(soup))
 
     
