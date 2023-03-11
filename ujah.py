@@ -93,32 +93,32 @@ class UJAH():
         while True:
             try:
                 self.browser.get(self.url)
-                time.sleep(2)
+                time.sleep(0.5)
                 print(name)
                 if "(初診)" in name:
                     self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[1]/label[2]/span').click()
-                    time.sleep(2)
+                    time.sleep(0.5)
                 print(1)
                 # ActionChains(driver).move_to_element(driver.find_element_by_xpath('//*[@id="QueryForm"]/div[1]/label[2]/input')).click().perform()
                 self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/input').send_keys(ID)
-                time.sleep(2)
+                time.sleep(0.5)
                 print(2)
                 bornDate = str(int(year) + 1911) + month + day
                 self.browser.find_element(By.XPATH, '//*[@id="birthday"]').send_keys(bornDate)
-                time.sleep(2)
+                time.sleep(0.5)
                 print(3)
                 Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="captcha"]'))
-                time.sleep(3)
+                time.sleep(0.5)
                 print(4)
                 self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/div[3]/input').send_keys(Captcha)
-                time.sleep(3)
+                time.sleep(0.5)
                 print(5)
                 self.browser.find_element(By.XPATH, '//*[@id="QueryForm"]/div[2]/div[4]/div/button[1]').click()
-                time.sleep(3)
+                time.sleep(0.5)
                 print(6)
                 dropDown="var q=document.documentElement.scrollTop=500"  
                 self.browser.execute_script(dropDown)
-                time.sleep(3)
+                time.sleep(0.5)
                 print(7)
                 reslut = self._CKCaptcha("Web", "驗證碼比對錯誤，請重新輸入")
                 if not reslut:
@@ -137,7 +137,6 @@ class UJAH():
                     tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                     os._exit(0)
                 self.errorNum += 1
-                time.sleep(5)
         
     def _startBrowser(self,name,ID) -> bool:
         if self._Screenshot("取消掛號",(name + '_' + ID + '_台中仁愛醫院.png')) :
