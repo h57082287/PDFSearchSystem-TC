@@ -160,7 +160,10 @@ class CKCCGH():
 
     def _errorReTryTime(self):
         self._ClearCookie(self.browser)
-        self.browser.get("about:blank")
+        try:
+            self.browser.get("about:blank")
+        except:
+            pass
         min = random.randint(0,10)
         sec = 59
         for m in range(min, -1, -1):
