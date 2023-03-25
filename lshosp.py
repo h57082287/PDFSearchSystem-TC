@@ -114,10 +114,10 @@ class LSHOSP():
                     self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                     time.sleep(1)
                     print("8-1")
-                if not self.CKQueryFqError():
+                elif not self.CKQueryFqError():
                     self.window.setStatusText(content="發生頻率錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                     time.sleep(1)
-                if not self.CKHaveYellowBox():
+                elif not self.CKHaveYellowBox():
                     self.window.setStatusText(content="發生黃屏錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                     time.sleep(1)
                 else:
