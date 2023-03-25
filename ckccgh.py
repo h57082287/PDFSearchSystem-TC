@@ -115,7 +115,11 @@ class CKCCGH():
         for tag in Tags :
             if tag.text == condition :
                 found = True
-                self.browser.save_screenshot(self.outputFile + '/' + fileName)
+                try:
+                    self.browser.save_screenshot(self.outputFile + '/' + fileName)
+                except:
+                    messagebox.showerror("發生錯誤", "瀏覽器沒有回應，請排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
                 break
         return found
 

@@ -226,4 +226,7 @@ class JJAH():
     
      # 清除快取
     def _ClearCookie(self,driver):
-        driver.delete_all_cookies()
+        try:
+            driver.delete_all_cookies()
+        except:
+            pass

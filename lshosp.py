@@ -114,6 +114,12 @@ class LSHOSP():
                     self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                     time.sleep(1)
                     print("8-1")
+                if not self.CKQueryFqError():
+                    self.window.setStatusText(content="發生頻率錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+                    time.sleep(1)
+                if not self.CKHaveYellowBox():
+                    self.window.setStatusText(content="發生黃屏錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
+                    time.sleep(1)
                 else:
                     print("8-2")
                     self.errorNum = 0
@@ -220,6 +226,20 @@ class LSHOSP():
                 self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候" + mm + ":" + ss + "重新執行~",x=0.3,y=0.8,size=12)
                 time.sleep(1)
     
-     # 清除快取
+    # 檢查是否為黃色畫面
+    def CKHaveYellowBox(self):
+        html = str(BeautifulSoup(self.browser.page_source,"html.parser"))
+        if "身分證號：" in html:
+            return True
+        return False
+    
+    # 檢查頁面中是否有查詢頻率過高的字樣
+    def CKQueryFqError(self):
+        html = str(BeautifulSoup(self.browser.page_source,"html.parser"))
+        if "您的查詢次數太過頻繁，請稍後再試" in html:
+            return False
+        return True
+
+    # 清除快取
     def _ClearCookie(self,driver):
         driver.delete_all_cookies()

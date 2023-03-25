@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 import tkinter
+from tkinter import messagebox
 from License import License
 from auh import AUH
 from ckccgh import CKCCGH
@@ -204,7 +205,7 @@ class MainWindows():
         
         # 檢查授權
         l = License(self)
-        l.TimeLicense("2023-04-05")
+        l.TimeLicense("2023-04-15")
         
         #-----------------------------------------------------------------------------------------啟動視窗
         # 建立設定頁面內容
@@ -243,19 +244,19 @@ class MainWindows():
         # 版本說明
         self.VersionInfo = tk.LabelFrame(self.SetupTab,text="版本資訊",width=350,height=230)
         self.VersionInfo.place(relx=0.2,rely=0.55)
-        self.version_text = tk.Label(self.VersionInfo,text="版本 : v3.3.5" ,font=("標楷體", 12))
+        self.version_text = tk.Label(self.VersionInfo,text="版本 : v3.3.8" ,font=("標楷體", 12))
         self.version_text.place(relx=0.1,rely=0.05)
         self.type_text = tk.Label(self.VersionInfo,text="類型 : 試用版" ,font=("標楷體", 12))
         self.type_text.place(relx=0.1,rely=0.16)
         self.status_text = tk.Label(self.VersionInfo,text="授權 : 未授權" ,font=("標楷體", 12))
         self.status_text.place(relx=0.1,rely=0.27)
-        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-03-24" ,font=("標楷體", 12))
+        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-03-25" ,font=("標楷體", 12))
         self.release_date.place(relx=0.1,rely=0.38)
         self.evmt = tk.Label(self.VersionInfo,text="支援環境 : Windows 10 、 Windows 11" ,font=("標楷體", 12))
         self.evmt.place(relx=0.1,rely=0.49)
         self.ChangeInfo = tk.LabelFrame(self.VersionInfo,text="變更內容",width=280,height=77)
         self.ChangeInfo.place(relx=0.1,rely=0.60)
-        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="修正澄清發生清除cookie的Timeout問題\n縮短林新醫院每次重試時間",font=("標楷體", 8))
+        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="修正澄清中港截圖時網頁無回應問題\n林新醫院加入兩種故障排除原則\n排除仁愛醫院系列發生清除cookie錯誤問題",font=("標楷體", 8))
         self.ChangeInfo_content.place(relx=0.1,rely=0.01)
         # ----------------------------------------------------------------------------------------
         # 選擇預設標籤
@@ -395,7 +396,11 @@ class MainWindows():
     
     # 建立主程序
     def mainProcess(self):
-        self.URLList[self.webList.get()].run()
+        try:
+            self.URLList[self.webList.get()].run()
+        except:
+            messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+            os._exit(0)
     
     # 結束瀏覽器
     def endBrowser(self):
