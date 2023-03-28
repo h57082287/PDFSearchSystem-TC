@@ -128,10 +128,10 @@ class EVERAN():
                 break
             except:
                 if self.errorNum < self.maxError:
+                    print("發生錯誤即將重試(" + str(self.errorNum) + ")")
                     self._errorReTryTime()
                     self.errorNum += 1
                 else:
-                    print("發生錯誤即將重試(" + str(self.errorNum) + ")")
                     tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                     os._exit(0)
 
