@@ -1,3 +1,4 @@
+import tkinter
 import httpx
 from bs4 import BeautifulSoup
 import ddddocr
@@ -32,14 +33,16 @@ class EVERAN():
         self.datalen = 0
         self.olddatalen = 0
         self.log = Log()
-        # if self.window.checkVal_AUVPNM.get() :
-        #     self.VPN = VPN(self.window)
-        #     VPNWindow(self.VPN)
-        #     if not self.VPN.InstallationCkeck() :
-        #         messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-        #         self.window.RunStatus = False
-        #         self.browser.quit()
-        #         os._exit(0)
+        self.errorNum = 0
+        self.maxError = 10
+        if self.window.checkVal_AUVPNM.get() :
+            self.VPN = VPN(self.window)
+            VPNWindow(self.VPN)
+            if not self.VPN.InstallationCkeck() :
+                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                self.window.RunStatus = False
+                self.browser.quit()
+                os._exit(0)
 
         # payload2需要用到的時間
         self.loc_dt = datetime.datetime.today()
@@ -101,55 +104,36 @@ class EVERAN():
         self.payload2['birthday'] = str(int(year) + 1911) + month + day
 
         print("A")
-        with httpx.Client(http2=True) as client :
-            print("B")
-            # 進入網頁
-            self.respone = client.post('http://www.everanhospital.com.tw:9099/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
-            print("C")
-            if(self.respone.json()[0]['msg'] == "病患不存在"):
-                print("D")
-                self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-                with open("reslut_太平長安.html", "w", encoding="utf-8") as f:
-                    f.write(self.respone.json()[0]['msg'])
-                print("E")
-            else:
-                print("F")
-                self.respone = client.get('http://www.everanhospital.com.tw:9099/OReg/ScheduledRecords', timeout=20)
-                print("G")
-                self.respone2 = client.post('http://www.everanhospital.com.tw:9099/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
-                print("H")
-                self._JSONDataToHTML(self.respone2,self.respone.text)
-                print("I")
-        print("J")
-        client.close()
-
-        # self.browser.get("http://www.everanhospital.com.tw:9099/OReg/HomePage#")
-        # time.sleep(3)
-        # self.browser.find_element(by=By.XPATH, value='//*[@id="btn-login"]').click()
-        # time.sleep(1)
-        # self.browser.find_element(by=By.XPATH, value='//*[@id="user-cardid"]').send_keys(ID)
-        # birthday = year + month + day
-        # self.browser.find_element(by=By.XPATH, value='//*[@id="user-birthday"]').send_keys(birthday)
-        # time.sleep(1)
-        # self.browser.find_element(by=By.XPATH, value='//*[@id="login-confirm"]').click()
-        # time.sleep(1)
-        # result1 = EC.alert_is_present()(self.browser)  #檢查是否為初診的彈窗
-        # if result1:
-        #     alert = self.browser.switch_to_alert()
-        #     alert.accept()
-        #     self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-        # else:
-        #     time.sleep(5)
-        #     self.browser.find_element(by=By.XPATH, value='//*[@id="scheduledrecords"]').click()
-        #     time.sleep(5)
-        #     # self.Screenshot(driver=self.browser,webPage=self.browser.page_source,element="div",condition='<div class="records_row_style1" onclick="CancelScheduled($(this).closest(\'tr\'))">取消</div>',YN=True,fileName =self.Datas[i]['Name'] + "_" + self.Datas[i]['ID']  + "_" + str(self.select).replace('\n','') + ".png",manual=False)
-            
-        #     if self._Screenshot("預約成功",(name + '_' + ID + '_太平長安醫院.png')) :
-        #         self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
-        #     else:
-        #         self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-        #     self.browser.find_element(by=By.XPATH, value='//*[@id="btn-logout"]').click()
-        # self.browser.get("http://www.everanhospital.com.tw:9099/OReg/HomePage#")
+        while True:
+            try:
+                with httpx.Client(http2=True) as client :
+                    print("B")
+                    # 進入網頁
+                    self.respone = client.post('http://www.everanhospital.com.tw:9099/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
+                    print("C")
+                    if(self.respone.json()[0]['msg'] == "病患不存在"):
+                        print("D")
+                        self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+                        with open("reslut_太平長安.html", "w", encoding="utf-8") as f:
+                            f.write(self.respone.json()[0]['msg'])
+                        print("E")
+                    else:
+                        print("F")
+                        self.respone = client.get('http://www.everanhospital.com.tw:9099/OReg/ScheduledRecords', timeout=20)
+                        print("G")
+                        self.respone2 = client.post('http://www.everanhospital.com.tw:9099/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
+                        print("H")
+                        self._JSONDataToHTML(self.respone2,self.respone.text)
+                        print("I")
+                break
+            except:
+                if self.errorNum < self.maxError:
+                    self._errorReTryTime()
+                    self.errorNum += 1
+                else:
+                    print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+                    tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                    os._exit(0)
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut_太平長安.html')
@@ -264,6 +248,32 @@ class EVERAN():
 
     def _endBrowser(self):
         self.browser.quit()
+    
+    def _errorReTryTime(self):
+        self._ClearCookie(self.browser)
+        try:
+            self.browser.get("about:blank")
+        except:
+            pass
+        min = random.randint(0,10)
+        sec = 59
+        for m in range(min, -1, -1):
+            for s in range(sec, -1, -1):
+                ss = str(s)
+                mm = str(m)
+                if m < 10:
+                    mm = '0' + str(m)
+                if s < 10:
+                    ss = '0' + str(s)     
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候" + mm + ":" + ss + "重新執行~",x=0.3,y=0.8,size=12)
+                time.sleep(1)
+    
+    # 清除快取
+    def _ClearCookie(self,driver):
+        try:
+            driver.delete_all_cookies()
+        except:
+            pass
 
     def __del__(self):
         print("物件刪除")

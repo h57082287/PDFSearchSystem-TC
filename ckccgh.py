@@ -141,20 +141,6 @@ class CKCCGH():
         for Tag in Tags:
             Tag['href'] = targer + Tag['href']
         return str(soup)
-    
-    # 用於發生太多次Error，鎖定系統等待重新連線
-    def TimeBlock(self):
-        maxM = random.randint(0,4)
-        self.window.setStatusText(content="嘗試次數過多，等候" + str(maxM + 1) + ":00",x=0.3,y=0.75,size=14)
-        for m in range(maxM, -1, -1):
-            for s in range(59, -1, -1):
-                S = ""
-                if s < 10 :
-                    S = "0" + str(s)
-                else:
-                    S = str(s)
-                self.window.setStatusText(content="嘗試次數過多，等候" + str(m) + ":" + S,x=0.3,y=0.75,size=14)
-                time.sleep(1)
 
     def _endBrowser(self):
         self.browser.quit()
@@ -181,7 +167,7 @@ class CKCCGH():
                 self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候" + mm + ":" + ss + "重新執行~",x=0.3,y=0.8,size=12)
                 time.sleep(1)
     
-     # 清除快取
+    # 清除快取
     def _ClearCookie(self,driver):
         try:
             driver.delete_all_cookies()
