@@ -141,9 +141,13 @@ class TAFGHZB():
                         content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-中清\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 except:
-                    print("跳過")
-                    break
-            client.close()
+                    print("發生錯誤即將重試(" + str(self.ErrorNum) + ")")
+                    self._errorReTryTime()
+                    if(self.ErrorNum >= self.ErrorMax):
+                        messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                        os._exit(0)
+                    self.ErrorNum += 1
+                    time.sleep(5)
         return status
 
     def _startBrowser(self,name,ID):
@@ -199,6 +203,29 @@ class TAFGHZB():
 
     def _endBrowser(self):
         self.browser.quit()
+
+    def _errorReTryTime(self):
+        self._ClearCookie(self.browser)
+        self.browser.get("about:blank")
+        min = random.randint(0,10)
+        sec = 59
+        for m in range(min, -1, -1):
+            for s in range(sec, -1, -1):
+                ss = str(s)
+                mm = str(m)
+                if m < 10:
+                    mm = '0' + str(m)
+                if s < 10:
+                    ss = '0' + str(s)     
+                self.window.setStatusText(content="~發生錯誤(" + str(self.ErrorNum) + ")，準備再次嘗試~\n~等候" + mm + ":" + ss + "重新執行~",x=0.3,y=0.8,size=12)
+                time.sleep(1)
+    
+     # 清除快取
+    def _ClearCookie(self,driver):
+        try:
+            driver.delete_all_cookies()
+        except:
+            pass
 
     def __del__(self):
         print("物件刪除")
