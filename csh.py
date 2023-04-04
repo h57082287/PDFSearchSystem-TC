@@ -106,7 +106,7 @@ class CSH():
         print("1")
         self.payload['tbIdNo'] = ID
         self.payload['tbBirthday'] = str(int(year) + 1911) + month + day
-
+    
         print("2")
         try:
             with httpx.Client(http2=True, timeout=None, verify=False) as client :

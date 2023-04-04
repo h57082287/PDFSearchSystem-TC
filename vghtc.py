@@ -11,6 +11,7 @@ from LogController import Log
 from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
+import random
 
 # 台中榮總
 class VGHTC():
@@ -24,6 +25,8 @@ class VGHTC():
         self.filePath = filePath
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
+        self.errorNum = 0
+        self.maxError = 10
         self.Data = []
         self.browser = browser
         # 各醫院新增項目
@@ -52,7 +55,8 @@ class VGHTC():
                             self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                             # self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"台中榮總",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
-                            time.sleep(2)
+                            sec = random.randint(1, 5)
+                            time.sleep(sec)
                         else:
                             break
                 self.currentNum = 1 
@@ -70,33 +74,42 @@ class VGHTC():
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str) -> bool:
-        self.browser.get("https://register.vghtc.gov.tw/register/queryInternetPrompt.jsp?type=query")
-        time.sleep(3)
-        self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[1]/td[2]/input').send_keys(ID)
-        time.sleep(1)
-        self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/input[3]').send_keys(year)
-        time.sleep(1)
-        Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[1]')).select_by_visible_text(month)
-        time.sleep(1)
-        Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[2]')).select_by_visible_text(day)
-        time.sleep(3)
-        while True:
-            Captcha = self._ParseCaptcha(self.browser.find_element(by=By.XPATH, value='//*[@id="numimage"]'),self.browser,mode=1)
+        try:
+            self.browser.get("https://register.vghtc.gov.tw/register/queryInternetPrompt.jsp?type=query")
+            time.sleep(3)
+            self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[1]/td[2]/input').send_keys(ID)
+            time.sleep(1)
+            self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/input[3]').send_keys(year)
+            time.sleep(1)
+            Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[1]')).select_by_visible_text(month)
+            time.sleep(1)
+            Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[2]')).select_by_visible_text(day)
+            time.sleep(3)
+            while True:
+                Captcha = self._ParseCaptcha(self.browser.find_element(by=By.XPATH, value='//*[@id="numimage"]'),self.browser,mode=1)
+                time.sleep(5)
+                self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[2]').send_keys(Captcha)
+                time.sleep(5)
+                break
+            self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[3]').click()
+            time.sleep(3)
+
+            if self._Screenshot("預約掛號查詢結果",(name + '_' + ID + '_台中榮總.png')) :
+                self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
+            else:
+                self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+
+            # with open('reslut.html','w', encoding='utf-8') as f :
+            #     f.write(self.browser.page_source)
+        except:
+            print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+            self._errorReTryTime()
+            if(self.errorNum >= self.maxError):
+                messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                os._exit(0)
+            self.errorNum += 1
             time.sleep(5)
-            self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[2]').send_keys(Captcha)
-            time.sleep(5)
-            break
-        self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[3]').click()
-        time.sleep(3)
-
-        if self._Screenshot("預約掛號查詢結果",(name + '_' + ID + '_台中榮總.png')) :
-            self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
-        else:
-            self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-
-        # with open('reslut.html','w', encoding='utf-8') as f :
-        #     f.write(self.browser.page_source)
-
+    
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
 
@@ -166,6 +179,29 @@ class VGHTC():
         # result = orc.classification(img_bytes)
         # os.remove("VaildCode.png")
         # return result
+
+    def _errorReTryTime(self):
+        self._ClearCookie(self.browser)
+        self.browser.get("about:blank")
+        min = random.randint(0,10)
+        sec = 59
+        for m in range(min, -1, -1):
+            for s in range(sec, -1, -1):
+                ss = str(s)
+                mm = str(m)
+                if m < 10:
+                    mm = '0' + str(m)
+                if s < 10:
+                    ss = '0' + str(s)     
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候" + mm + ":" + ss + "重新執行~",x=0.3,y=0.8,size=12)
+                time.sleep(1)
+
+     # 清除快取
+    def _ClearCookie(self,driver):
+        try:
+            driver.delete_all_cookies()
+        except:
+            pass
 
     def _endBrowser(self):
         self.browser.quit()

@@ -133,8 +133,6 @@ class WLSHOSP():
                 self.errorNum += 1
                 time.sleep(5)
 
-
-
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut_烏日林新醫院.html')
         if self._Screenshot("預約成功",(name + '_' + ID + '_烏日林新醫院.png')) :
