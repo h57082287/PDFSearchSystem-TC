@@ -99,7 +99,7 @@ class CMUHH():
                 self.browser.get('https://appointment.cmuh.org.tw/cgi-bin/reg21.cgi?Tel=' + ID +'&Year=088&month=01&day=01')
                 if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
-                time.sleep(random.randint(1, 10))
+                time.sleep(random.randint(1, 2))
                 self.errorNum = 0
                 break
             except selenium.common.exceptions.TimeoutException:
@@ -121,7 +121,6 @@ class CMUHH():
                     messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                     os._exit(0)
                 self.errorNum += 1
-                time.sleep(5)
     
     def _getReslut_2(self,name:str, ID:str, year:str, month:str, day:str):
         while True:
@@ -130,7 +129,9 @@ class CMUHH():
                 self.browser.get('https://appointment.cmuh.org.tw/cgi-bin/reg22.cgi?CrtIdno=' + ID + '&sYear=' + year + '&sMonth=' + month + '&sDay=' + day + '&Year=088&month=01&day=01')
                 if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
-                time.sleep(random.randint(1, 10))
+                elif ("這個網頁無法正常運作" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
+                    raise AttributeError("查詢服務器異常")
+                time.sleep(random.randint(1, 2))
                 self.errorNum = 0
                 break
             except selenium.common.exceptions.TimeoutException:

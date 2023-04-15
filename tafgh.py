@@ -136,7 +136,7 @@ class TAFGH():
                         if(self.ErrorNum >= self.ErrorMax):
                             break
                         time.sleep(1)
-                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-台中\n當前第" + str(self.currentPage) + "頁，第" + str(self.currentNum) + "筆"
+                        content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-台中\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 except:
                     print("發生錯誤即將重試(" + str(self.ErrorNum) + ")")
