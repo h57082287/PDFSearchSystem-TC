@@ -1,4 +1,5 @@
 import httpx
+import tkinter
 from bs4 import BeautifulSoup
 import ddddocr
 import os
@@ -26,6 +27,8 @@ class FYH():
         self.filePath = filePath
         self.currentPage = int(S_Page)
         self.currentNum = int(S_Num)
+        self.errorNum = 0
+        self.maxError = 10
         self.Data = []
         self.browser = browser
         # 各醫院新增項目
@@ -77,7 +80,6 @@ class FYH():
                             self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"豐原醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             sec = random.randint(1, 5)
-                            # print(sec)
                             time.sleep(sec)
                         else:
                             break
@@ -100,28 +102,62 @@ class FYH():
         self.payload2['cardid'] = ID
         self.payload2['birthday'] = str(int(year) + 1911) + month + day
 
-        print("A")
-        with httpx.Client(http2=True) as client :
-            print("B")
-            # 進入網頁
-            self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
-            print("C")
-            if(self.respone.json()[0]['msg'] == "病患不存在"):
-                print("D")
-                self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-                with open("reslut_豐原醫院.html", "w", encoding="utf-8") as f:
-                    f.write(self.respone.json()[0]['msg'])
-                print("E")
-            else:
-                print("F")
-                self.respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords', timeout=20)
-                print("G")
-                self.respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
-                print("H")
-                self._JSONDataToHTML(self.respone2,self.respone.text)
-                print("I")
-        print("J")
-        client.close()
+        try:
+            print("A")
+            with httpx.Client(http2=True) as client :
+                print("B")
+                # 進入網頁
+                self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
+                print("C")
+                if(self.respone.json()[0]['msg'] == "病患不存在"):
+                    print("D")
+                    self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+                    with open("reslut_豐原醫院.html", "w", encoding="utf-8") as f:
+                        f.write(self.respone.json()[0]['msg'])
+                    print("E")
+                else:
+                    print("F")
+                    self.respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords', timeout=20)
+                    print("G")
+                    self.respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
+                    print("H")
+                    self._JSONDataToHTML(self.respone2,self.respone.text)
+                    print("I")
+            print("J")
+            client.close()
+        except httpx.ConnectTimeout:
+            self._errorReTryTime()
+            self.errorNum += 1
+            if(self.errorNum > self.maxError):
+                self.errorNum = 0
+                try:
+                    self.VPN.startVPN()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 豐原醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+        except AttributeError:
+            self._errorReTryTime()
+            self.errorNum += 1
+            if(self.errorNum > self.maxError):
+                self.errorNum = 0
+                try:
+                    self.VPN.startVPN()
+                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 豐原醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    self.window.Runstatus = False
+            time.sleep(5)
+        except:
+            print("發生錯誤即將重試(" + str(self.errorNum) + ")")
+            self._errorReTryTime()
+            if(self.errorNum >= self.maxError):
+                tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                os._exit(0)
+            self.errorNum += 1
+            time.sleep(5)
         
         # self.browser.get("https://nreg.fyh.mohw.gov.tw/OReg/HomePage#")
         # time.sleep(3)
