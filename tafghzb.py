@@ -27,7 +27,7 @@ class TAFGHZB():
         self.currentNum = int(S_Num)
         self.Data = []
         self.ErrorNum = 0
-        self.ErrorMax = 20
+        self.ErrorMax = 50
         # 各醫院新增項目
         self.idx = 0
         self.datalen = 0
@@ -99,24 +99,29 @@ class TAFGHZB():
             # 利用迴圈自動重試
             while True:
                 try:
+                    print("f1")
                     # 獲取登入網頁回應
                     self.respone = client.get('https://web-reg-server.803.org.tw/816/WebReg/book_query', timeout=20)
                     soup = BeautifulSoup(self.respone.content,"html.parser")
                     time.sleep(1)
 
+                    print("f2")
                     # 獲取隱藏元素
                     self.payload['__RequestVerificationToken'] = soup.find('form',{'method':'post'}).find('input',{'name':'__RequestVerificationToken'}).get('value')
                     
+                    print("f3")
                     # 請求驗證碼
                     self.respone = client.get('https://web-reg-server.803.org.tw/816/captcha-img', timeout=20)
                     with open('VaildCode.png','wb') as f :
                         f.write(self.respone.content)
                     self.payload['vcode'] = self._ParseCaptcha()
 
+                    print("f4")
                     # 發送登入請求
                     self.respone = client.post('https://web-reg-server.803.org.tw/816/WebReg/book_query', headers=self.headers, data=self.payload, timeout=20)
                     # 檢查是否登入成功(有登入成功此網站會回應302)
                     if(self.respone.status_code == 302):
+                        print("f5")
                         # 查詢掛號紀錄
                         self.respone = client.get('https://web-reg-server.803.org.tw/816/WebReg/book_detail')
                         with open('reslut.html','w', encoding='utf-8') as f :
@@ -124,6 +129,7 @@ class TAFGHZB():
                         status = True
                         break
                     else:
+                        print("f6")
                         # 沒有登入成功的話先檢查有沒有病歷資料
                         soup = BeautifulSoup(self.respone.content,"html.parser")
                         if("無符合病歷資料，請填寫初診資料以建立初次掛號" in str(soup)):
@@ -133,8 +139,10 @@ class TAFGHZB():
                             status = True
                             break
                         # 有病歷資料的話即為驗證碼輸入錯誤，進行重試
+                        print("f7")
                         self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
                         self.ErrorNum += 1
+                        print("驗證碼重試次數 : " + str(self.ErrorNum))
                         if(self.ErrorNum >= self.ErrorMax):
                             break
                         time.sleep(1)

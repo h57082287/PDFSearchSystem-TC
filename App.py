@@ -396,11 +396,11 @@ class MainWindows():
     
     # 建立主程序
     def mainProcess(self):
-        try:
+        # try:
             self.URLList[self.webList.get()].run()
-        except:
-            messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
-            os._exit(0)
+        # except:
+        #     messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+        #     os._exit(0)
     
     # 結束瀏覽器
     def endBrowser(self):
