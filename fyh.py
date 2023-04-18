@@ -64,12 +64,15 @@ class FYH():
     def run(self):
         if self.window.checkVal_AUVPNM.get() :
             self.VPN = VPN(self.window)
+            print("a")
             VPNWindow(self.VPN)
+            print("b")
             if not self.VPN.InstallationCkeck() :
                 messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
                 self.window.RunStatus = False
                 self.browser.quit()
                 os._exit(0)
+            print("c")
                 
         for self.page in range(self.currentPage-1,self.EndPage):
             if self.window.RunStatus:
@@ -116,9 +119,9 @@ class FYH():
                 time.sleep(delay)
                 # 進入網頁
                 self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
-                print(self.respone)
+                # print(self.respone)
                 print("C")
-                print(self.respone.json())
+                # print(self.respone.json())
                 if(self.respone.json()[0]['msg'] == "病患不存在"):
                     print("D")
                     self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
