@@ -62,7 +62,7 @@ class MainWindows():
             "林新醫院" : None,
             "部立台中醫院" : None,
             "慈濟醫院台中分院" : None,
-            # "豐原醫院" : None,
+            "豐原醫院" : None,
             "太平長安醫院" : None,
             "清泉醫院" : None,
             "烏日林新醫院" : None,

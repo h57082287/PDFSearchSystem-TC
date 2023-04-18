@@ -36,14 +36,8 @@ class FYH():
         self.datalen = 0
         self.olddatalen = 0
         self.log = Log()
-        # if self.window.checkVal_AUVPNM.get() :
-        #     self.VPN = VPN(self.window)
-        #     VPNWindow(self.VPN)
-        #     if not self.VPN.InstallationCkeck() :
-        #         messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-        #         self.window.RunStatus = False
-        #         self.browser.quit()
-        #         os._exit(0)
+        self.reTry = 0
+        self.maxTry = 5
 
         # payload2需要用到的時間
         self.loc_dt = datetime.datetime.today()
@@ -68,6 +62,15 @@ class FYH():
                         }
 
     def run(self):
+        if self.window.checkVal_AUVPNM.get() :
+            self.VPN = VPN(self.window)
+            VPNWindow(self.VPN)
+            if not self.VPN.InstallationCkeck() :
+                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                self.window.RunStatus = False
+                self.browser.quit()
+                os._exit(0)
+                
         for self.page in range(self.currentPage-1,self.EndPage):
             if self.window.RunStatus:
                 if self._PDFData(self.page):
@@ -79,6 +82,8 @@ class FYH():
                             self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                             self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"豐原醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
+                            self.errorNum = 0
+                            self._ClearCookie(self.browser)
                             sec = random.randint(1, 5)
                             time.sleep(sec)
                         else:
@@ -91,6 +96,7 @@ class FYH():
         except:
             pass
         self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
+        self.errorNum = 0
         time.sleep(2)
         self.window.GUIRestart()
         self._endBrowser()
@@ -104,11 +110,15 @@ class FYH():
 
         try:
             print("A")
+            delay = random.randint(1, 5)
             with httpx.Client(http2=True) as client :
                 print("B")
+                time.sleep(delay)
                 # 進入網頁
                 self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
+                print(self.respone)
                 print("C")
+                print(self.respone.json())
                 if(self.respone.json()[0]['msg'] == "病患不存在"):
                     print("D")
                     self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
@@ -125,34 +135,15 @@ class FYH():
                     print("I")
             print("J")
             client.close()
-        except httpx.ConnectTimeout:
-            self._errorReTryTime()
-            self.errorNum += 1
-            if(self.errorNum > self.maxError):
-                self.errorNum = 0
-                try:
-                    self.VPN.startVPN()
-                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 豐原醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                    self.window.Runstatus = False
-        except AttributeError:
-            self._errorReTryTime()
-            self.errorNum += 1
-            if(self.errorNum > self.maxError):
-                self.errorNum = 0
-                try:
-                    self.VPN.startVPN()
-                    content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 豐原醫院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
-                    self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                    self.window.Runstatus = False
-            time.sleep(5)
         except:
             print("發生錯誤即將重試(" + str(self.errorNum) + ")")
             self._errorReTryTime()
+            if(self.errorNum == 5):
+                try:
+                    self.VPN.startVPN()
+                except:
+                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    os._exit(0)
             if(self.errorNum >= self.maxError):
                 tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                 os._exit(0)
@@ -317,6 +308,35 @@ class FYH():
         while(self.ChangeIPNow):
             pass
         self.ChangeIPNow = False
+        
+    def _endBrowser(self):
+        self.browser.quit()
+    
+    def _errorReTryTime(self):
+        self._ClearCookie(self.browser)
+        try:
+            self.browser.get("about:blank")
+        except:
+            pass
+        min = 5
+        sec = 30
+        for m in range(1):
+            for s in range(sec, -1, -1):
+                ss = str(s)
+                mm = str(m)
+                if m < 10:
+                    mm = '0' + str(m)
+                if s < 10:
+                    ss = '0' + str(s)     
+                self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候" + mm + ":" + ss + "重新執行~",x=0.3,y=0.8,size=12)
+                time.sleep(1)
+                
+    # 清除快取
+    def _ClearCookie(self,driver):
+        try:
+            driver.delete_all_cookies()
+        except:
+            pass
 
     def _endBrowser(self):
         self.browser.quit()
