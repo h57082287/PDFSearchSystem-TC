@@ -13,6 +13,7 @@ from tkinter import messagebox
 import random
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import selenium
 
 
 # 豐原醫院
@@ -62,6 +63,7 @@ class FYH():
                         }
 
     def run(self):
+        
         if self.window.checkVal_AUVPNM.get() :
             self.VPN = VPN(self.window)
             print("a")
@@ -85,10 +87,9 @@ class FYH():
                             self._getReslut(self.Data[self.idx]['Name'], self.Data[self.idx]['ID'], self.Data[self.idx]['Born'].split('/')[0],self.Data[self.idx]['Born'].split('/')[1],self.Data[self.idx]['Born'].split('/')[2])
                             self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"豐原醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
-                            self.errorNum = 0
                             self._ClearCookie(self.browser)
-                            sec = random.randint(1, 5)
-                            time.sleep(sec)
+                            # sec = random.randint(1, 5)
+                            time.sleep(25)
                         else:
                             break
                 self.currentNum = 1 
@@ -113,6 +114,7 @@ class FYH():
 
         try:
             print("A")
+            # self.errorNum = 5
             delay = random.randint(1, 5)
             with httpx.Client(http2=True) as client :
                 print("B")
@@ -138,15 +140,17 @@ class FYH():
                     print("I")
             print("J")
             client.close()
-        except:
+            # raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
+        except Exception as e :
+            print("這是錯誤訊息 : " + str(e))
             print("發生錯誤即將重試(" + str(self.errorNum) + ")")
             self._errorReTryTime()
-            if(self.errorNum == 5):
-                try:
-                    self.VPN.startVPN()
-                except:
-                    messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                    os._exit(0)
+            # if(self.errorNum == 5):
+            #     try:
+            #         self.VPN.startVPN()
+            #     except:
+            #         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+            #         os._exit(0)
             if(self.errorNum >= self.maxError):
                 tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                 os._exit(0)
