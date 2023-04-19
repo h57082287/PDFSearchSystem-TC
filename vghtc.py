@@ -34,14 +34,6 @@ class VGHTC():
         self.datalen = 0
         self.olddatalen = 0
         self.log = Log()
-        # if self.window.checkVal_AUVPNM.get() :
-        #     self.VPN = VPN(self.window)
-        #     VPNWindow(self.VPN)
-        #     if not self.VPN.InstallationCkeck() :
-        #         messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-        #         self.window.RunStatus = False
-        #         self.browser.quit()
-        #         os._exit(0)
 
     def run(self):
         for self.page in range(self.currentPage-1,self.EndPage):
@@ -56,7 +48,6 @@ class VGHTC():
                             # self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"台中榮總",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             sec = random.randint(1, 5)
-                            time.sleep(sec)
                         else:
                             break
                 self.currentNum = 1 
@@ -101,6 +92,7 @@ class VGHTC():
 
             # with open('reslut.html','w', encoding='utf-8') as f :
             #     f.write(self.browser.page_source)
+            time.sleep(15)
         except:
             print("發生錯誤即將重試(" + str(self.errorNum) + ")")
             self._errorReTryTime()
