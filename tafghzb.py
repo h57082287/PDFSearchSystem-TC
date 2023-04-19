@@ -27,7 +27,7 @@ class TAFGHZB():
         self.currentNum = int(S_Num)
         self.Data = []
         self.ErrorNum = 0
-        self.ErrorMax = 50
+        self.ErrorMax = 10
         # 各醫院新增項目
         self.idx = 0
         self.datalen = 0
@@ -73,8 +73,7 @@ class TAFGHZB():
                                 self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                                 self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"國軍醫院-中清",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             sec = random.randint(1, 5)
-                            print(sec)
-                            time.sleep(sec)
+                            time.sleep(20)
                         else:
                             break
                         self.ErrorNum = 0

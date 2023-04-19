@@ -64,17 +64,17 @@ class FYH():
 
     def run(self):
         
-        if self.window.checkVal_AUVPNM.get() :
-            self.VPN = VPN(self.window)
-            print("a")
-            VPNWindow(self.VPN)
-            print("b")
-            if not self.VPN.InstallationCkeck() :
-                messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-                self.window.RunStatus = False
-                self.browser.quit()
-                os._exit(0)
-            print("c")
+        # if self.window.checkVal_AUVPNM.get() :
+        #     self.VPN = VPN(self.window)
+        #     print("a")
+        #     VPNWindow(self.VPN)
+        #     print("b")
+        #     if not self.VPN.InstallationCkeck() :
+        #         messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+        #         self.window.RunStatus = False
+        #         self.browser.quit()
+        #         os._exit(0)
+        #     print("c")
                 
         for self.page in range(self.currentPage-1,self.EndPage):
             if self.window.RunStatus:
@@ -88,8 +88,7 @@ class FYH():
                             self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                             self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"豐原醫院",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             self._ClearCookie(self.browser)
-                            # sec = random.randint(1, 5)
-                            time.sleep(25)
+                            sec = random.randint(1, 5)
                         else:
                             break
                 self.currentNum = 1 
@@ -114,16 +113,13 @@ class FYH():
 
         try:
             print("A")
-            # self.errorNum = 5
             delay = random.randint(1, 5)
             with httpx.Client(http2=True) as client :
                 print("B")
                 time.sleep(delay)
                 # 進入網頁
                 self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
-                # print(self.respone)
                 print("C")
-                # print(self.respone.json())
                 if(self.respone.json()[0]['msg'] == "病患不存在"):
                     print("D")
                     self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
@@ -140,17 +136,11 @@ class FYH():
                     print("I")
             print("J")
             client.close()
-            # raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
+            time.sleep(20)
         except Exception as e :
             print("這是錯誤訊息 : " + str(e))
             print("發生錯誤即將重試(" + str(self.errorNum) + ")")
             self._errorReTryTime()
-            # if(self.errorNum == 5):
-            #     try:
-            #         self.VPN.startVPN()
-            #     except:
-            #         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-            #         os._exit(0)
             if(self.errorNum >= self.maxError):
                 tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                 os._exit(0)
@@ -192,7 +182,6 @@ class FYH():
         #         self.browser.find_element(by=By.XPATH, value='//*[@id="btn-logout"]').click()
         # self.browser.get("https://nreg.fyh.mohw.gov.tw/OReg/HomePage#")
 
-
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut_豐原醫院.html')
         if self._Screenshot("預約成功",(name + '_' + ID + '_豐原醫院.png')) :
@@ -212,7 +201,6 @@ class FYH():
         return found
 
     def _PDFData(self,currentPage) -> bool:
-        # print("Current : " + str(self.currentPage) + "  End : " + str(self.EndPage))
         mPDFReader = PDFReader(self.window,self.filePath)
         status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
         return status
@@ -327,7 +315,7 @@ class FYH():
             pass
         min = 5
         sec = 30
-        for m in range(1):
+        for m in range(min, -1, -1):
             for s in range(sec, -1, -1):
                 ss = str(s)
                 mm = str(m)
