@@ -137,6 +137,7 @@ class FYH():
             print("J")
             client.close()
             time.sleep(20)
+            
         except Exception as e :
             print("這是錯誤訊息 : " + str(e))
             print("發生錯誤即將重試(" + str(self.errorNum) + ")")
