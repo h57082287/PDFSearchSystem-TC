@@ -136,7 +136,7 @@ class FYH():
                     print("I")
             print("J")
             client.close()
-            time.sleep(20)
+            time.sleep(30)
             
         except Exception as e :
             print("這是錯誤訊息 : " + str(e))

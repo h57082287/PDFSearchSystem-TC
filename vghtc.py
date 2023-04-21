@@ -92,7 +92,7 @@ class VGHTC():
 
             # with open('reslut.html','w', encoding='utf-8') as f :
             #     f.write(self.browser.page_source)
-            time.sleep(15)
+            time.sleep(30)
         except:
             print("發生錯誤即將重試(" + str(self.errorNum) + ")")
             self._errorReTryTime()

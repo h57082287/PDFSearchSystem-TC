@@ -73,7 +73,6 @@ class TAFGHZB():
                                 self._startBrowser(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'])
                                 self.log.write(self.Data[self.idx]['Name'],self.Data[self.idx]['ID'],"國軍醫院-中清",self.Data[self.idx]['Born'],str(self.page + 1),str(self.idx + 1))
                             sec = random.randint(1, 5)
-                            time.sleep(20)
                         else:
                             break
                         self.ErrorNum = 0
@@ -155,6 +154,7 @@ class TAFGHZB():
                         os._exit(0)
                     self.ErrorNum += 1
                     time.sleep(5)
+        time.sleep(30)
         return status
 
     def _startBrowser(self,name,ID):
