@@ -256,7 +256,7 @@ class MainWindows():
         self.evmt.place(relx=0.1,rely=0.49)
         self.ChangeInfo = tk.LabelFrame(self.VersionInfo,text="變更內容",width=280,height=77)
         self.ChangeInfo.place(relx=0.1,rely=0.60)
-        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="提高國軍中清驗證碼錯誤重試次數20 -> 50",font=("標楷體", 8))
+        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="豐原醫院、中榮、國軍中清加入延遲",font=("標楷體", 8))
         self.ChangeInfo_content.place(relx=0.1,rely=0.01)
         # ----------------------------------------------------------------------------------------
         # 選擇預設標籤
