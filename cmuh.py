@@ -123,6 +123,8 @@ class CMUH():
                 print("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip())
                 if ("對不起!此ip查詢或取消資料次數過多" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
                     raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
+                elif ("這個網頁無法正常運行" in BeautifulSoup(self.browser.page_source, "html.parser").text.strip()) :
+                    raise selenium.common.exceptions.TimeoutException("ip已被封鎖")
                 time.sleep(random.randint(1,10))
                 self.errorNum = 0
                 break
