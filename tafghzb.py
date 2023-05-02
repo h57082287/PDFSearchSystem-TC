@@ -33,14 +33,6 @@ class TAFGHZB():
         self.datalen = 0
         self.olddatalen = 0
         self.log = Log()
-        # if self.window.checkVal_AUVPNM.get() :
-        #     self.VPN = VPN(self.window)
-        #     VPNWindow(self.VPN)
-        #     if not self.VPN.InstallationCkeck() :
-        #         messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-        #         self.window.RunStatus = False
-        #         self.browser.quit()
-        #         os._exit(0)
 
         # 建立header
         self.headers = {    
@@ -93,10 +85,10 @@ class TAFGHZB():
         status = False
         self.payload['idno'] = ID
         self.payload['birth'] = str(int(year)) + month + day
-        with httpx.Client(http2=True) as client :
+        try:
+            with httpx.Client(http2=True) as client :
             # 利用迴圈自動重試
-            while True:
-                try:
+                while True:
                     print("f1")
                     # 獲取登入網頁回應
                     self.respone = client.get('https://web-reg-server.803.org.tw/816/WebReg/book_query', timeout=20)
@@ -146,14 +138,14 @@ class TAFGHZB():
                         time.sleep(1)
                         content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-中清\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx +1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-                except:
-                    print("發生錯誤即將重試(" + str(self.ErrorNum) + ")")
-                    self._errorReTryTime()
-                    if(self.ErrorNum >= self.ErrorMax):
-                        messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
-                        os._exit(0)
-                    self.ErrorNum += 1
-                    time.sleep(5)
+        except:
+            print("發生錯誤即將重試(" + str(self.ErrorNum) + ")")
+            self._errorReTryTime()
+            if(self.ErrorNum >= self.ErrorMax):
+                messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                os._exit(0)
+            self.ErrorNum += 1
+            time.sleep(15)
         time.sleep(30)
         return status
 
