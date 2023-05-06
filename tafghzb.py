@@ -12,7 +12,6 @@ from tkinter import messagebox
 import random
 import socket
 
-
 # 國軍醫院-中清
 class TAFGHZB():
     def __init__(self, browser, mainWindowsObj, S_Page:int=1, S_Num:int=1, E_Page:int=1, E_Num:int=5, outputFile:str=None, filePath:str=None) -> None:
@@ -85,10 +84,10 @@ class TAFGHZB():
         status = False
         self.payload['idno'] = ID
         self.payload['birth'] = str(int(year)) + month + day
-        try:
-            with httpx.Client(http2=True) as client :
+        with httpx.Client(http2=True) as client :
             # 利用迴圈自動重試
-                while True:
+            while True:
+                try:
                     print("f1")
                     # 獲取登入網頁回應
                     self.respone = client.get('https://web-reg-server.803.org.tw/816/WebReg/book_query', timeout=20)
@@ -135,17 +134,17 @@ class TAFGHZB():
                         print("驗證碼重試次數 : " + str(self.ErrorNum))
                         if(self.ErrorNum >= self.ErrorMax):
                             break
-                        time.sleep(1)
+                        time.sleep(2)
                         content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-中清\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx +1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
-        except:
-            print("發生錯誤即將重試(" + str(self.ErrorNum) + ")")
-            self._errorReTryTime()
-            if(self.ErrorNum >= self.ErrorMax):
-                messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
-                os._exit(0)
-            self.ErrorNum += 1
-            time.sleep(15)
+                except:
+                    print("發生錯誤即將重試(" + str(self.ErrorNum) + ")")
+                    self._errorReTryTime()
+                    if(self.ErrorNum >= self.ErrorMax):
+                        messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
+                        os._exit(0)
+                    self.ErrorNum += 1
+                    time.sleep(15)
         time.sleep(30)
         return status
 
