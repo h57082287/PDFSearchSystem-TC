@@ -90,9 +90,10 @@ class TAFGHZB():
                 try:
                     print("f1")
                     # 獲取登入網頁回應
+                    time.sleep(5)
                     self.respone = client.get('https://web-reg-server.803.org.tw/816/WebReg/book_query', timeout=20)
                     soup = BeautifulSoup(self.respone.content,"html.parser")
-                    time.sleep(1)
+                    
 
                     print("f2")
                     # 獲取隱藏元素
@@ -100,6 +101,7 @@ class TAFGHZB():
                     
                     print("f3")
                     # 請求驗證碼
+                    time.sleep(5)
                     self.respone = client.get('https://web-reg-server.803.org.tw/816/captcha-img', timeout=20)
                     with open('VaildCode.png','wb') as f :
                         f.write(self.respone.content)
@@ -108,10 +110,12 @@ class TAFGHZB():
                     print("f4")
                     # 發送登入請求
                     self.respone = client.post('https://web-reg-server.803.org.tw/816/WebReg/book_query', headers=self.headers, data=self.payload, timeout=20)
+                    time.sleep(10)
                     # 檢查是否登入成功(有登入成功此網站會回應302)
                     if(self.respone.status_code == 302):
                         print("f5")
                         # 查詢掛號紀錄
+                        time.sleep(5)
                         self.respone = client.get('https://web-reg-server.803.org.tw/816/WebReg/book_detail')
                         with open('reslut.html','w', encoding='utf-8') as f :
                             f.write(self._changeHTMLStyle(self.respone.content))
@@ -134,7 +138,7 @@ class TAFGHZB():
                         print("驗證碼重試次數 : " + str(self.ErrorNum))
                         if(self.ErrorNum >= self.ErrorMax):
                             break
-                        time.sleep(2)
+                        time.sleep(5)
                         content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-中清\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx +1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 except:
@@ -144,8 +148,7 @@ class TAFGHZB():
                         messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                         os._exit(0)
                     self.ErrorNum += 1
-                    time.sleep(15)
-        time.sleep(30)
+                    time.sleep(5)
         return status
 
     def _startBrowser(self,name,ID):
