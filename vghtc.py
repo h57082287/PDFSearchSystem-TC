@@ -67,15 +67,15 @@ class VGHTC():
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str) -> bool:
         try:
             self.browser.get("https://register.vghtc.gov.tw/register/queryInternetPrompt.jsp?type=query")
-            time.sleep(3)
+            time.sleep(8)
             self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[1]/td[2]/input').send_keys(ID)
-            time.sleep(1)
+            time.sleep(2)
             self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/input[3]').send_keys(year)
-            time.sleep(1)
+            time.sleep(2)
             Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[1]')).select_by_visible_text(month)
-            time.sleep(1)
+            time.sleep(2)
             Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[2]')).select_by_visible_text(day)
-            time.sleep(3)
+            time.sleep(5)
             while True:
                 Captcha = self._ParseCaptcha(self.browser.find_element(by=By.XPATH, value='//*[@id="numimage"]'),self.browser,mode=1)
                 time.sleep(5)
@@ -92,8 +92,9 @@ class VGHTC():
 
             # with open('reslut.html','w', encoding='utf-8') as f :
             #     f.write(self.browser.page_source)
-            time.sleep(30)
-        except:
+            time.sleep(15)
+        except Exception as e:
+            print("這是錯誤訊息 : " + str(e))
             print("發生錯誤即將重試(" + str(self.errorNum) + ")")
             self._errorReTryTime()
             if(self.errorNum >= self.maxError):

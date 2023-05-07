@@ -113,10 +113,10 @@ class FYH():
 
         try:
             print("A")
-            delay = random.randint(1, 5)
+            # delay = random.randint(1, 5)
             with httpx.Client(http2=True) as client :
                 print("B")
-                time.sleep(delay)
+                time.sleep(8)
                 # 進入網頁
                 self.respone = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetPatInfo', data=self.payload, headers=self.headers, timeout=20)
                 print("C")
@@ -128,15 +128,17 @@ class FYH():
                     print("E")
                 else:
                     print("F")
+                    time.sleep(8)
                     self.respone = client.get('https://nreg.fyh.mohw.gov.tw/OReg/ScheduledRecords', timeout=20)
                     print("G")
+                    time.sleep(8)
                     self.respone2 = client.post('https://nreg.fyh.mohw.gov.tw/OReg/GetEventsByCondition', data=self.payload2, headers=self.headers, timeout=20)
                     print("H")
                     self._JSONDataToHTML(self.respone2,self.respone.text)
                     print("I")
             print("J")
             client.close()
-            time.sleep(30)
+            time.sleep(15)
             
         except Exception as e :
             print("這是錯誤訊息 : " + str(e))
