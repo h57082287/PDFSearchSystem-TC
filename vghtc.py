@@ -1,6 +1,7 @@
 import time
 from urllib.parse import quote
 from bs4 import BeautifulSoup
+import tkinter
 import ddddocr
 import os
 from PDFReader import PDFReader
@@ -12,6 +13,8 @@ from VPNClient import VPN
 from VPNWindow import VPNWindow
 from tkinter import messagebox
 import random
+import selenium
+
 
 # 台中榮總
 class VGHTC():
@@ -36,6 +39,14 @@ class VGHTC():
         self.log = Log()
 
     def run(self):
+        if self.window.checkVal_AUVPNM.get() :
+            self.VPN = VPN(self.window)
+            VPNWindow(self.VPN)
+            if not self.VPN.InstallationCkeck() :
+                tkinter.messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                self.window.RunStatus = False
+                self.browser.quit()
+                os._exit(0)
         for self.page in range(self.currentPage-1,self.EndPage):
             if self.window.RunStatus:
                 if self._PDFData(self.page):
@@ -53,9 +64,10 @@ class VGHTC():
                 self.currentNum = 1 
             else:
                 break
-
         try :
             self.VPN.stopVPN()
+            content = "姓名 : " + self.Data[self.idx]['Name'] + "\n身分證字號 : " + self.Data[self.idx]['ID'] + "\n出生日期 : " + self.Data[self.idx]['Born'] + "\n查詢醫院 : 中國醫學大學豐原分院\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
+            self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
         except:
             pass
         self.window.setStatusText(content="~比對完成~",x=0.35,y=0.7,size=24)
@@ -69,21 +81,21 @@ class VGHTC():
             self.browser.get("https://register.vghtc.gov.tw/register/queryInternetPrompt.jsp?type=query")
             time.sleep(8)
             self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[1]/td[2]/input').send_keys(ID)
-            time.sleep(2)
+            time.sleep(3)
             self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/input[3]').send_keys(year)
-            time.sleep(2)
+            time.sleep(3)
             Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[1]')).select_by_visible_text(month)
-            time.sleep(2)
+            time.sleep(3)
             Select(self.browser.find_element(by = By.XPATH, value='//*[@id="senddata"]/table/tbody/tr[3]/td[2]/select[2]')).select_by_visible_text(day)
-            time.sleep(5)
+            time.sleep(6)
             while True:
                 Captcha = self._ParseCaptcha(self.browser.find_element(by=By.XPATH, value='//*[@id="numimage"]'),self.browser,mode=1)
-                time.sleep(5)
+                time.sleep(6)
                 self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[2]').send_keys(Captcha)
-                time.sleep(5)
+                time.sleep(6)
                 break
             self.browser.find_element(by=By.XPATH, value='//*[@id="senddata"]/p[2]/input[3]').click()
-            time.sleep(3)
+            time.sleep(5)
 
             if self._Screenshot("預約掛號查詢結果",(name + '_' + ID + '_台中榮總.png')) :
                 self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
@@ -92,7 +104,19 @@ class VGHTC():
 
             # with open('reslut.html','w', encoding='utf-8') as f :
             #     f.write(self.browser.page_source)
-            time.sleep(15)
+            time.sleep(20)
+        except selenium.common.exceptions.WebDriverException:
+            try:
+                    self.VPN.startVPN()
+            except:
+                tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                self.window.Runstatus = False
+        except selenium.common.exceptions.NoSuchWindowException:
+            try:
+                    self.VPN.startVPN()
+            except:
+                tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                self.window.Runstatus = False
         except Exception as e:
             print("這是錯誤訊息 : " + str(e))
             print("發生錯誤即將重試(" + str(self.errorNum) + ")")
@@ -101,7 +125,7 @@ class VGHTC():
                 messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                 os._exit(0)
             self.errorNum += 1
-            time.sleep(5)
+            time.sleep(10)
     
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')

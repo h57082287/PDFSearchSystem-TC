@@ -13,6 +13,10 @@ import random
 import socket
 import base64
 from selenium.webdriver.common.by import By
+import tkinter
+import selenium
+import urllib3
+
 
 # 國軍醫院-中清
 class TAFGHZB():
@@ -53,6 +57,14 @@ class TAFGHZB():
         self.browser = browser
 
     def run(self):
+        if self.window.checkVal_AUVPNM.get() :
+            self.VPN = VPN(self.window)
+            VPNWindow(self.VPN)
+            if not self.VPN.InstallationCkeck() :
+                tkinter.messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+                self.window.RunStatus = False
+                self.browser.quit()
+                os._exit(0)
         socket.setdefaulttimeout(20)
         for self.page in range(self.currentPage-1,self.EndPage):
             if self.window.RunStatus:
@@ -195,6 +207,18 @@ class TAFGHZB():
                     #     time.sleep(5)
                     #     content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-中清\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx +1) + "筆"
                     #     self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except urllib3.exceptions.ReadTimeoutError:
+                    try:
+                        self.VPN.startVPN()
+                    except:
+                        tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                        self.window.Runstatus = False
+                except selenium.common.exceptions.NoSuchWindowException:
+                    try:
+                        self.VPN.startVPN()
+                    except:
+                        tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                        self.window.Runstatus = False
                 except Exception as e:
                     print(e)
                     print("發生錯誤即將重試(" + str(self.ErrorNum) + ")")
