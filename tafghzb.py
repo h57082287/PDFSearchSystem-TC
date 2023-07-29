@@ -121,7 +121,7 @@ class TAFGHZB():
                     self.browser.execute_script("arguments[0].click()", button)
                     time.sleep(5)
 
-                        # 檢查驗證碼是否輸入正確
+                    # 檢查驗證碼是否輸入正確
                     checkCaptcha = BeautifulSoup(self.browser.page_source,"html.parser")
                     # 將element.Tag轉型成字串
                     buffer = []
@@ -142,7 +142,9 @@ class TAFGHZB():
                             self.browser.find_element(by=By.XPATH, value='/html/body/main/div/div/div/div/div[3]/div/div/div/div[2]/a').click()
                         except:
                             pass
-                        self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)                            
+                        self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
+                    status = True 
+                    break                           
                 except urllib3.exceptions.ReadTimeoutError:
                     try:
                         self.VPN.startVPN()
@@ -165,7 +167,7 @@ class TAFGHZB():
                     self.ErrorNum += 1
                     time.sleep(5)
                 time.sleep(15)
-                return status
+        return status
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
@@ -228,13 +230,8 @@ class TAFGHZB():
             img_bytes = f.read()
         orc = ddddocr.DdddOcr()
         result = orc.classification(img_bytes)
+        os.remove("captcha.png")
         return result
-        # with open("VaildCode.png",'rb') as f :
-        #     img_bytes = f.read()
-        # orc = ddddocr.DdddOcr()
-        # result = orc.classification(img_bytes)
-        # os.remove("VaildCode.png")
-        # return result
 
     # 各醫院新增項目
     def _ChangingIPCK(self):
