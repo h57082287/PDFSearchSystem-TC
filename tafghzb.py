@@ -111,39 +111,28 @@ class TAFGHZB():
                     bornText = str(int(year)) + month + day
                     self.browser.find_element(by=By.XPATH, value='//*[@id="birth"]').send_keys(bornText)
                     print(bornText)
-                    Captcha = self._ParseCaptcha(element=self.browser.find_element(by=By.XPATH, value='//*[@id="codeimg"]'),driver=self.browser,mode=2)
+                    Captcha = self._ParseCaptcha(element=self.browser.find_element(by=By.XPATH, value='//*[@id="codeimg"]'),driver=self.browser)
                     time.sleep(2)
                     print(Captcha)
                     self.browser.find_element(by=By.XPATH, value='//*[@id="vcode"]').send_keys(Captcha)
                     time.sleep(2)
-                    self.browser.find_element(by=By.XPATH, value='//*[@id="Send"]').click()
+                    button = self.browser.find_element(by=By.XPATH, value='//*[@id="Send"]')
+                    # Change use javascript click button
+                    self.browser.execute_script("arguments[0].click()", button)
                     time.sleep(5)
 
-                    while True:
                         # 檢查驗證碼是否輸入正確
-                        checkCaptcha = BeautifulSoup(self.browser.page_source,"html.parser")
-                        # 將element.Tag轉型成字串
-                        buffer = []
-                        for buff in checkCaptcha.find_all('div',{'class':'modal-body'}):
-                            buffer.append(buff.text.replace(' ','').replace('\n',''))
-                        # 檢查錯誤用
-                        for b in buffer:
-                            print(b)
-                        if ('驗證碼輸入錯誤！' in buffer) :
-                            self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.7,size=20)
-                            self.browser.find_element(by=By.XPATH, value='//*[@id="alertMe"]/div/div/div[1]/button/span').click()
-                            time.sleep(5)
-                            Captcha = self._ParseCaptcha(element=self.browser.find_element(by=By.XPATH, value='//*[@id="codeimg"]'),driver=self.browser,mode=2)
-                            time.sleep(2)
-                            print(Captcha)
-                            self.browser.find_element(by=By.XPATH, value='//*[@id="vcode"]').send_keys(Captcha)
-                            time.sleep(2)
-                            self.browser.find_element(by=By.XPATH, value='//*[@id="Send"]').click()
-                            time.sleep(2)
-                        else:
-                            time.sleep(2)
-                            break
-                    time.sleep(5)
+                    checkCaptcha = BeautifulSoup(self.browser.page_source,"html.parser")
+                    # 將element.Tag轉型成字串
+                    buffer = []
+                    for buff in checkCaptcha.find_all('div',{'class':'modal-body'}):
+                        buffer.append(buff.text.replace(' ','').replace('\n',''))
+                    # 檢查錯誤用
+                    for b in buffer:
+                        print(b)
+                    if ('驗證碼輸入錯誤！' in buffer) :
+                        self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.7,size=20)
+                        continue
 
                     if self._Screenshot("我要取消",(name + '_' + ID + '_國軍醫院-中清.png')) :
                         self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
@@ -154,59 +143,6 @@ class TAFGHZB():
                         except:
                             pass
                         self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)                            
-
-                    # print("f1")
-                    # # 獲取登入網頁回應
-                    # time.sleep(5)
-                    # self.respone = client.get('https://web-reg-server.803.org.tw/816/WebReg/book_query', timeout=20)
-                    # soup = BeautifulSoup(self.respone.content,"html.parser")
-
-                    # print("f2")
-                    # # 獲取隱藏元素
-                    # self.payload['__RequestVerificationToken'] = soup.find('form',{'method':'post'}).find('input',{'name':'__RequestVerificationToken'}).get('value')
-                    
-                    # print("f3")
-                    # # 請求驗證碼
-                    # time.sleep(5)
-                    # self.respone = client.get('https://web-reg-server.803.org.tw/816/captcha-img', timeout=20)
-                    # with open('VaildCode.png','wb') as f :
-                    #     f.write(self.respone.content)
-                    # self.payload['vcode'] = self._ParseCaptcha()
-
-                    # print("f4")
-                    # # 發送登入請求
-                    # self.respone = client.post('https://web-reg-server.803.org.tw/816/WebReg/book_query', headers=self.headers, data=self.payload, timeout=20)
-                    # time.sleep(10)
-                    # # 檢查是否登入成功(有登入成功此網站會回應302)
-                    # if(self.respone.status_code == 302):
-                    #     print("f5")
-                    #     # 查詢掛號紀錄
-                    #     time.sleep(5)
-                    #     self.respone = client.get('https://web-reg-server.803.org.tw/816/WebReg/book_detail')
-                    #     with open('reslut.html','w', encoding='utf-8') as f :
-                    #         f.write(self._changeHTMLStyle(self.respone.content))
-                    #     status = True
-                    #     break
-                    # else:
-                    #     print("f6")
-                    #     # 沒有登入成功的話先檢查有沒有病歷資料
-                    #     soup = BeautifulSoup(self.respone.content,"html.parser")
-                    #     if("無符合病歷資料，請填寫初診資料以建立初次掛號" in str(soup)):
-                    #         self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
-                    #         with open("reslut.html", "w", encoding="utf-8") as f:
-                    #             f.write("病患不存在")
-                    #         status = True
-                    #         break
-                    #     # 有病歷資料的話即為驗證碼輸入錯誤，進行重試
-                    #     print("f7")
-                    #     self.window.setStatusText(content="驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
-                    #     self.ErrorNum += 1
-                    #     print("驗證碼重試次數 : " + str(self.ErrorNum))
-                    #     if(self.ErrorNum >= self.ErrorMax):
-                    #         break
-                    #     time.sleep(5)
-                    #     content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-中清\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx +1) + "筆"
-                    #     self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
                 except urllib3.exceptions.ReadTimeoutError:
                     try:
                         self.VPN.startVPN()
@@ -230,7 +166,6 @@ class TAFGHZB():
                     time.sleep(5)
                 time.sleep(15)
                 return status
-        # return status
 
     def _startBrowser(self,name,ID):
         self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')

@@ -1,7 +1,7 @@
 /__pycache__
-/*.txt
-/login.conf
-/reslut.html
-/*.png
-/*.html
+*.txt
+login.conf
+reslut.html
+*.png
+*.html
 *.exe
