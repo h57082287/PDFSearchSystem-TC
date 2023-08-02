@@ -39,14 +39,16 @@ class VGHTC():
         self.log = Log()
 
     def run(self):
-        if self.window.checkVal_AUVPNM.get() :
-            self.VPN = VPN(self.window)
-            VPNWindow(self.VPN)
-            if not self.VPN.InstallationCkeck() :
-                tkinter.messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
-                self.window.RunStatus = False
-                self.browser.quit()
-                os._exit(0)
+        ## VPN
+        # if self.window.checkVal_AUVPNM.get() :
+        #     self.VPN = VPN(self.window)
+        #     VPNWindow(self.VPN)
+        #     if not self.VPN.InstallationCkeck() :
+        #         tkinter.messagebox.showerror("VPN異常","請檢查您是否有安裝OpenVPN !!!")
+        #         self.window.RunStatus = False
+        #         self.browser.quit()
+        #         os._exit(0)
+        
         for self.page in range(self.currentPage-1,self.EndPage):
             if self.window.RunStatus:
                 if self._PDFData(self.page):
@@ -105,18 +107,21 @@ class VGHTC():
             # with open('reslut.html','w', encoding='utf-8') as f :
             #     f.write(self.browser.page_source)
             time.sleep(20)
-        except selenium.common.exceptions.WebDriverException:
-            try:
-                    self.VPN.startVPN()
-            except:
-                tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                self.window.Runstatus = False
-        except selenium.common.exceptions.NoSuchWindowException:
-            try:
-                    self.VPN.startVPN()
-            except:
-                tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
-                self.window.Runstatus = False
+            
+        ## VPN
+        # except selenium.common.exceptions.WebDriverException:
+        #     try:
+        #             self.VPN.startVPN()
+        #     except:
+        #         tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+        #         self.window.Runstatus = False
+        # except selenium.common.exceptions.NoSuchWindowException:
+        #     try:
+        #             self.VPN.startVPN()
+        #     except:
+        #         tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+        #         self.window.Runstatus = False
+        
         except Exception as e:
             print("這是錯誤訊息 : " + str(e))
             print("發生錯誤即將重試(" + str(self.errorNum) + ")")
