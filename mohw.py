@@ -13,6 +13,7 @@ from tkinter import messagebox
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.alert import Alert
+from selenium.webdriver.common.action_chains import ActionChains
 
 # 部立台中醫院
 class MOHW():
@@ -32,7 +33,7 @@ class MOHW():
         self.page = 0
         self.datalen = 0
         self.log = Log()
-        self.url = "https://www03.taic.mohw.gov.tw/OINetReg/OINetReg.Reg/Reg_RegConfirm.aspx"
+        self.url = "https://www03.taic.mohw.gov.tw/OINetReg.WebRwd/Reg/RegQuery"
         self.browser = browser
         self.errorNum = 0
         self.maxError = 10
@@ -81,34 +82,51 @@ class MOHW():
                 self.browser.get(self.url)
                 time.sleep(2)
                 print(1)
-                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtIDNOorPatientID"]').send_keys(ID)
-                time.sleep(2)
+                for word in ID:
+                    self.browser.find_element(By.XPATH, '//*[@id="PatIdForm_PatId"]').send_keys(word)
+                    time.sleep(random.random())
+                time.sleep(random.randint(1, 5))
                 print(2)
-                Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthM"]')).select_by_visible_text(month)
-                time.sleep(2)
+                for word in month:
+                    self.browser.find_element(By.XPATH, '//*[@id="PatIdForm_BirthM"]').send_keys(word)
+                    time.sleep(random.random())
+                time.sleep(random.randint(1, 5))
                 print(3)
-                Select(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_dd1BirthD"]')).select_by_visible_text(day)
-                time.sleep(2)
+                for word in day:
+                    self.browser.find_element(By.XPATH, '//*[@id="PatIdForm_BirthD"]').send_keys(word)
+                    time.sleep(random.random())
+                time.sleep(random.randint(1, 5))
                 print(4)
-                Captcha = self._ParseCaptcha4Img(self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_imgVerificationCode"]'))
-                time.sleep(2)
-                print(5)
-                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_txtVerificationCode"]').send_keys(Captcha)
-                time.sleep(2)
-                print(6)
-                self.browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_btnReg"]').click()
-                time.sleep(2)
-                print(7)
-                # 檢查驗證碼
-                reslut = self._CKCaptcha("Web", "驗證碼錯誤! 請輸入正確的驗證碼！")
-                if not reslut:
-                    self.window.setStatusText(content="因驗證碼錯誤，系統正重新查詢",x=0.2,y=0.8,size=20)
-                    time.sleep(2)
-                    print("8-1")
-                else:
-                    print("8-2")
-                    self.errorNum = 0
-                    break
+                self.browser.find_element(By.XPATH, '//*[@id="main"]/section[2]/div/form/div[2]/div/div/div/input').click()
+                time.sleep(random.randint(1, 5))
+                
+                # 嘗試進入google辨識窗
+                try:
+                    print("進入")
+                    self.browser.switch_to.frame(self.browser.find_element(By.XPATH, '/html/body/div/div[2]/iframe'))
+                    print("辨識中....")
+                    ActionChains(self.browser).move_to_element_with_offset(self.browser.find_element(By.XPATH, '//*[@id="recaptcha-audio-button"]'),50,10).click().perform()
+                    print("離開辨識")
+                    self.browser.switch_to.default_content()
+                    print("等待5秒，切換回主視窗")
+                    time.sleep(5)
+                except Exception as e:
+                    print("發生錯誤: " + str(e))
+
+                # 檢測是否辨識成功
+                try:
+                    print("檢視語音辨識iframe是否存在")
+                    self.browser.switch_to.frame(self.browser.find_element(By.XPATH, '/html/body/div/div[2]/iframe'))
+                    print("成功進入語音辨識iframe，表示未驗證成功，準備重試")
+                    time.sleep(5)
+                    self.browser.switch_to.default_content()
+                    print("離開")
+                    continue
+                except Exception as e:
+                    print("錯誤訊息: " + str(e))
+                    print("視窗不存在，辨識成功")
+                    pass
+                break
             except:
                 print("發生錯誤即將重試(" + str(self.errorNum) + ")")
                 self._errorReTryTime()
@@ -120,7 +138,7 @@ class MOHW():
             
 
     def _startBrowser(self,name,ID):
-        if self._Screenshot("就診序號",(name + '_' + ID + '_部立台中醫院.png')) :
+        if self._Screenshot("看診號",(name + '_' + ID + '_部立台中醫院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
             self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
@@ -130,7 +148,7 @@ class MOHW():
         soup = BeautifulSoup(self.browser.page_source,"html.parser")
         Tags = soup.find_all(['a','button','input','th','h1','h2','h3','h4','h5'])
         for tag in Tags :
-            if tag.text == condition :
+            if (str(tag.text).strip() == condition) or (condition in str(tag.text).strip()):
                 found = True
                 self.browser.save_screenshot(self.outputFile + '/' + fileName)
                 break

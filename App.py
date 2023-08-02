@@ -351,7 +351,9 @@ class MainWindows():
 
     def Start(self):
         self._LockUI()
-        self.browser = webdriver.Chrome(ChromeDriverManager().install())
+        chrome_option = webdriver.ChromeOptions()
+        chrome_option.add_extension('2.0.1_0.crx')
+        self.browser = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_option)
         self.browser.set_page_load_timeout(180)
         print("Init URLList")
         self.URLList = {

@@ -65,7 +65,6 @@ class TAFGHZB():
                 self.window.RunStatus = False
                 self.browser.quit()
                 os._exit(0)
-        socket.setdefaulttimeout(20)
         for self.page in range(self.currentPage-1,self.EndPage):
             if self.window.RunStatus:
                 if self._PDFData(self.page):
@@ -144,6 +143,7 @@ class TAFGHZB():
                             pass
                         self.window.setStatusText(content="~不符合截圖標準~",x=0.3,y=0.7,size=24)
                     status = True 
+                    self.ErrorNum = 0
                     break                           
                 except urllib3.exceptions.ReadTimeoutError:
                     try:
@@ -189,18 +189,6 @@ class TAFGHZB():
         status, self.Data,self.datalen = mPDFReader.GetData(currentPage)
         return status
     
-    def _changeHTMLStyle(self,page_content):
-        soup = BeautifulSoup(page_content,"html.parser")
-        # 替換屬性內容，強制複寫資源路徑(針對img)
-        Tags = soup.find_all(['img'])
-        for Tag in Tags:
-            Tag['src'] = 'https://web-reg-server.803.org.tw' + Tag['src'] 
-        # 替換屬性內容，強制複寫資源路徑(針對link)
-        Tags = soup.find_all(['link'])
-        for Tag in Tags:
-            Tag['href'] = 'https://web-reg-server.803.org.tw' + Tag['href']
-        return str(soup)
-    
     # 驗證碼辨識
     def _ParseCaptcha(self,element,driver,mode=1):
         if mode == 1 :
@@ -232,12 +220,6 @@ class TAFGHZB():
         result = orc.classification(img_bytes)
         os.remove("captcha.png")
         return result
-
-    # 各醫院新增項目
-    def _ChangingIPCK(self):
-        while(self.ChangeIPNow):
-            pass
-        self.ChangeIPNow = False
 
     def _endBrowser(self):
         self.browser.quit()
