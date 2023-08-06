@@ -136,10 +136,10 @@ class UpdateController:
             state = True
         return state
 
+    # 刪除暫存檔案
     def __DelTempFile(self, name):
         os.popen("rmdir /q /s " + name)
         os.popen("del /q .\\" + name + ".zip")
-
 
 if __name__ == "__main__":
     try:
