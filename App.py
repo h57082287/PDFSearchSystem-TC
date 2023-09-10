@@ -30,7 +30,7 @@ from vghtc import VGHTC
 from ktghs import KTGHS
 from ktghd import KTGHD
 from selenium import webdriver
-from DriverMgr import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager
 # from VPNClient import VPN
 
 # ========================================================
