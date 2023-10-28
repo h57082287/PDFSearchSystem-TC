@@ -30,6 +30,8 @@ from vghtc import VGHTC
 from ktghs import KTGHS
 from ktghd import KTGHD
 from selenium import webdriver
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 # from VPNClient import VPN
 
@@ -351,9 +353,17 @@ class MainWindows():
 
     def Start(self):
         self._LockUI()
-        chrome_option = webdriver.ChromeOptions()
-        chrome_option.add_extension('2.0.1_0.crx')
-        self.browser = webdriver.Chrome(ChromeDriverManager().install(), chrome_options=chrome_option)
+        # Use Chrome
+        # chrome_option = webdriver.ChromeOptions()
+        # chrome_option.add_extension('2.0.1_0.crx')
+        # self.browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_option)
+        
+        # Use Edge
+        edge_option = webdriver.EdgeOptions()
+        edge_option.add_argument('start-maximized')
+        edge_option.add_extension('2.0.1_0.crx')
+        self.browser = webdriver.Edge(service=EdgeService(executable_path="msedgedriver.exe"), options=edge_option)
+        
         self.browser.set_page_load_timeout(180)
         print("Init URLList")
         self.URLList = {

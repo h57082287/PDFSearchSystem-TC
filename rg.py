@@ -107,9 +107,10 @@ class RG():
                 if reslut :
                     self.errorNum = 0
                     break
-            except:
+            except Exception as e:
+                print(e)
                 print("發生錯誤即將重試(" + str(self.errorNum) + ")")
-                self._errorReTryTime()
+                # self._errorReTryTime()
                 if(self.errorNum >= self.maxError):
                     tkinter.messagebox.showerror("發生錯誤", "請檢查您的網路是否異常，並排除後再次執行本程式，系統將於您按下[確定]後自動關閉!!!")
                     os._exit(0)
@@ -152,7 +153,7 @@ class RG():
                 cnv.getContext('2d').drawImage(ele,0,0);\
                 return cnv.toDataURL('image/png').substring(22);\
             ",element)
-        orc = ddddocr.DdddOcr()
+        orc = ddddocr.DdddOcr(show_ad=False)
         result = orc.classification(image_base64)
         return result
     
