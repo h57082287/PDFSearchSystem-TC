@@ -149,7 +149,7 @@ class TAFGH():
         return status
 
     def _startBrowser(self,name,ID):
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut.html')
+        self.browser.get(r'file:///' + (os.path.dirname(os.path.abspath(__file__))).replace('\_internal','') + '/reslut.html')
         if self._Screenshot("我要取消",(name + '_' + ID + '_國軍醫院-台中.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
