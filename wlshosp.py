@@ -134,7 +134,7 @@ class WLSHOSP():
                 time.sleep(5)
 
     def _startBrowser(self,name,ID):
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut_烏日林新醫院.html')
+        self.browser.get(r'file:///' + (os.path.dirname(os.path.abspath(__file__)).replace('\_internal','')) + '/reslut_烏日林新醫院.html')
         if self._Screenshot("預約成功",(name + '_' + ID + '_烏日林新醫院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
