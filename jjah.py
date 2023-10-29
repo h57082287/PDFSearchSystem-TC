@@ -129,7 +129,8 @@ class JJAH():
                     print("8-2")
                     self.errorNum = 0
                     break
-            except:
+            except Exception as e:
+                print(e)
                 print("發生錯誤即將重試(" + str(self.errorNum) + ")")
                 self._errorReTryTime()
                 if(self.errorNum >= self.maxError):
