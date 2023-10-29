@@ -102,7 +102,7 @@ class FYH():
         self.errorNum = 0
         time.sleep(2)
         self.window.GUIRestart()
-        self._endBrowser()
+        # self._endBrowser()
         del self
 
     def _getReslut(self,name:str, ID:str, year:str, month:str, day:str):
@@ -186,7 +186,10 @@ class FYH():
         # self.browser.get("https://nreg.fyh.mohw.gov.tw/OReg/HomePage#")
 
     def _startBrowser(self,name,ID):
-        self.browser.get(r'file:///' + os.path.dirname(os.path.abspath(__file__)) + '/reslut_豐原醫院.html')
+        print(os.path.dirname(os.path.abspath(__file__)))
+        print((os.path.dirname(os.path.abspath(__file__))).replace('\_internal',''))
+        print(str(os.path.dirname(os.path.abspath(__file__))).replace('\_internal',''))
+        self.browser.get(r'file:///' + (os.path.dirname(os.path.abspath(__file__))).replace('\_internal','') + '/reslut_豐原醫院.html')
         if self._Screenshot("預約成功",(name + '_' + ID + '_豐原醫院.png')) :
             self.window.setStatusText(content="~條件符合，已截圖保存~",x=0.25,y=0.7,size=24)
         else:
