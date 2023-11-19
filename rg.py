@@ -201,6 +201,9 @@ class RG():
                     ss = '0' + str(s)     
                 self.window.setStatusText(content="~發生錯誤(" + str(self.errorNum) + ")，準備再次嘗試~\n~等候" + mm + ":" + ss + "重新執行~",x=0.3,y=0.8,size=12)
                 time.sleep(1)
+        
+    def Checked_BlankPage(self):
+        pass
     
      # 清除快取
     def _ClearCookie(self,driver):

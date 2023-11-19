@@ -4,6 +4,8 @@ import httpx
 from bs4 import BeautifulSoup
 import ddddocr
 import os
+
+from selenium.common.exceptions import TimeoutException
 from PDFReader import PDFReader
 from LogController import Log
 from VPNClient import VPN
@@ -138,6 +140,16 @@ class TAFGH():
                         time.sleep(1)
                         content = "姓名 : " + name + "\n身分證字號 : " + ID + "\n出生日期 : " + (year + "/" + month + "/" + day) + "\n查詢醫院 : 國軍醫院-台中\n當前第" + str(self.page + 1) + "頁，第" + str(self.idx + 1) + "筆"
                         self.window.setStatusText(content=content,x=0.3,y=0.75,size=12)
+                except TimeoutException as error:
+                    print("偵測到瀏覽器超時異常，系統即將啟動VPN並重試")
+                    print(error)
+                    time.sleep(5)
+                    # try:
+                    #     self.VPN.startVPN()
+                    # except:
+                    #     tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                    #     self.window.Runstatus = False
+                    #     break
                 except:
                     print("發生錯誤即將重試(" + str(self.ErrorNum) + ")")
                     self._errorReTryTime()

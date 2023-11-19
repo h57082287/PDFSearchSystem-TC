@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 import ddddocr
 import os
 import time
+
+from selenium.common.exceptions import TimeoutException
 from PDFReader import PDFReader
 import datetime
 from LogController import Log
@@ -152,6 +154,16 @@ class CHINGCHYUAN():
                     except:
                         messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
                         os._exit(0)
+            except TimeoutException as error:
+                print("偵測到瀏覽器超時異常，系統即將啟動VPN並重試")
+                print(error)
+                time.sleep(5)
+                # try:
+                #     self.VPN.startVPN()
+                # except:
+                #     tkinter.messagebox.showerror("啟動VPN發生錯誤","無法啟動VPN輪轉功能，可能是您並未於設定裡允許'啟動VPN'的功能")
+                #     self.window.Runstatus = False
+                #     break
             except:
                 if self.errorNum < self.maxError:
                         print("發生錯誤即將重試(" + str(self.errorNum) + ")")
