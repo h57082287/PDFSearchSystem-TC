@@ -32,7 +32,7 @@ from ktghd import KTGHD
 from selenium import webdriver
 from selenium.webdriver.edge.service import Service as EdgeService
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
+from DriverMgr import ChromeDriverManager
 # from VPNClient import VPN
 
 # ========================================================
