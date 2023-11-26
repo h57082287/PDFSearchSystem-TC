@@ -246,19 +246,19 @@ class MainWindows():
         # 版本說明
         self.VersionInfo = tk.LabelFrame(self.SetupTab,text="版本資訊",width=350,height=230)
         self.VersionInfo.place(relx=0.2,rely=0.55)
-        self.version_text = tk.Label(self.VersionInfo,text="版本 : v4.1.0" ,font=("標楷體", 12))
+        self.version_text = tk.Label(self.VersionInfo,text="版本 : v4.2.0" ,font=("標楷體", 12))
         self.version_text.place(relx=0.1,rely=0.05)
         self.type_text = tk.Label(self.VersionInfo,text="類型 : 試用版" ,font=("標楷體", 12))
         self.type_text.place(relx=0.1,rely=0.16)
         self.status_text = tk.Label(self.VersionInfo,text="授權 : 未授權" ,font=("標楷體", 12))
         self.status_text.place(relx=0.1,rely=0.27)
-        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-11-19" ,font=("標楷體", 12))
+        self.release_date = tk.Label(self.VersionInfo,text="發布日期 : 2023-11-26" ,font=("標楷體", 12))
         self.release_date.place(relx=0.1,rely=0.38)
         self.evmt = tk.Label(self.VersionInfo,text="支援環境 : Windows 10 、 Windows 11" ,font=("標楷體", 12))
         self.evmt.place(relx=0.1,rely=0.49)
         self.ChangeInfo = tk.LabelFrame(self.VersionInfo,text="變更內容",width=280,height=77)
         self.ChangeInfo.place(relx=0.1,rely=0.60)
-        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="各醫院加入瀏覽器超時重試機制",font=("標楷體", 8))
+        self.ChangeInfo_content = tk.Label(self.ChangeInfo,text="修正各醫院僅能跑一小段時間就終止問題",font=("標楷體", 8))
         self.ChangeInfo_content.place(relx=0.1,rely=0.01)
         # ----------------------------------------------------------------------------------------
         # 選擇預設標籤
