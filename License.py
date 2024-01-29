@@ -8,7 +8,7 @@ class License():
         self.windows = mainWindowsObj
 
     def TimeLicense(self,day):
-        hosts = ['0.cn.pool.ntp.org','1.cn.pool.ntp.org','2.cn.pool.ntp.org','3.cn.pool.ntp.org']
+        hosts = ['time.asia.apple.com','time.google.com','time.stdtime.gov.tw','time.windows.com']
         t = ntplib.NTPClient()
         for host in hosts:
             try:
